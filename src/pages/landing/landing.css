@@ -676,3 +676,23 @@
     animation: none !important;
   }
 }
+
+/* ───────────────────────── /start launcher ───────────────────────── */
+.startpage {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-4) 0;
+}
+.startpage__head {
+  margin-bottom: var(--space-4);
+}
+.startpage__title {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  margin: 0 0 var(--space-1);
+}
+.startpage__sub {
+  font-family: var(--font);
+  color: var(--text-dim);
+  margin: 0;
+}

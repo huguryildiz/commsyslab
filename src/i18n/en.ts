@@ -1,5 +1,8 @@
 export const en: Record<string, string> = {
   'app.title': 'CommSysLab',
+  'nav.modules': 'Modules',
+  'start.title': 'Choose a module',
+  'start.subtitle': 'Nine chapters, one communication link — pick where to start.',
   'app.subtitle': 'Interactive Communication Systems Lab',
   'nav.home': 'Home',
   'nav.sampling': 'Sampling & Quantization',
@@ -192,7 +195,7 @@ export const en: Record<string, string> = {
   'landing.headline.l2': 'survive the channel.',
   'landing.lead':
     'CommSysLab is a hands-on playground for the whole communication system — from analog AM/FM to the digital link: sample, quantize, source-code, modulate, and detect, every block live and grounded in Proakis & Salehi.',
-  'landing.cta.primary': 'Start with Sampling',
+  'landing.cta.primary': 'Browse the modules',
   'landing.cta.secondary': 'Explore the link',
   'landing.stats.modules': 'Modules',
   'landing.stats.panels': 'Interactive panels',
