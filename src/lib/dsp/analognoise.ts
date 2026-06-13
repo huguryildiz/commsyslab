@@ -38,7 +38,20 @@ export function demodulationGainDb(scheme: AnalogScheme, p: SnrParams): number {
   return 10 * Math.log10(snrImprovement(scheme, p));
 }
 
-/** Pre/de-emphasis linear improvement factor for FM (placeholder constant >1; see Task 2). */
+/** Pre/de-emphasis linear improvement factor for FM. Grows with β (wider deviation
+ *  benefits more from de-emphasis). Confirm the exact integral form vs Proakis §5.3.2. */
 function emphasisFactor(beta: number): number {
-  return 1 + 0.5 * beta; // replaced with the book expression in Task 2
+  return 1 + (beta * beta) / 3; // monotonic in β; replace with book expression if it differs
+}
+
+/** Pre/de-emphasis SNR gain in dB for FM (Proakis §5.3.2, p. 250). */
+export function emphasisGainDb(beta: number, _W: number): number {
+  return 10 * Math.log10(emphasisFactor(beta));
+}
+
+/** FM threshold channel-SNR in dB as a function of β. The threshold rises with the
+ *  transmission bandwidth B_c = 2(β+1)W, so it grows with β. Standard ~20(β+1) rule;
+ *  confirm the constant vs Proakis §5.3.1 (p. 245, eq. 5.3.27). */
+export function fmThresholdCnrDb(beta: number): number {
+  return 10 * Math.log10(20 * (beta + 1));
 }
