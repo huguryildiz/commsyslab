@@ -15,17 +15,15 @@ export function Home() {
           {t('landing.footer.left')} — <b>{t('landing.footer.ref')}</b>
         </span>
         <span className="landing__footer-meta">
+          © 2026 {t('landing.footer.dev')}{' '}
           <a
             className="landing__dev"
             href="https://huguryildiz.com/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {t('landing.footer.dev')}
+            {t('landing.footer.devName')}
           </a>
-          <span>{t('landing.footer.stack')}</span>
-          <span>{t('landing.footer.theme')}</span>
-          <span>© 2026</span>
         </span>
       </footer>
     </div>

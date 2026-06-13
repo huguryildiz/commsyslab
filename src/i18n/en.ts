@@ -211,7 +211,6 @@ export const en: Record<string, string> = {
   'landing.flow.detect': 'detect',
   'landing.flow.sink': 'sink',
   'landing.section.kicker': '01 / LAB',
-  'landing.section.title': 'Five blocks, one link',
   'landing.module': 'MODULE',
   'landing.tile.open': 'Open module',
   'landing.tile.soon': 'SOON',
@@ -232,9 +231,8 @@ export const en: Record<string, string> = {
     'The full chain wired together — source coding → modulation → channel → detection, with a live link budget.',
   'landing.footer.left': 'Interactive Communication Systems Lab',
   'landing.footer.ref': 'built on Proakis & Salehi, Communication Systems Engineering',
-  'landing.footer.stack': 'React · TS · Vite',
-  'landing.footer.theme': 'dark / light',
-  'landing.footer.dev': 'Developed by Hüseyin Uğur Yıldız',
+  'landing.footer.dev': 'Developed by',
+  'landing.footer.devName': 'Hüseyin Uğur Yıldız',
 
   // --- Baseband module ---
   'baseband.tab.pulse': 'Pulse Shaping & Nyquist',
