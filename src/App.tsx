@@ -5,6 +5,7 @@ import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
 import { SamplingModule } from '@/modules/sampling/SamplingModule';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
+import { InfoTheoryModule } from '@/modules/infotheory/InfoTheoryModule';
 import './theme/global.css';
 import './components/components.css';
 import './pages/pages.css';
@@ -14,7 +15,7 @@ const NAV = [
   { to: '/sampling', key: 'nav.sampling' },
   { to: '/modulation', key: 'nav.modulation' },
   { to: '/baseband', key: 'nav.baseband' },
-  { to: '/huffman', key: 'nav.huffman' },
+  { to: '/information-theory', key: 'nav.infotheory' },
   { to: '/end-to-end', key: 'nav.endToEnd' },
 ];
 
@@ -48,7 +49,7 @@ export default function App() {
             <Route path="/sampling" element={<SamplingModule />} />
             <Route path="/modulation" element={<ModulationModule />} />
             <Route path="/baseband" element={<ModulePlaceholder title={t('nav.baseband')} />} />
-            <Route path="/huffman" element={<ModulePlaceholder title={t('nav.huffman')} />} />
+            <Route path="/information-theory" element={<InfoTheoryModule />} />
             <Route
               path="/end-to-end"
               element={<ModulePlaceholder title={t('nav.endToEnd')} />}
