@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Panel,
   Slider,
@@ -7,11 +7,14 @@ import {
   Readout,
   TheoryBox,
   Formula,
+  TransportControls,
 } from '@/components';
 import { t } from '@/i18n';
-import { PRESETS, signalPeak, type Tone } from '@/lib/dsp/signals';
+import { PRESETS, signalPeak, evalSignal, type Tone } from '@/lib/dsp/signals';
 import type { QuantizerType } from '@/lib/dsp/quantize';
 import type { PcmCoding } from '@/lib/dsp/pcm';
+import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
+import { pcmCodeword } from '@/lib/dsp/pcm';
 import { buildSamplingView } from './model';
 import { TimePanel, SpectrumPanel, QuantPanel, ErrorPanel } from './panels';
 import './sampling.css';
@@ -40,6 +43,9 @@ export function SamplingModule() {
   const [type, setType] = useState<QuantizerType>('midrise');
   const [coding, setCoding] = useState<PcmCoding>('nbc');
   const [showRecon, setShowRecon] = useState(true);
+  const [t0, setT0] = useState(0);
+  const [bitLog, setBitLog] = useState<string>('');
+  const lastSampleIdx = useRef(-1);
 
   const tones: Tone[] = useMemo(() => {
     if (preset === 'single') return [{ freq: toneFreq, amp: 1 }];
@@ -47,6 +53,27 @@ export function SamplingModule() {
   }, [preset, toneFreq]);
 
   const mMax = useMemo(() => signalPeak(tones), [tones]);
+
+  const loop = useSimulationLoop({
+    ticksPerSecond: 30,
+    onTick: (_dt, simTime) => {
+      setT0(simTime);
+      const Ts = 1 / fs;
+      const rightEdge = simTime + WINDOW_SEC;
+      const idx = Math.floor(rightEdge / Ts);
+      if (idx !== lastSampleIdx.current) {
+        lastSampleIdx.current = idx;
+        const val = evalSignal(tones, idx * Ts);
+        const word = pcmCodeword(val, mMax, bits, type, coding).join('');
+        setBitLog((prev) => (prev + word).slice(-64));
+      }
+    },
+    onReset: () => {
+      setT0(0);
+      setBitLog('');
+      lastSampleIdx.current = -1;
+    },
+  });
 
   const view = useMemo(
     () =>
@@ -57,16 +84,17 @@ export function SamplingModule() {
         mMax,
         type,
         coding,
-        t0: 0,
+        t0,
         windowSec: WINDOW_SEC,
         analogN: 480,
       }),
-    [tones, fs, bits, mMax, type, coding],
+    [tones, fs, bits, mMax, type, coding, t0],
   );
 
-  const pcmPreview = view.pcm
-    .slice(0, 48)
-    .join('')
+  const cursorT = view.samples.t.length ? view.samples.t[view.samples.t.length - 1] : undefined;
+
+  const windowBits = view.pcm.slice(0, 64).join('');
+  const pcmPreview = (loop.running ? bitLog : windowBits)
     .replace(/(.{4})/g, '$1 ')
     .trim();
 
@@ -136,6 +164,7 @@ export function SamplingModule() {
             checked={showRecon}
             onChange={setShowRecon}
           />
+          <TransportControls loop={loop} />
         </Panel>
 
         <Panel title={t('sampling.pcm.title')}>
@@ -182,7 +211,12 @@ export function SamplingModule() {
 
         <div className="sampling__panels">
           <Panel title={t('sampling.panel.time')}>
-            <TimePanel view={view} mMax={mMax} showReconstruction={showRecon} />
+            <TimePanel
+              view={view}
+              mMax={mMax}
+              showReconstruction={showRecon}
+              cursorT={loop.running ? cursorT : undefined}
+            />
           </Panel>
           <Panel title={t('sampling.panel.spectrum')}>
             <SpectrumPanel tones={tones} fs={fs} />
