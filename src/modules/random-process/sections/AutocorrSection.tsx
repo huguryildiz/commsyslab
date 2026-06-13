@@ -3,10 +3,9 @@ import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import { t } from '@/i18n';
-import type { Derived, ProcessParams } from '../model';
+import type { Derived } from '../model';
 
 interface Props {
-  params: ProcessParams;
   d: Derived;
 }
 

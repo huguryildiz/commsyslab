@@ -24,7 +24,7 @@ export function RandomProcessModule() {
       <GeneratorControls params={params} set={set} resample={resample} />
       <div className="rp__grid">
         <EnsembleSection params={params} d={d} />
-        <AutocorrSection params={params} d={d} />
+        <AutocorrSection d={d} />
         <PsdSection params={params} d={d} />
         <FilterSection params={params} d={d} />
       </div>
