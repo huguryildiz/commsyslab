@@ -1,67 +1,66 @@
 /* =====================================================================
- * Design tokens — signal_sim görsel dili (glassmorphism + neon glow)
- * Referans: ../signal_sim_ref/style.css  (spmi-lab/signal_sim)
- * Token İSİMLERİ korunur → mevcut modüller otomatik yeni paleti alır.
+ * Design tokens — CommSysLab visual language (glassmorphism + neon glow)
+ * Token NAMES are preserved → existing modules pick up the palette automatically.
  * ===================================================================== */
 :root {
-  /* ── Zemin & yüzeyler ── */
+  /* ── Background & surfaces ── */
   --bg: #06060f; /* bg-deep */
-  --bg-panel: rgba(12, 15, 40, 0.72); /* cam panel dolgusu */
-  --surface: rgba(12, 15, 40, 0.72); /* .panel → cam */
-  --surface-2: rgba(15, 18, 48, 0.85); /* input/select/buton zemini */
+  --bg-panel: rgba(12, 15, 40, 0.72); /* glass panel fill */
+  --surface: rgba(12, 15, 40, 0.72); /* .panel → glass */
+  --surface-2: rgba(15, 18, 48, 0.85); /* input/select/button background */
   --canvas-bg: rgba(4, 4, 18, 0.5);
   --select-option-bg: #0c0f28;
 
-  /* ── Metin ── */
+  /* ── Text ── */
   --text: #e2e6f0;
   --text-dim: #7a82a6;
   --text-faint: #4a5070;
 
-  /* ── Çerçeve & glow ── */
+  /* ── Border & glow ── */
   --border: rgba(100, 140, 255, 0.18); /* border-glow */
   --border-strong: rgba(100, 180, 255, 0.35);
   --slider-track: rgba(100, 140, 255, 0.12);
 
-  /* ── Neon vurgu renkleri ── */
-  --accent: #39ff85; /* neon yeşil (birincil) */
-  --accent-2: #ff8c42; /* turuncu (ikincil) */
-  --accent-blue: #7b8cff; /* mavi-mor */
+  /* ── Neon accent colors ── */
+  --accent: #39ff85; /* neon green (primary) */
+  --accent-2: #ff8c42; /* orange (secondary) */
+  --accent-blue: #7b8cff; /* blue-violet */
 
-  /* ── Sinyal/grafik renkleri (signal_sim eşlemesi) ── */
-  --color-x: #39ff85; /* giriş/yeşil */
-  --color-h: #ff8c42; /* sistem/turuncu */
-  --color-y: #7b8cff; /* çıkış/mavi-mor */
-  --color-marker: #ff4f9a; /* imleç/pembe */
+  /* ── Signal / chart colors ── */
+  --color-x: #39ff85; /* input/green */
+  --color-h: #ff8c42; /* system/orange */
+  --color-y: #7b8cff; /* output/blue-violet */
+  --color-marker: #ff4f9a; /* marker/pink */
 
-  /* ── Durum renkleri ── */
+  /* ── Status colors ── */
   --ok: #39ff85;
   --err: #ff5b6b;
   --warn: #ff8c42;
 
-  /* ── Boşluk ── */
+  /* ── Spacing ── */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 40px;
 
-  /* ── Şekil & hareket ── */
+  /* ── Shape & motion ── */
   --radius: 14px;
   --radius-sm: 8px;
   --glass-blur: 18px;
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* ── Tipografi — premium SaaS üçlüsü (lab-dergisi tonu) ── */
-  --font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* gövde/UI */
-  --font-head: 'Fraunces', Georgia, 'Times New Roman', serif; /* başlık — yüksek kontrastlı serif */
-  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace; /* sayısal/formül/kod/okuma */
+  /* ── Typography — premium SaaS trio (lab-journal tone) ── */
+  --font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* body/UI */
+  --font-head: 'Fraunces', Georgia, 'Times New Roman', serif; /* heading — high-contrast serif */
+  --mono: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace; /* numeric/formula/code/reading */
 
-  /* ── Enstrüman ekranı — osiloskop/viz canvas zemini (her iki temada da koyu) ── */
+  /* ── Instrument screen — oscilloscope/viz canvas background (dark in both themes) ── */
   --scope-bg: #04050f;
 }
 
 /* =====================================================================
- * Açık tema — signal_sim light-theme eşlemesi (koyu + okunaklı tonlar)
+ * Light theme — readable light tones (token names preserved)
  * ===================================================================== */
 :root[data-theme='light'] {
   --bg: #eef1f8;
@@ -79,8 +78,8 @@
   --border-strong: rgba(20, 50, 160, 0.78);
   --slider-track: rgba(40, 70, 170, 0.22);
 
-  --accent: #0e6e2e; /* orman yeşili */
-  --accent-2: #a8430a; /* koyu kiremit */
+  --accent: #0e6e2e; /* forest green */
+  --accent-2: #a8430a; /* dark brick */
   --accent-blue: #2a3a9a; /* indigo */
 
   --color-x: #0e6e2e;

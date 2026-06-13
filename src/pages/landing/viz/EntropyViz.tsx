@@ -3,7 +3,7 @@ import { VIZ } from './palette';
 
 const BASE = [0.34, 0.22, 0.16, 0.12, 0.09, 0.07];
 
-/** Bilgi Teorisi: olasılık / entropi çubukları (hafif animasyonlu). */
+/** Information Theory: probability / entropy bars (lightly animated). */
 const draw: DrawFn = (ctx, t, w, h) => {
   ctx.clearRect(0, 0, w, h);
   const gap = 7;

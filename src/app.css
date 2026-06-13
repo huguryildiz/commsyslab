@@ -18,7 +18,7 @@
   flex-wrap: wrap;
 }
 .app__brand {
-  /* Marka tekno-bileşik bir kelime: serif yerine temiz sans (Plex Sans) */
+  /* Brand techno-compound word: clean sans (Plex Sans) instead of serif */
   font-family: var(--font);
   font-weight: 700;
   letter-spacing: -0.01em;

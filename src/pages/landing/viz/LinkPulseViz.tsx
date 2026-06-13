@@ -1,7 +1,7 @@
 import { useCanvasTicker, type DrawFn } from '../useCanvasTicker';
 import { VIZ } from './palette';
 
-/** End-to-End (yakında): zarflı sönük bir darbe — tüm zincirin nabzı. */
+/** End-to-End (soon): an envelope-modulated fading pulse — the entire chain's heartbeat. */
 const draw: DrawFn = (ctx, t, w, h) => {
   ctx.clearRect(0, 0, w, h);
   ctx.strokeStyle = VIZ.dim;

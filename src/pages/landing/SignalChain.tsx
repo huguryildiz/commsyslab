@@ -1,7 +1,7 @@
 import { t } from '@/i18n';
 import { FLOW_STOPS } from './modules.config';
 
-/** İnce, animasyonlu sinyal-zinciri şeridi: kaynak → ... → alıcı. */
+/** Thin, animated signal-chain strip: source → ... → sink. */
 export function SignalChain() {
   return (
     <div className="flow">

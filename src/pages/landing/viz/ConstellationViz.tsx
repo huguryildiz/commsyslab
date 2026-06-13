@@ -8,7 +8,7 @@ for (let i = -3; i <= 3; i += 2) {
   }
 }
 
-/** Bir karenin içine düşen, sönerek kaybolan "alınan sembol". */
+/** A "received symbol" that falls within a box, fading and disappearing. */
 interface RxSymbol {
   i: number;
   q: number;
@@ -20,9 +20,9 @@ const rx: RxSymbol[] = [];
 const TTL = 36;
 
 /**
- * Flagship: 16-QAM takımyıldızı. Her frame yeni "alınan semboller" gürültüyle
- * ideal noktaların çevresine düşer ve sönerek kaybolur; ideal noktalar nabız
- * atar. Gürültü genliği nefes alır (E_b/N_0 değişiyormuş hissi).
+ * Flagship: 16-QAM constellation. Each frame, new "received symbols" with noise
+ * fall around ideal points and fade away; ideal points pulse. Noise amplitude
+ * breathes (giving the impression E_b/N_0 is changing).
  */
 const draw: DrawFn = (ctx, t, w, h) => {
   ctx.clearRect(0, 0, w, h);
@@ -30,7 +30,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   const cy = h / 2;
   const s = Math.min(w, h) / 9;
 
-  // I/Q eksenleri
+  // I/Q axes
   ctx.strokeStyle = VIZ.axis;
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -40,14 +40,14 @@ const draw: DrawFn = (ctx, t, w, h) => {
   ctx.lineTo(w - 6, cy);
   ctx.stroke();
 
-  // nefes alan gürültü genliği + yeni alınan semboller doğur
+  // breathing noise amplitude + spawn new received symbols
   const sigma = 0.2 + 0.12 * (0.5 + 0.5 * Math.sin(t * 0.025));
   for (let k = 0; k < 2; k += 1) {
     const p = POINTS[Math.floor(Math.random() * POINTS.length)];
     if (p) rx.push({ i: p[0], q: p[1], ox: gaussian() * sigma, oy: gaussian() * sigma, age: 0 });
   }
 
-  // alınan sembolleri yaşlandır + sönerek çiz
+  // age received symbols + draw fading
   for (let idx = rx.length - 1; idx >= 0; idx -= 1) {
     const r = rx[idx];
     if (!r) continue;
@@ -65,7 +65,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
     ctx.fill();
   }
 
-  // ideal noktalar — nabız atan glow
+  // ideal points — pulsing glow
   for (const [i, q] of POINTS) {
     const bx = cx + i * s;
     const by = cy - q * s;

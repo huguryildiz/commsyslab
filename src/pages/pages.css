@@ -1,3 +1,3 @@
-/* Eski .home* kartları kaldırıldı — landing stilleri artık
- * src/pages/landing/landing.css içinde (Home.tsx onu import eder).
- * Bu dosya App.tsx tarafından import edilir; paylaşılan sayfa stilleri için ayrılmıştır. */
+/* Old .home* cards removed — landing styles now
+ * in src/pages/landing/landing.css (Home.tsx imports it).
+ * This file is imported by App.tsx; reserved for shared page styles. */

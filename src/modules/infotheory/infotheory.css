@@ -1,5 +1,5 @@
-/* Information Theory modülü — signal_sim görsel dili (tokenlardan tüketir, sabit hex yok).
- * Canvas grafik renkleri platform-geneli konvansiyondur (bkz. modulation/sampling). */
+/* Information Theory module — CommSysLab visual language (consumes tokens, no hard-coded hex).
+ * Canvas chart colors follow the platform-wide convention (see modulation/sampling). */
 .it-module { display: flex; flex-direction: column; gap: 16px; }
 .it-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .it-tab {

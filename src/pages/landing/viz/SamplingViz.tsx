@@ -1,7 +1,7 @@
 import { useCanvasTicker, type DrawFn } from '../useCanvasTicker';
 import { VIZ } from './palette';
 
-/** Örnekleme: sürekli sinüs + sample-and-hold merdiveni + örnek noktaları. */
+/** Sampling: continuous sine + sample-and-hold staircase + sample points. */
 const draw: DrawFn = (ctx, t, w, h) => {
   ctx.clearRect(0, 0, w, h);
   const mid = h * 0.55;
@@ -10,7 +10,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   const ph = t * 0.025;
   const n = 11;
 
-  // sample & hold merdiveni
+  // sample & hold staircase
   ctx.strokeStyle = 'rgba(255, 140, 66, 0.85)';
   ctx.lineWidth = 1.8;
   ctx.beginPath();
@@ -24,7 +24,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   }
   ctx.stroke();
 
-  // sürekli sinüs
+  // continuous sine
   ctx.strokeStyle = VIZ.green;
   ctx.lineWidth = 2;
   ctx.shadowColor = VIZ.green;
@@ -38,7 +38,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // örnek noktaları
+  // sample points
   for (let i = 0; i <= n; i += 1) {
     const x = (w * i) / n;
     const y = mid - Math.sin(x * k + ph) * amp;

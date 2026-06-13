@@ -1,8 +1,8 @@
 @import './tokens.css';
 
 /* =====================================================================
- * Global stil — signal_sim görsel dili (glassmorphism + neon glow)
- * Fontlar index.html'de Google Fonts ile yüklenir (Inter / Space Grotesk / JetBrains Mono).
+ * Global styles — CommSysLab visual language (glassmorphism + neon glow)
+ * Fonts are loaded via Google Fonts in index.html (Fraunces / IBM Plex Sans / IBM Plex Mono).
  * ===================================================================== */
 
 * {
@@ -25,7 +25,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
-  /* Derin zemin + köşelerde hafif neon halo */
+  /* Deep background + subtle neon halo at edges */
   background:
     radial-gradient(ellipse 60% 40% at 15% 0%, rgba(57, 255, 133, 0.06), transparent 60%),
     radial-gradient(ellipse 60% 40% at 85% 0%, rgba(255, 140, 66, 0.05), transparent 60%),
@@ -47,12 +47,12 @@ h2,
 h3 {
   margin: 0 0 var(--space-3);
   font-family: var(--font-head);
-  font-optical-sizing: auto; /* Fraunces opsz ekseni — büyük başlıkta yüksek kontrast */
+  font-optical-sizing: auto; /* Fraunces opsz axis — high contrast at large headlines */
   font-weight: 700;
-  letter-spacing: 0; /* serif başlıkta negatif/geniş tracking istemiyoruz */
+  letter-spacing: 0; /* serif headline: no negative/wide tracking needed */
 }
 
-/* Sayısal/kod içerikleri monospace */
+/* Numeric/code content in monospace */
 code,
 pre,
 kbd,
@@ -60,7 +60,7 @@ samp {
   font-family: var(--mono);
 }
 
-/* ── Cam panel davranışı (mevcut .panel / .theory-box bunu alır) ── */
+/* ── Glass panel behavior (current .panel / .theory-box uses this) ── */
 .panel,
 .glass-panel {
   background: var(--bg-panel);
@@ -76,7 +76,7 @@ samp {
   box-shadow: 0 0 22px rgba(100, 160, 255, 0.1);
 }
 
-/* ── Butonlar — neon hover ── */
+/* ── Buttons — neon hover ── */
 button {
   font-family: var(--mono);
   cursor: pointer;
@@ -97,7 +97,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* ── Form öğeleri ── */
+/* ── Form elements ── */
 select,
 input[type='text'],
 input[type='number'] {

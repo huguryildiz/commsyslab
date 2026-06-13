@@ -1,14 +1,14 @@
 import { useEffect, useRef, type RefObject } from 'react';
 
 /**
- * Bir canvas'a CSS-piksel koordinatlarında çizim yapan fonksiyon.
- * Context, devicePixelRatio kadar ölçeklenmiştir; (w, h) CSS pikselidir.
+ * Function that draws to a canvas in CSS-pixel coordinates.
+ * Context is scaled by devicePixelRatio; (w, h) is in CSS pixels.
  */
 export type DrawFn = (ctx: CanvasRenderingContext2D, t: number, w: number, h: number) => void;
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Tek paylaşılan requestAnimationFrame döngüsü — tüm landing canvas'ları aynı
- * tick'i kullanır. Sekme gizliyken durur; görünür canvas kalmazsa durur.
+ * Single shared requestAnimationFrame loop — all landing canvases use the same
+ * tick. Stops when tab is hidden; stops if no visible canvas remains.
  * ───────────────────────────────────────────────────────────────────────── */
 const drawers = new Set<() => void>();
 let frame = 0;
@@ -54,9 +54,9 @@ function prefersReduced(): boolean {
 }
 
 /**
- * Canvas ref'i döndürür; `draw` her frame çağrılır. devicePixelRatio'a göre
- * boyutlandırır (max 2), `prefers-reduced-motion` ile tek statik frame çizer,
- * ekran dışındayken ve sekme gizliyken durur.
+ * Returns a canvas ref; `draw` is called each frame. Sizes by devicePixelRatio
+ * (max 2), draws a single static frame with `prefers-reduced-motion`, and
+ * stops when off-screen and when tab is hidden.
  */
 export function useCanvasTicker(draw: DrawFn): RefObject<HTMLCanvasElement> {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -79,12 +79,12 @@ export function useCanvasTicker(draw: DrawFn): RefObject<HTMLCanvasElement> {
       h = Math.max(1, Math.round(r.height));
       canvas.width = w * dpr;
       canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // CSS-piksel koordinat sistemi
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // CSS-pixel coordinate system
     };
     const paint = (): void => drawRef.current(ctx, frame, w, h);
 
     resize();
-    paint(); // ilk frame anında görünsün
+    paint(); // show first frame immediately
 
     const ro = new ResizeObserver(() => {
       resize();
@@ -92,7 +92,7 @@ export function useCanvasTicker(draw: DrawFn): RefObject<HTMLCanvasElement> {
     });
     ro.observe(canvas);
 
-    // Hareket azaltma: döngüye girme, tek statik frame yeter.
+    // Reduced motion: no loop, single static frame is enough.
     if (prefersReduced()) {
       return () => ro.disconnect();
     }

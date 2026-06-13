@@ -1,9 +1,9 @@
 import { useCanvasTicker, type DrawFn } from '../useCanvasTicker';
 import { VIZ } from './palette';
 
-/** Hero osiloskobu: graticule + örnek çubukları + gürültülü iz + tarama çizgisi. */
+/** Hero oscilloscope: graticule + sample stems + noisy trace + scan line. */
 const draw: DrawFn = (ctx, t, w, h) => {
-  // fosfor kalıntısı (panelin koyu --scope-bg zemini üzerinde sönen iz)
+  // phosphor persistence (fading trace over panel's dark --scope-bg background)
   ctx.fillStyle = VIZ.trail;
   ctx.fillRect(0, 0, w, h);
 
@@ -33,7 +33,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   const k = 6.2 / w;
   const ph = t * 0.03;
 
-  // örnek çubukları (sample stems)
+  // sample stems
   const n = 18;
   for (let i = 0; i <= n; i += 1) {
     const x = (w * i) / n;
@@ -50,7 +50,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
     ctx.fill();
   }
 
-  // sürekli gürültülü iz
+  // continuous noisy trace
   ctx.shadowColor = VIZ.green;
   ctx.shadowBlur = 9;
   ctx.strokeStyle = VIZ.green;
@@ -64,7 +64,7 @@ const draw: DrawFn = (ctx, t, w, h) => {
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // tarama çizgisi
+  // scan line
   const sx = (t * 3) % w;
   const grd = ctx.createLinearGradient(sx - 40, 0, sx, 0);
   grd.addColorStop(0, 'rgba(57, 255, 133, 0)');
