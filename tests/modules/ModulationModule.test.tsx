@@ -33,4 +33,16 @@ describe('ModulationModule', () => {
     expect(screen.getByText('Peak SNR 2E/N₀')).toBeInTheDocument();
     expect(screen.getByText('Live Pₑ (Monte Carlo)')).toBeInTheDocument();
   });
+
+  it('on the optimum-receiver tab, selecting QPSK shows the constellation-landing decision panel', () => {
+    render(<ModulationModule />);
+    fireEvent.click(screen.getByRole('tab', { name: 'Optimum receiver' }));
+    const setSelect = screen.getByLabelText('Signal set') as HTMLSelectElement;
+    fireEvent.change(setSelect, { target: { value: 'qpsk' } });
+    expect(
+      screen.getByLabelText('Constellation with decision regions and the received point'),
+    ).toBeInTheDocument();
+    // the carrier-cycles control appears for non-1-D schemes
+    expect(screen.getByLabelText(/Carrier cycles/i)).toBeInTheDocument();
+  });
 });
