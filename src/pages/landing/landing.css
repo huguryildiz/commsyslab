@@ -317,6 +317,7 @@
   grid-template-areas:
     'mod mod four'
     'mod mod anal'
+    'rp rp rp'
     'samp info base'
     'e2e e2e e2e';
 }
@@ -388,6 +389,9 @@
 .tile--anal {
   grid-area: anal;
 }
+.tile--rp {
+  grid-area: rp;
+}
 .tile:nth-child(1) {
   animation-delay: 0.05s;
 }
@@ -402,6 +406,12 @@
 }
 .tile:nth-child(5) {
   animation-delay: 0.33s;
+}
+.tile:nth-child(6) {
+  animation-delay: 0.4s;
+}
+.tile:nth-child(7) {
+  animation-delay: 0.47s;
 }
 
 .tile__top {

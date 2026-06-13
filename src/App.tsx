@@ -5,6 +5,7 @@ import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
 import { FourierModule } from '@/modules/fourier/FourierModule';
 import { AnalogModule } from '@/modules/analog/AnalogModule';
+import { RandomProcessModule } from '@/modules/random-process/RandomProcessModule';
 import { SamplingModule } from '@/modules/sampling-quantization/SamplingModule';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
 import { BasebandModule } from '@/modules/baseband/BasebandModule';
@@ -18,6 +19,7 @@ import './app.css';
 const NAV = [
   { to: '/fourier', key: 'nav.fourier' },
   { to: '/analog', key: 'nav.analog' },
+  { to: '/random-process', key: 'nav.randomProcess' },
   { to: '/sampling', key: 'nav.sampling' },
   { to: '/modulation', key: 'nav.modulation' },
   { to: '/baseband', key: 'nav.baseband' },
@@ -54,6 +56,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/fourier" element={<FourierModule />} />
             <Route path="/analog" element={<AnalogModule />} />
+            <Route path="/random-process" element={<RandomProcessModule />} />
             <Route path="/sampling" element={<SamplingModule />} />
             <Route path="/modulation" element={<ModulationModule />} />
             <Route path="/baseband" element={<BasebandModule />} />

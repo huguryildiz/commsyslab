@@ -1,0 +1,27 @@
+/* src/modules/random-process/random-process.css — token-driven (no hard-coded hex/px beyond layout) */
+.rp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+.rp__head h1 {
+  background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.rp__head p {
+  color: var(--text-dim);
+  font-family: var(--mono);
+}
+.rp__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+@media (max-width: 900px) {
+  .rp__grid {
+    grid-template-columns: 1fr;
+  }
+}
