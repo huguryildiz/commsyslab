@@ -35,3 +35,10 @@ export function linspace(a: number, b: number, n: number): number[] {
   for (let i = 0; i < n; i++) out[i] = a + step * i;
   return out;
 }
+
+/** Normalized sinc: sin(pi*x)/(pi*x), with sinc(0) = 1. */
+export function sinc(x: number): number {
+  if (x === 0) return 1;
+  const px = Math.PI * x;
+  return Math.sin(px) / px;
+}

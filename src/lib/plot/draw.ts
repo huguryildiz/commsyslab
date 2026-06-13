@@ -116,3 +116,46 @@ export function shadeRegion(
   ctx.fillStyle = fill;
   ctx.fillRect(px, py, ax.x(x1) - px, ax.y(y0) - py);
 }
+
+/** Draw a sample-and-hold staircase through (xs[i], ys[i]). */
+export function drawStep(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  xs: number[],
+  ys: number[],
+  color: string,
+  width = 2,
+): void {
+  if (xs.length === 0) return;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(ax.x(xs[0]), ax.y(ys[0]));
+  for (let i = 1; i < xs.length; i++) {
+    ctx.lineTo(ax.x(xs[i]), ax.y(ys[i - 1])); // hold previous level
+    ctx.lineTo(ax.x(xs[i]), ax.y(ys[i])); // step to new level
+  }
+  ctx.stroke();
+}
+
+/** Draw a vertical line at data-x spanning data-y [y0, y1]. */
+export function drawVLine(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  xData: number,
+  y0: number,
+  y1: number,
+  color: string,
+  dashed = false,
+  width = 1,
+): void {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.setLineDash(dashed ? [4, 4] : []);
+  const px = ax.x(xData);
+  ctx.beginPath();
+  ctx.moveTo(px, ax.y(y0));
+  ctx.lineTo(px, ax.y(y1));
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
