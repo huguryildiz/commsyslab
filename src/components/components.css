@@ -6,10 +6,12 @@
   margin-bottom: var(--space-3);
 }
 .panel__title {
-  font-size: 0.95rem;
-  color: var(--text-dim);
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 .ctl-slider,
 .ctl-select,
