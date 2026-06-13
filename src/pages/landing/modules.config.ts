@@ -5,7 +5,7 @@
  */
 export type ModuleStatus = 'live' | 'soon';
 export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse' | 'fourier' | 'amfm';
-export type BentoArea = 'mod' | 'samp' | 'info' | 'base' | 'e2e' | 'four' | 'anal';
+export type BentoArea = 'mod' | 'rp' | 'samp' | 'info' | 'base' | 'e2e' | 'four' | 'anal';
 
 export interface LandingModule {
   id: string;
@@ -48,8 +48,20 @@ export const LANDING_MODULES: LandingModule[] = [
     compact: true,
   },
   {
+    id: 'random-process',
+    num: '03',
+    titleKey: 'rp.title',
+    descKey: 'rp.subtitle',
+    chapter: 'CH 4',
+    route: '/random-process',
+    status: 'live',
+    area: 'rp',
+    viz: 'sampling',
+    compact: true,
+  },
+  {
     id: 'modulation',
-    num: '05',
+    num: '06',
     titleKey: 'landing.mod.modulation.title',
     descKey: 'landing.mod.modulation.desc',
     chapter: 'CH 7',
@@ -61,7 +73,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'sampling',
-    num: '03',
+    num: '04',
     titleKey: 'landing.mod.sampling.title',
     descKey: 'landing.mod.sampling.desc',
     chapter: 'CH 4·6',
@@ -73,7 +85,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'infotheory',
-    num: '04',
+    num: '05',
     titleKey: 'landing.mod.infotheory.title',
     descKey: 'landing.mod.infotheory.desc',
     chapter: 'CH 6',
@@ -85,17 +97,17 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'baseband',
-    num: '06',
+    num: '07',
     titleKey: 'landing.mod.baseband.title',
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
     route: '/baseband',
-    status: 'soon',
+    status: 'live',
     area: 'base',
   },
   {
     id: 'end-to-end',
-    num: '07',
+    num: '08',
     titleKey: 'landing.mod.e2e.title',
     descKey: 'landing.mod.e2e.desc',
     chapter: 'All',
