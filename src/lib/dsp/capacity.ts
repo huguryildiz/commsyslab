@@ -80,3 +80,25 @@ export function awgnHardCrossover(ebN0: number): number {
 export function awgnSoftCapacityPerUse(ebN0: number): number {
   return 0.5 * Math.log2(1 + 2 * ebN0);
 }
+
+// Ref: §9.2, Problem 9.5 — binary-input continuous-output AWGN capacity.
+// y = ±a + n, n~N(0,1), a = √(2·Eb/N0). C = 1 − E_n[ log2(1 + e^{−2a(a+n)}) ] (bits/use).
+// Evaluated by composite Simpson integration of the N(0,1)-weighted integrand over n∈[−8,8].
+/** Capacity per use of the binary-input AWGN channel given Eb/N0 (linear). */
+export function biAwgnCapacityPerUse(ebN0: number): number {
+  const a = Math.sqrt(2 * ebN0);
+  // Numerically stable softplus in base-2: log2(1 + e^x).
+  const log2_1pe = (x: number) => (x > 30 ? x / Math.LN2 : Math.log2(1 + Math.exp(x)));
+  const f = (n: number) => {
+    const phi = Math.exp(-0.5 * n * n) / Math.sqrt(2 * Math.PI);
+    return phi * log2_1pe(-2 * a * (a + n));
+  };
+  const lo = -8;
+  const hi = 8;
+  const N = 2000; // even
+  const step = (hi - lo) / N;
+  let s = f(lo) + f(hi);
+  for (let i = 1; i < N; i++) s += (i % 2 === 0 ? 2 : 4) * f(lo + i * step);
+  const integral = (step / 3) * s;
+  return 1 - integral;
+}

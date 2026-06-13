@@ -10,6 +10,7 @@ import {
   mutualInformation,
   awgnHardCrossover,
   awgnSoftCapacityPerUse,
+  biAwgnCapacityPerUse,
 } from '@/lib/dsp/capacity';
 
 describe('bscCapacity = 1 − H_b(ε)', () => {
@@ -95,5 +96,20 @@ describe('awgnSoftCapacityPerUse = ½log2(1+2·Eb/N0) (Eq. 9.2.15)', () => {
   it('is 0 at Eb/N0=0 and 0.5 bit/use at Eb/N0=0.5', () => {
     expect(awgnSoftCapacityPerUse(0)).toBeCloseTo(0, 12);
     expect(awgnSoftCapacityPerUse(0.5)).toBeCloseTo(0.5, 12);
+  });
+});
+
+describe('biAwgnCapacityPerUse (binary-input AWGN capacity, Problem 9.5)', () => {
+  it('is ~0 at Eb/N0=0 and approaches 1 bit/use at high Eb/N0', () => {
+    expect(biAwgnCapacityPerUse(0)).toBeCloseTo(0, 4);
+    expect(biAwgnCapacityPerUse(100)).toBeGreaterThan(0.99);
+  });
+  it('is monotone increasing in Eb/N0', () => {
+    expect(biAwgnCapacityPerUse(2)).toBeGreaterThan(biAwgnCapacityPerUse(1));
+    expect(biAwgnCapacityPerUse(1)).toBeGreaterThan(biAwgnCapacityPerUse(0.5));
+  });
+  it('never exceeds the unconstrained Gaussian capacity', () => {
+    expect(biAwgnCapacityPerUse(1)).toBeLessThan(awgnSoftCapacityPerUse(1));
+    expect(biAwgnCapacityPerUse(1)).toBeGreaterThan(0);
   });
 });
