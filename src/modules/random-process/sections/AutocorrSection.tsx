@@ -33,7 +33,7 @@ export function AutocorrSection({ d }: Props) {
         }}
       />
       <Readout label="power P_X = R_X(0)" value={power.toFixed(3)} />
-      <Formula tex="S_X\text{-pair: } R_X(\tau)=E[X(t)X(t+\tau)]" />
+      <Formula tex="R_X(\tau)=E[X(t)\,X(t+\tau)]" />
       <TheoryBox>
         Dashed = theory, green = time average from one realization, blue = ensemble average. When
         the time and ensemble averages coincide, the process is ergodic in autocorrelation. Raise M

@@ -191,7 +191,7 @@ export function theoreticalAutocorr(p: ProcessParams, taus: Float64Array): Float
         break;
       case 'white-gaussian':
       case 'colored':
-        r[i] = tau === 0 ? (p.n0 / 2) * p.fs : 0; // discrete white spike (relative)
+        r[i] = tau === 0 ? p.n0 / 2 : 0; // white spike: variance N0/2 at zero lag (matches the generated process)
         break;
     }
   }

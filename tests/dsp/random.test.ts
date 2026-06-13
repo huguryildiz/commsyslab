@@ -153,6 +153,17 @@ describe('theoretical references', () => {
     expect(r[3]).toBeCloseTo(0, 6);
   });
 
+  it('white theoretical autocorr is N0/2 spike at lag 0, on the same scale as the estimate', () => {
+    const p = { ...base, kind: 'white-gaussian' as const, n0: 1, N: 4096, M: 1 };
+    const r = theoreticalAutocorr(p, Float64Array.from([0, 0.01, 0.02]));
+    expect(r[0]).toBeCloseTo(p.n0 / 2, 6); // variance N0/2, NOT scaled by fs
+    expect(r[1]).toBe(0);
+    expect(r[2]).toBe(0);
+    // theory at lag 0 must match the generated process variance (estimator) within Monte-Carlo tolerance
+    const est = timeAutocorr(generateEnsemble(p)[0], 4);
+    expect(est[0]).toBeCloseTo(r[0], 1);
+  });
+
   it('RC filter magnitude-squared is 1 at DC and 0.5 at cutoff', () => {
     const p = { ...base, filterKind: 'rc' as const, cutoff: 10 };
     const h = filterMagSq(p, Float64Array.from([0, p.cutoff]));
