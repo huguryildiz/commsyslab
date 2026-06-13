@@ -1,3 +1,4 @@
+// Ref: Proakis & Salehi §6.3.1 (The Huffman Source-Coding Algorithm). Bkz. docs/book-reference.md.
 import { entropy } from './entropy';
 
 export interface HuffmanNode {

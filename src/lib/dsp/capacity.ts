@@ -1,3 +1,5 @@
+// Ref: Proakis & Salehi §9.2 (Channel Capacity): BSC capacity C = 1 − H_b(ε) and the
+// Shannon-Hartley AWGN capacity C = B·log2(1 + SNR). Bkz. docs/book-reference.md.
 import { binaryEntropy } from './entropy';
 
 /** Capacity of a binary symmetric channel with crossover probability ε: C = 1 − H_b(ε). */

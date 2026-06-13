@@ -1,3 +1,6 @@
+// Ref: Proakis & Salehi §6.2 (Source-Coding Theorem) & §6.3 (Source-Coding Algorithms):
+// Kraft inequality, prefix/instantaneous codes, unique decodability. Bkz. docs/book-reference.md.
+
 /** Kraft sum Σ 2^(−lₖ). A prefix code requires this to be ≤ 1 (necessary, not sufficient). */
 export function kraftSum(lengths: number[]): number {
   return lengths.reduce((s, l) => s + 2 ** -l, 0);

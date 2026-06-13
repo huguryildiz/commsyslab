@@ -1,3 +1,6 @@
+// Ref: Proakis & Salehi, Communication Systems Engineering §6.1 (6.1.1 Measure of
+// Information, 6.1.2 Joint & Conditional Entropy). Bkz. docs/book-reference.md.
+
 /** Self-information I(p) = −log2(p), in bits. p≤0 returns 0 (a never-occurring symbol conveys no surprise). */
 export function selfInfo(p: number): number {
   return p <= 0 ? 0 : -Math.log2(p);

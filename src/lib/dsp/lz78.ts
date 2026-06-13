@@ -1,3 +1,5 @@
+// Ref: Proakis & Salehi §6.3.2 (The Lempel-Ziv Source-Coding Algorithm). Bkz. docs/book-reference.md.
+
 export interface LzPhrase {
   location: number; // 1-based dictionary index
   contents: string; // the phrase bits
