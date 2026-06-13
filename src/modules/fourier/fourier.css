@@ -1,0 +1,30 @@
+.fourier__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fourier__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.fourier__readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.fourier__plots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .fourier__plots {
+    grid-template-columns: 1fr;
+  }
+}

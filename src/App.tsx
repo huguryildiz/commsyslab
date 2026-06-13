@@ -3,7 +3,9 @@ import { HashRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { t } from '@/i18n';
 import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
-import { SamplingModule } from '@/modules/sampling/SamplingModule';
+import { FourierModule } from '@/modules/fourier/FourierModule';
+import { AnalogModule } from '@/modules/analog/AnalogModule';
+import { SamplingModule } from '@/modules/sampling-quantization/SamplingModule';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
 import { BasebandModule } from '@/modules/baseband/BasebandModule';
 import { InfoTheoryModule } from '@/modules/infotheory/InfoTheoryModule';
@@ -12,7 +14,10 @@ import './components/components.css';
 import './pages/pages.css';
 import './app.css';
 
+// Nav follows the book flow: foundations (Ch 2/3) first, then the existing tracks.
 const NAV = [
+  { to: '/fourier', key: 'nav.fourier' },
+  { to: '/analog', key: 'nav.analog' },
   { to: '/sampling', key: 'nav.sampling' },
   { to: '/modulation', key: 'nav.modulation' },
   { to: '/baseband', key: 'nav.baseband' },
@@ -47,6 +52,8 @@ export default function App() {
         <main className="app__main">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/fourier" element={<FourierModule />} />
+            <Route path="/analog" element={<AnalogModule />} />
             <Route path="/sampling" element={<SamplingModule />} />
             <Route path="/modulation" element={<ModulationModule />} />
             <Route path="/baseband" element={<BasebandModule />} />

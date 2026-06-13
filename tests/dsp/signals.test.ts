@@ -4,6 +4,7 @@ import {
   signalBandwidth,
   signalPeak,
   signalPower,
+  periodicWave,
   PRESETS,
 } from '@/lib/dsp/signals';
 
@@ -35,6 +36,35 @@ describe('signalPower', () => {
   it('is sum of amp^2/2 for cosines', () => {
     expect(signalPower([{ freq: 1, amp: 2 }])).toBeCloseTo(2, 12); // 4/2
     expect(signalPower([{ freq: 1, amp: 5 }])).toBeCloseTo(12.5, 12); // 25/2
+  });
+});
+
+describe('periodicWave', () => {
+  const f0 = 1; // period = 1 s
+
+  it('square is +1 in the first half-period and -1 in the second', () => {
+    expect(periodicWave('square', f0, 0.1)).toBeCloseTo(1, 12);
+    expect(periodicWave('square', f0, 0.6)).toBeCloseTo(-1, 12);
+  });
+
+  it('square is periodic', () => {
+    expect(periodicWave('square', f0, 1.1)).toBeCloseTo(periodicWave('square', f0, 0.1), 12);
+  });
+
+  it('sawtooth ramps from -1 to +1 across one period', () => {
+    expect(periodicWave('sawtooth', f0, 0)).toBeCloseTo(-1, 6);
+    expect(periodicWave('sawtooth', f0, 0.5)).toBeCloseTo(0, 6);
+    expect(periodicWave('sawtooth', f0, 0.999)).toBeCloseTo(1, 2);
+  });
+
+  it('triangle peaks at +1 mid-period and is -1 at the edges', () => {
+    expect(periodicWave('triangle', f0, 0)).toBeCloseTo(-1, 6);
+    expect(periodicWave('triangle', f0, 0.5)).toBeCloseTo(1, 6);
+  });
+
+  it('pulse respects its duty cycle', () => {
+    expect(periodicWave('pulse', f0, 0.1, 0.25)).toBeCloseTo(1, 12); // within duty
+    expect(periodicWave('pulse', f0, 0.5, 0.25)).toBeCloseTo(0, 12); // outside duty
   });
 });
 

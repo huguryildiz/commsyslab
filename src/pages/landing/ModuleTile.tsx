@@ -5,6 +5,8 @@ import { ConstellationViz } from './viz/ConstellationViz';
 import { SamplingViz } from './viz/SamplingViz';
 import { EntropyViz } from './viz/EntropyViz';
 import { LinkPulseViz } from './viz/LinkPulseViz';
+import { FourierViz } from './viz/FourierViz';
+import { AmFmViz } from './viz/AmFmViz';
 
 function Viz({ kind }: { kind: VizKind }) {
   switch (kind) {
@@ -16,6 +18,10 @@ function Viz({ kind }: { kind: VizKind }) {
       return <EntropyViz />;
     case 'linkpulse':
       return <LinkPulseViz />;
+    case 'fourier':
+      return <FourierViz />;
+    case 'amfm':
+      return <AmFmViz />;
     default:
       return null;
   }

@@ -1,0 +1,102 @@
+export const analog: Record<string, string> = {
+  // Panel selector
+  'analog.panel.select': 'Panel',
+
+  // Navigation & landing
+  'nav.analog': 'Analog AM/FM',
+  'landing.mod.analog.title': 'Analog AM/FM Modulation',
+  'landing.mod.analog.desc': 'Explore amplitude and frequency modulation, envelope detection, and FM synthesis.',
+
+  // AM Modulator panel
+  'analog.am.title': 'AM Modulator',
+  'analog.am.mode': 'Modulation mode',
+  'analog.am.mode.dsb': 'DSB-SC (Double sideband)',
+  'analog.am.mode.conventional': 'Conventional AM',
+  'analog.am.mode.ssb-usb': 'SSB-USB (Upper sideband)',
+  'analog.am.mode.ssb-lsb': 'SSB-LSB (Lower sideband)',
+  'analog.am.mode.vsb': 'VSB (Vestigial sideband)',
+  'analog.am.messageFreq': 'Message frequency fₘ',
+  'analog.am.carrierFreq': 'Carrier frequency fᶜ',
+  'analog.am.carrierAmp': 'Carrier amplitude Aᶜ',
+  'analog.am.modIndex': 'Modulation index a',
+  'analog.am.warning.overmod': 'Warning: Over-modulation (a > 1) detected',
+  'analog.am.spectrum': 'Frequency spectrum',
+  'analog.am.timeDomain': 'Time domain waveform',
+
+  // FM/PM Modulator panel
+  'analog.fm.title': 'FM/PM Modulator',
+  'analog.fm.mode': 'Modulation type',
+  'analog.fm.mode.fm': 'Frequency modulation (FM)',
+  'analog.fm.mode.pm': 'Phase modulation (PM)',
+  'analog.fm.messageFreq': 'Message frequency fₘ',
+  'analog.fm.carrierFreq': 'Carrier frequency fᶜ',
+  'analog.fm.carrierAmp': 'Carrier amplitude Aᶜ',
+  'analog.fm.modIndex': 'Modulation index β (FM) / kₚ (PM)',
+  'analog.fm.instantFreq': 'Instantaneous frequency fᵢ(t)',
+  'analog.fm.carson': 'Carson bandwidth B',
+  'analog.fm.spectrum': 'Bessel sidebands (FM)',
+  'analog.fm.timeDomain': 'Constant-envelope carrier',
+  'analog.fm.sidebands': 'Significant sidebands',
+
+  // Power & Efficiency panel
+  'analog.power.title': 'Power & Efficiency',
+  'analog.power.carrierPower': 'Carrier power Pᶜ',
+  'analog.power.sidebandPower': 'Sideband power Pₛ',
+  'analog.power.efficiency': 'Modulation efficiency η',
+  'analog.power.chart': 'Power distribution',
+
+  // Demodulation panel
+  'analog.demod.title': 'Demodulation',
+  'analog.demod.method': 'Demodulation method',
+  'analog.demod.method.envelope': 'Envelope detector',
+  'analog.demod.method.coherent': 'Coherent (sync) detector',
+  'analog.demod.method.pll': 'PLL carrier recovery',
+  'analog.demod.method.fmdiscrim': 'FM discriminator',
+  'analog.demod.recovered': 'Recovered message',
+  'analog.demod.original': 'Original message',
+  'analog.demod.carrier': 'Recovered carrier cos θ̂(t)',
+  'analog.demod.distortion': 'Detection distortion',
+  'analog.demod.fidelity': 'Recovery fidelity',
+  'analog.demod.faithful': 'Faithful',
+  'analog.demod.distorted': 'Distorted',
+  'analog.demod.warning': 'Envelope detector fails for a > 1 (over-modulation).',
+  'analog.demod.lockStatus': 'PLL lock status',
+  'analog.demod.locked': 'Locked',
+  'analog.demod.unlocked': 'Unlocked',
+
+  // Superheterodyne panel
+  'analog.super.title': 'Superheterodyne Receiver',
+  'analog.super.station': 'Station frequency fᶜ',
+  'analog.super.if': 'IF frequency f_IF',
+  'analog.super.lo': 'Local oscillator f_LO',
+  'analog.super.image': 'Image frequency',
+  'analog.super.plan': 'RF → IF frequency plan',
+  'analog.super.rf': 'RF amp',
+  'analog.super.mixer': 'Mixer',
+  'analog.super.iffilter': 'IF filter',
+  'analog.super.detector': 'Detector',
+  'analog.super.audio': 'Audio',
+  'analog.super.stationFreq': 'Station frequency fᶜ',
+  'analog.super.loFreq': 'Local oscillator fₗₒ',
+  'analog.super.ifFreq': 'IF frequency fᵢf',
+  'analog.super.rfToIf': 'RF → IF frequency translation',
+  'analog.super.imageFreq': 'Image frequency fᵢₘₐgₑ',
+  'analog.super.chain': 'Receiver chain: RF → Mixer → IF filter → Detector',
+
+  // Readouts
+  'analog.readout.bandwidth': 'Bandwidth',
+  'analog.readout.peakFreq': 'Peak frequency',
+  'analog.readout.power': 'Power',
+  'analog.readout.efficiency': 'Efficiency',
+  'analog.readout.distortion': 'Distortion',
+
+  // Theory box
+  'analog.theory.title': 'Analog Modulation Theory',
+  'analog.theory.dsb': 'DSB-SC: u(t) = m(t)·cos(2πfᶜt)',
+  'analog.theory.conventional': 'Conventional AM: u(t) = Aᶜ[1 + a·mₙ(t)]·cos(2πfᶜt)',
+  'analog.theory.efficiency': 'Efficiency: η = a²Pₘₙ/(1+a²Pₘₙ)',
+  'analog.theory.fm': 'FM: u(t) = Aᶜ·cos(2πfᶜt + β·sin(2πfₘt))',
+  'analog.theory.carson': 'Carson bandwidth: B = 2(β+1)fₘ',
+  'analog.theory.pll': 'PLL: θ̂(t) tracks carrier phase',
+  'analog.theory.super': 'Heterodyne: fₗₒ = fᶜ + fᵢf',
+};

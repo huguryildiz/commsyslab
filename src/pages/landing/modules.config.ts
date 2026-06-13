@@ -1,11 +1,11 @@
 /**
- * Landing modül haritası — bento ızgarası, sinyal zinciri ve yönlendirme için
- * tek doğruluk kaynağı. Sıra iletişim zincirini izler:
- * kaynak → örnekleme → kaynak kodlama → modülasyon → kanal → sezim → alıcı.
+ * Landing module map — single source of truth for bento grid, signal chain, and routing.
+ * Follows the communication chain order:
+ * source → sampling → source coding → modulation → channel → detection → sink.
  */
 export type ModuleStatus = 'live' | 'soon';
-export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse';
-export type BentoArea = 'mod' | 'samp' | 'info' | 'base' | 'e2e';
+export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse' | 'fourier' | 'amfm';
+export type BentoArea = 'mod' | 'samp' | 'info' | 'base' | 'e2e' | 'four' | 'anal';
 
 export interface LandingModule {
   id: string;
@@ -18,14 +18,38 @@ export interface LandingModule {
   area: BentoArea;
   viz?: VizKind;
   flagship?: boolean;
-  /** Kompakt canlı karo: açıklama gizli, viz alt yarıyı doldurur. */
+  /** Compact live tile: description hidden, viz fills bottom half. */
   compact?: boolean;
 }
 
 export const LANDING_MODULES: LandingModule[] = [
   {
+    id: 'fourier',
+    num: '01',
+    titleKey: 'landing.mod.fourier.title',
+    descKey: 'landing.mod.fourier.desc',
+    chapter: 'CH 2',
+    route: '/fourier',
+    status: 'live',
+    area: 'four',
+    viz: 'fourier',
+    compact: true,
+  },
+  {
+    id: 'analog',
+    num: '02',
+    titleKey: 'landing.mod.analog.title',
+    descKey: 'landing.mod.analog.desc',
+    chapter: 'CH 3',
+    route: '/analog',
+    status: 'live',
+    area: 'anal',
+    viz: 'amfm',
+    compact: true,
+  },
+  {
     id: 'modulation',
-    num: '03',
+    num: '05',
     titleKey: 'landing.mod.modulation.title',
     descKey: 'landing.mod.modulation.desc',
     chapter: 'CH 7',
@@ -37,7 +61,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'sampling',
-    num: '01',
+    num: '03',
     titleKey: 'landing.mod.sampling.title',
     descKey: 'landing.mod.sampling.desc',
     chapter: 'CH 4·6',
@@ -49,7 +73,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'infotheory',
-    num: '02',
+    num: '04',
     titleKey: 'landing.mod.infotheory.title',
     descKey: 'landing.mod.infotheory.desc',
     chapter: 'CH 6',
@@ -61,7 +85,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'baseband',
-    num: '04',
+    num: '06',
     titleKey: 'landing.mod.baseband.title',
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
@@ -71,7 +95,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'end-to-end',
-    num: '05',
+    num: '07',
     titleKey: 'landing.mod.e2e.title',
     descKey: 'landing.mod.e2e.desc',
     chapter: 'All',
@@ -82,7 +106,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
 ];
 
-/** Sinyal zinciri şeridindeki duraklar (soldan sağa). */
+/** Flow stops in the signal chain strip (left to right). */
 export interface FlowStop {
   key: string;
   x: number;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { buildSamplingView, type SamplingParams } from '@/modules/sampling/model';
+import { buildSamplingView, type SamplingParams } from '@/modules/sampling-quantization/model';
 
 const base: SamplingParams = {
   tones: [{ freq: 2, amp: 1 }],

@@ -35,6 +35,29 @@ export function signalPower(tones: Tone[]): number {
   return p;
 }
 
+/** Periodic non-sinusoidal waveform kinds (Fourier-series sources). */
+export type Periodic = 'square' | 'triangle' | 'sawtooth' | 'pulse';
+
+/**
+ * Value of a unit-amplitude periodic waveform at time t (s), fundamental f0 (Hz).
+ * square/triangle/sawtooth swing in [-1, 1]; pulse is {0, 1} with `duty` (default 0.5).
+ * Proakis & Salehi §2.1 (Fourier-series example waveforms).
+ */
+export function periodicWave(kind: Periodic, f0: number, t: number, duty = 0.5): number {
+  let ph = (t * f0) % 1; // fractional position in [0,1)
+  if (ph < 0) ph += 1;
+  switch (kind) {
+    case 'square':
+      return ph < 0.5 ? 1 : -1;
+    case 'sawtooth':
+      return 2 * ph - 1;
+    case 'triangle':
+      return ph < 0.5 ? -1 + 4 * ph : 3 - 4 * ph;
+    case 'pulse':
+      return ph < duty ? 1 : 0;
+  }
+}
+
 /** Built-in example signals. */
 export const PRESETS: Record<string, Tone[]> = {
   singleTone: [{ freq: 2, amp: 1 }],

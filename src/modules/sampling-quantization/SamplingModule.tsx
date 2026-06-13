@@ -19,7 +19,7 @@ import { aliasFrequency } from '@/lib/dsp/sampling';
 import { audioSupported, playSampledTone } from '@/lib/audio/sampling-audio';
 import { buildSamplingView } from './model';
 import { TimePanel, SpectrumPanel, QuantPanel, ErrorPanel } from './panels';
-import './sampling.css';
+import './sampling-quantization.css';
 
 type PresetKey = 'single' | 'two' | 'three';
 

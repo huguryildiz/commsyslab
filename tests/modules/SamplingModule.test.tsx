@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { SamplingModule } from '@/modules/sampling/SamplingModule';
+import { SamplingModule } from '@/modules/sampling-quantization/SamplingModule';
 
 describe('SamplingModule', () => {
   it('renders controls, panels, and key readouts', () => {

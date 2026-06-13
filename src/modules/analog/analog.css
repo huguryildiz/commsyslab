@@ -1,0 +1,141 @@
+/* Analog AM/FM Module Layout */
+
+.analog__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.analog__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.analog__readouts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.analog__plots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .analog__plots {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Panel layouts */
+
+.analog__am-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.analog__panel-half {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analog__label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.analog__fm-panel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.analog__panel-third {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 1200px) {
+  .analog__fm-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analog__power-panel {
+  display: flex;
+  justify-content: center;
+}
+
+/* Demodulation panel */
+
+.analog__demod-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .analog__demod-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analog__demod-panel .analog__warning {
+  grid-column: 1 / -1;
+}
+
+/* Superheterodyne panel */
+
+.analog__super-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analog__chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.analog__chain-block {
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.analog__chain-arrow {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Warning message */
+
+.analog__warning {
+  padding: 12px 16px;
+  background-color: rgba(255, 79, 154, 0.1);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-sm);
+  color: var(--warn);
+  font-size: 13px;
+  margin-top: 8px;
+  font-family: var(--mono);
+}
