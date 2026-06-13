@@ -1,7 +1,7 @@
 /* =====================================================================
  * Landing — "The Lab Instrument"
- * All values come from tokens.css (no raw hex/px embedded).
- * Instrument canvases (oscilloscope/viz) use their own dark screen.
+ * Tüm değerler tokens.css'ten gelir (ham hex/px gömülmez).
+ * Enstrüman canvas'ları (osiloskop/viz) kendi koyu ekranını kullanır.
  * ===================================================================== */
 
 .landing {
@@ -10,7 +10,7 @@
   margin: 0 auto;
   padding-bottom: var(--space-5);
 }
-/* atmosphere: fine dot-grid texture (token color) */
+/* atmosfer: ince nokta-ızgara dokusu (token renk) */
 .landing::before {
   content: '';
   position: absolute;
@@ -85,7 +85,7 @@
   flex-wrap: wrap;
 }
 
-/* buttons (Link/anchor — global button{} applies only to <button>) */
+/* buttons (Link/anchor — global button{} sadece <button>'a uygulanır) */
 .btn {
   font-family: var(--font);
   font-weight: 600;
@@ -315,10 +315,9 @@
   grid-auto-rows: 188px;
   gap: var(--space-3);
   grid-template-areas:
-    'mod mod four'
-    'mod mod anal'
-    'samp info base'
-    'e2e e2e e2e';
+    'mod mod samp'
+    'mod mod info'
+    'base e2e e2e';
 }
 .tile {
   position: relative;
@@ -381,12 +380,6 @@
 }
 .tile--e2e {
   grid-area: e2e;
-}
-.tile--four {
-  grid-area: four;
-}
-.tile--anal {
-  grid-area: anal;
 }
 .tile:nth-child(1) {
   animation-delay: 0.05s;
@@ -468,7 +461,7 @@
   gap: 0.4rem;
 }
 
-/* viz layout (by area) */
+/* viz yerleşimi (alanına göre) */
 .tile__viz {
   position: absolute;
   pointer-events: none;
@@ -488,14 +481,6 @@
   height: 52%;
   opacity: 0.92;
 }
-.tile--four .tile__viz,
-.tile--anal .tile__viz {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 56%;
-  opacity: 0.92;
-}
 .tile--e2e .tile__viz {
   right: 1.1rem;
   bottom: 1rem;
@@ -513,7 +498,7 @@
   max-width: 26ch;
 }
 
-/* compact live tiles: description hidden, viz fills bottom half */
+/* kompakt canlı karolar: açıklama gizli, viz alt yarıyı doldurur */
 .tile--compact .tile__desc {
   display: none;
 }
@@ -521,9 +506,9 @@
   margin-top: 0.45rem;
 }
 
-/* coming-soon tiles */
+/* coming-soon karolar */
 .tile--soon {
-  opacity: 0.78; /* tile-fade moves this to 0.78 when animation ends */
+  opacity: 0.78; /* animasyon bittiğinde tile-fade bunu 0.78'e taşır */
   cursor: default;
 }
 .tile--soon:hover {
