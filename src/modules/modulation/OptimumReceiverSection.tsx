@@ -3,21 +3,23 @@ import { Panel, Slider, Select, Readout, TheoryBox, Formula, TransportControls }
 import { t } from '@/i18n';
 import { makeRng } from '@/lib/sim/sources';
 import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
+import { OPT_RX_SIGNAL_SETS, buildOptRxView, simulateReception, monteCarloPe } from './model';
 import {
-  OPT_RX_SIGNAL_SETS,
-  buildOptRxView,
-  simulateReception,
-  monteCarloPe,
-} from './model';
-import { WaveformPanel, DemodPanel, DecisionAxisPanel } from './optreceiver-panels';
+  WaveformPanel,
+  DemodPanel,
+  DecisionAxisPanel,
+  ConstellationLandingPanel,
+  CorrelatorBankPanel,
+} from './optreceiver-panels';
 
-const SPS = 32;
+const SPS = 64;
 const BATCH = 200;
 
 export function OptimumReceiverSection() {
   const [signalSetId, setSignalSetId] = useState('binary');
   const [ebN0Db, setEbN0Db] = useState(8);
   const [symbolIndex, setSymbolIndex] = useState(0);
+  const [cycles, setCycles] = useState(4);
   const [nonce, setNonce] = useState(0);
   const [livePe, setLivePe] = useState<{ errors: number; total: number } | null>(null);
 
@@ -26,8 +28,8 @@ export function OptimumReceiverSection() {
   const mcRngRef = useRef(makeRng(2024));
 
   const view = useMemo(
-    () => buildOptRxView({ signalSetId, ebN0Db, symbolIndex, sps: SPS }),
-    [signalSetId, ebN0Db, symbolIndex],
+    () => buildOptRxView({ signalSetId, ebN0Db, symbolIndex, sps: SPS, cycles }),
+    [signalSetId, ebN0Db, symbolIndex, cycles],
   );
 
   const reception = useMemo(
@@ -63,6 +65,17 @@ export function OptimumReceiverSection() {
   });
 
   const livePeValue = livePe && livePe.total > 0 ? livePe.errors / livePe.total : undefined;
+  const statText =
+    view.kind === '1d'
+      ? reception.statistic[0].toFixed(3)
+      : `(${reception.statistic.map((s) => s.toFixed(2)).join(', ')})`;
+
+  const decisionTitle =
+    view.kind === '2d'
+      ? t('modulation.optrx.panel.landing')
+      : view.kind === 'orthogonal'
+        ? t('modulation.optrx.panel.bank')
+        : t('modulation.optrx.panel.decision');
 
   return (
     <div className="module-layout">
@@ -83,14 +96,21 @@ export function OptimumReceiverSection() {
             unit="dB"
             onChange={handleEbN0}
           />
+          {view.kind !== '1d' && (
+            <Slider
+              label={t('modulation.optrx.cycles')}
+              value={cycles}
+              min={2}
+              max={8}
+              step={1}
+              onChange={setCycles}
+            />
+          )}
           <Select<string>
             label={t('modulation.optrx.symbol')}
             value={String(symbolIndex)}
             onChange={(v) => setSymbolIndex(Number(v))}
-            options={view.amplitudes.map((a, i) => ({
-              value: String(i),
-              label: `${view.labels[i]}  (a=${a.toFixed(2)})`,
-            }))}
+            options={view.labels.map((lab, i) => ({ value: String(i), label: lab }))}
           />
           <button type="button" onClick={() => setNonce((n) => n + 1)}>
             {t('modulation.optrx.resample')}
@@ -102,10 +122,7 @@ export function OptimumReceiverSection() {
       <div className="modulation__content">
         <div className="modulation__readouts">
           <Readout label={t('modulation.optrx.readout.peakSnr')} value={view.peakSnr.toFixed(2)} />
-          <Readout
-            label={t('modulation.optrx.readout.statistic')}
-            value={reception.statistic.toFixed(3)}
-          />
+          <Readout label={t('modulation.optrx.readout.statistic')} value={statText} />
           <Readout
             label={t('modulation.optrx.readout.peTheory')}
             value={view.theoreticalPe.toExponential(2)}
@@ -132,15 +149,13 @@ export function OptimumReceiverSection() {
           </Panel>
           <Panel title={t('modulation.optrx.panel.demod')}>
             <DemodPanel view={view} reception={reception} />
-            <div className="modulation__legend">
-              <span className="lg-live">{t('modulation.optrx.legend.corr')}</span>
-              <span className="lg-sim">{t('modulation.optrx.legend.mfout')}</span>
-            </div>
           </Panel>
         </div>
 
-        <Panel title={t('modulation.optrx.panel.decision')}>
-          <DecisionAxisPanel view={view} reception={reception} />
+        <Panel title={decisionTitle}>
+          {view.kind === '1d' && <DecisionAxisPanel view={view} reception={reception} />}
+          {view.kind === '2d' && <ConstellationLandingPanel view={view} reception={reception} />}
+          {view.kind === 'orthogonal' && <CorrelatorBankPanel view={view} reception={reception} />}
         </Panel>
 
         <TheoryBox title={t('modulation.optrx.theory.title')}>
@@ -148,13 +163,10 @@ export function OptimumReceiverSection() {
             <Formula tex="r_k=\int_0^T r(t)\,\varphi_k(t)\,dt \quad(\text{correlator, §7.5.1})" block />
           </p>
           <p>
-            <Formula tex="h(t)=g(T-t),\quad y(t)=(r*h)(t),\ \ y(T)=\textstyle\int_0^T r\,\varphi\,dt" block />
+            <Formula tex="\hat{m}=\arg\min_i \lVert r-s_i\rVert^2 \quad(\text{min-distance, §7.5.3})" block />
           </p>
           <p>
             <Formula tex="\mathrm{SNR}_{\text{peak}}=\dfrac{2E}{N_0}" block />
-          </p>
-          <p>
-            <Formula tex="P_e^{\text{2-PAM}}=Q\!\left(\sqrt{2E_b/N_0}\right)" block />
           </p>
         </TheoryBox>
       </div>

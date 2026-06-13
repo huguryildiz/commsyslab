@@ -1,9 +1,8 @@
 import { makeConstellation, type Scheme, type Constellation } from '@/lib/dsp/modulation';
 import { theoreticalSer } from '@/lib/dsp/ser';
-import { n0FromEbN0Db, sigmaFromN0, gaussian } from '@/lib/dsp/awgn';
+import { n0FromEbN0Db, sigmaFromN0, gaussian, addAwgn } from '@/lib/dsp/awgn';
 import { mapThreshold1D, detectML } from '@/lib/dsp/detector';
 import {
-  matchedFilter,
   matchedFilterOutput,
   runningCorrelation,
   correlate,
@@ -11,6 +10,7 @@ import {
   peakSnr,
 } from '@/lib/dsp/matchedfilter';
 import { linspace } from '@/lib/dsp/math';
+import { quadratureBasis, fskBasis } from '@/lib/dsp/carrierbasis';
 
 export type Decision = 'ml' | 'map';
 
@@ -154,52 +154,76 @@ export function buildModulationView(p: ModulationParams): ModulationView {
   };
 }
 
-// ── Optimum receiver (Phase 1: 1-D binary / PAM), Proakis §7.5–7.6 ──────────────
+// ── Optimum receiver (Proakis §7.5–7.6), generalized to N dimensions ──────────────
+
+export type OptRxKind = '1d' | '2d' | 'orthogonal';
 
 export interface OptRxSignalSet {
   id: string;
   /** i18n key for the dropdown label. */
   labelKey: string;
-  /** Underlying 1-D scheme: 'bpsk' for binary antipodal, 'mask' for M-PAM. */
   scheme: Scheme;
   M: number;
+  kind: OptRxKind;
+  /** Carrier cycles per symbol for 2d/orthogonal bases; ignored for 1d. */
+  cycles?: number;
 }
 
-/** Data-driven signal-set list. Phase 2/3 entries (2-D, custom) append here. */
+/** Data-driven signal-set list. Phase 3 "custom" entry appends here. */
 export const OPT_RX_SIGNAL_SETS: OptRxSignalSet[] = [
-  { id: 'binary', labelKey: 'modulation.optrx.set.binary', scheme: 'bpsk', M: 2 },
-  { id: 'pam4', labelKey: 'modulation.optrx.set.pam4', scheme: 'mask', M: 4 },
-  { id: 'pam8', labelKey: 'modulation.optrx.set.pam8', scheme: 'mask', M: 8 },
+  { id: 'binary', labelKey: 'modulation.optrx.set.binary', scheme: 'bpsk', M: 2, kind: '1d' },
+  { id: 'pam4', labelKey: 'modulation.optrx.set.pam4', scheme: 'mask', M: 4, kind: '1d' },
+  { id: 'pam8', labelKey: 'modulation.optrx.set.pam8', scheme: 'mask', M: 8, kind: '1d' },
+  { id: 'qpsk', labelKey: 'modulation.optrx.set.qpsk', scheme: 'mpsk', M: 4, kind: '2d' },
+  { id: 'psk8', labelKey: 'modulation.optrx.set.psk8', scheme: 'mpsk', M: 8, kind: '2d' },
+  { id: 'qam16', labelKey: 'modulation.optrx.set.qam16', scheme: 'mqam', M: 16, kind: '2d' },
+  { id: 'bfsk', labelKey: 'modulation.optrx.set.bfsk', scheme: 'bfsk', M: 2, kind: 'orthogonal' },
+  { id: 'fsk4', labelKey: 'modulation.optrx.set.fsk4', scheme: 'mfsk', M: 4, kind: 'orthogonal' },
 ];
 
 export interface OptRxParams {
   signalSetId: string;
   ebN0Db: number;
-  /** Index (into ascending amplitudes) of the symbol to display. */
+  /** Index (into the view's points) of the symbol to display. */
   symbolIndex: number;
   /** Samples per symbol for waveform resolution. */
   sps: number;
+  /** Carrier cycles per symbol (2d/orthogonal); ignored for 1d. */
+  cycles: number;
 }
 
 export interface OptRxView {
   signalSet: OptRxSignalSet;
+  kind: OptRxKind;
   M: number;
-  amplitudes: number[]; // 1-D coordinates, ascending
-  labels: string[]; // Gray labels aligned to ascending amplitudes
-  thresholds: number[]; // M-1 midpoints between adjacent amplitudes
-  basis: number[]; // unit-energy φ[n], length sps
-  matchedIR: number[]; // h[n] = φ reversed (display)
-  symbolWaveform: number[]; // amplitudes[symbolIndex] · φ[n]
+  dim: number; // number of basis functions N
+  points: number[][]; // M signal-space points, each length dim (1d sorted ascending)
+  labels: string[]; // labels aligned to points
+  basis: number[][]; // dim basis waveforms, each length sps (unit energy, ~orthonormal)
+  symbolWaveform: number[]; // Σ_k points[symbolIndex][k]·basis[k], length sps
+  thresholds: number[]; // 1d only: M-1 midpoints; [] otherwise
   eb: number;
   n0: number;
   sigmaW: number; // per-sample time-domain noise std = √(N0/2)
   symbolEnergy: number; // energy of the displayed symbol waveform
   peakSnr: number; // 2E/N0 for the displayed symbol
   theoreticalPe: number;
-  extent: number; // half-extent of the decision axis (data units)
+  extent: number; // half-extent of the decision axis/plane (data units)
 }
 
-/** Assemble the optimum-receiver view for a 1-D signal set. Pure. */
+/**
+ * Synthesize the orthonormal basis waveforms for a signal set.
+ * - 2d: quadrature carrier φ₁=cos, φ₂=sin (Proakis §7.3).
+ * - orthogonal: M orthogonal FSK tones (Proakis §7.4).
+ * - 1d: single unit-energy rectangular pulse.
+ */
+function buildBasis(set: OptRxSignalSet, sps: number, cycles: number): number[][] {
+  if (set.kind === '2d') return quadratureBasis(sps, cycles);
+  if (set.kind === 'orthogonal') return fskBasis(set.M, sps, cycles);
+  return [new Array<number>(sps).fill(1 / Math.sqrt(sps))];
+}
+
+/** Assemble the optimum-receiver view for a signal set. Pure. */
 export function buildOptRxView(p: OptRxParams): OptRxView {
   const set = OPT_RX_SIGNAL_SETS.find((s) => s.id === p.signalSetId) ?? OPT_RX_SIGNAL_SETS[0];
   const c = makeConstellation(set.scheme, set.M);
@@ -207,36 +231,49 @@ export function buildOptRxView(p: OptRxParams): OptRxView {
   const n0 = n0FromEbN0Db(p.ebN0Db, eb);
   const sigmaW = sigmaFromN0(n0);
 
-  // Sort symbols by 1-D coordinate ascending; carry Gray labels along.
-  const order = c.points.map((_, i) => i).sort((a, b) => c.points[a][0] - c.points[b][0]);
-  const amplitudes = order.map((i) => c.points[i][0]);
+  // 1d: order ascending by coordinate so the decision axis reads left→right; else keep order.
+  const order =
+    set.kind === '1d'
+      ? c.points.map((_, i) => i).sort((a, b) => c.points[a][0] - c.points[b][0])
+      : c.points.map((_, i) => i);
+  const points = order.map((i) => c.points[i]);
   const labels = order.map((i) => c.labels[i]);
+
   const thresholds: number[] = [];
-  for (let k = 0; k < amplitudes.length - 1; k++) {
-    thresholds.push((amplitudes[k] + amplitudes[k + 1]) / 2);
+  if (set.kind === '1d') {
+    for (let k = 0; k < points.length - 1; k++) {
+      thresholds.push((points[k][0] + points[k + 1][0]) / 2);
+    }
   }
 
-  // Unit-energy rectangular basis φ[n] = 1/√sps  (Σ φ² = 1), so the correlator
-  // output ∫r·φ has noise variance σ_w²·Σφ² = N0/2, matching the signal-space model.
-  const basis = new Array<number>(p.sps).fill(1 / Math.sqrt(p.sps));
-  const matchedIR = matchedFilter(basis);
+  const basis = buildBasis(set, p.sps, set.cycles ?? p.cycles);
+  const dim = basis.length;
 
-  const idx = Math.min(Math.max(p.symbolIndex, 0), amplitudes.length - 1);
-  const symbolWaveform = basis.map((b) => amplitudes[idx] * b);
+  const idx = Math.min(Math.max(p.symbolIndex, 0), points.length - 1);
+  const coords = points[idx];
+  const symbolWaveform = new Array<number>(p.sps).fill(0);
+  for (let k = 0; k < dim; k++) {
+    const ck = coords[k] ?? 0;
+    for (let n = 0; n < p.sps; n++) symbolWaveform[n] += ck * basis[k][n];
+  }
   const symbolEnergy = pulseEnergy(symbolWaveform);
 
-  const maxAmp = Math.max(...amplitudes.map((a) => Math.abs(a)), Math.sqrt(eb));
-  const extent = maxAmp + 3.5 * sigmaW;
+  const maxCoord = points.reduce(
+    (m, q) => Math.max(m, ...q.map((v) => Math.abs(v))),
+    Math.sqrt(eb),
+  );
+  const extent = maxCoord + 3.5 * sigmaW;
 
   return {
     signalSet: set,
+    kind: set.kind,
     M: c.M,
-    amplitudes,
+    dim,
+    points,
     labels,
-    thresholds,
     basis,
-    matchedIR,
     symbolWaveform,
+    thresholds,
     eb,
     n0,
     sigmaW,
@@ -250,47 +287,50 @@ export function buildOptRxView(p: OptRxParams): OptRxView {
 export interface OptRxReception {
   txIndex: number;
   received: number[]; // r[n] = s[n] + w[n]
-  mfOutput: number[]; // matched-filter output (full convolution)
-  runningCorr: number[]; // cumulative correlator integral over [0, T]
-  statistic: number; // decision statistic = ∫ r·φ
-  decided: number; // detected symbol index (into ascending amplitudes)
+  branchCorr: number[][]; // per-basis cumulative correlator integral
+  branchMf: number[][] | null; // per-basis matched-filter output (1d only, for equivalence)
+  statistic: number[]; // decision statistic vector r = (∫ r·φ_k)
+  decided: number; // detectML(statistic, points)
 }
 
-/** One noisy reception of symbol `txIndex` through correlator + matched filter. Pure given rng. */
+/** One noisy reception of symbol `txIndex` through the correlator bank. Pure given rng. */
 export function simulateReception(
   view: OptRxView,
   txIndex: number,
   rng: () => number,
 ): OptRxReception {
   const tx = Math.min(Math.max(txIndex, 0), view.M - 1);
-  const s = view.basis.map((b) => view.amplitudes[tx] * b);
+  const coords = view.points[tx];
+  const sps = view.basis[0].length;
+  const s = new Array<number>(sps).fill(0);
+  for (let k = 0; k < view.dim; k++) {
+    const ck = coords[k] ?? 0;
+    for (let n = 0; n < sps; n++) s[n] += ck * view.basis[k][n];
+  }
   const received = s.map((v) => v + view.sigmaW * gaussian(rng));
-  const mfOutput = matchedFilterOutput(received, view.basis);
-  const runningCorr = runningCorrelation(received, view.basis);
-  const statistic = correlate(received, view.basis);
-  const decided = detectML(
-    [statistic],
-    view.amplitudes.map((a) => [a]),
-  );
-  return { txIndex: tx, received, mfOutput, runningCorr, statistic, decided };
+  const branchCorr = view.basis.map((phi) => runningCorrelation(received, phi));
+  const statistic = view.basis.map((phi) => correlate(received, phi));
+  const branchMf =
+    view.kind === '1d' ? view.basis.map((phi) => matchedFilterOutput(received, phi)) : null;
+  const decided = detectML(statistic, view.points);
+  return { txIndex: tx, received, branchCorr, branchMf, statistic, decided };
 }
 
 /**
- * Monte-Carlo symbol-error count for the optimum receiver. Uses the statistically
- * identical shortcut T = a_tx + N(0, N0/2) (correlator output, since Σφ² = 1) so the
- * loop is cheap; the displayed reception uses the full waveform path above.
+ * Monte-Carlo symbol-error count. Uses the statistically identical signal-space shortcut:
+ * draw a transmitted point, add i.i.d. N(0, N0/2)=sigmaW² per dimension, detect by min-distance.
+ * (The correlator output ∫r·φ_k has exactly this distribution because the basis is orthonormal.)
  */
 export function monteCarloPe(
   view: OptRxView,
   n: number,
   rng: () => number,
 ): { errors: number; total: number } {
-  const points = view.amplitudes.map((a) => [a]);
   let errors = 0;
   for (let i = 0; i < n; i++) {
     const tx = Math.min(view.M - 1, Math.floor(rng() * view.M));
-    const stat = view.amplitudes[tx] + view.sigmaW * gaussian(rng);
-    if (detectML([stat], points) !== tx) errors++;
+    const r = addAwgn(view.points[tx], view.sigmaW, rng);
+    if (detectML(r, view.points) !== tx) errors++;
   }
   return { errors, total: n };
 }
