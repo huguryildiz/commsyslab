@@ -42,6 +42,7 @@ const PRESETS: Record<string, Row[]> = {
 function codesToTree(rows: Row[]): BinTree {
   const root: BinTree = {};
   for (const r of rows) {
+    if (r.code.length === 0) continue; // skip symbols with no codeword yet (mid-edit)
     let node = root;
     for (const b of r.code) {
       if (b === '0') node.left = node.left ?? {};
@@ -57,14 +58,16 @@ export function PrefixKraftSection() {
   const [rows, setRows] = useState<Row[]>(PRESETS.II);
   const [stream, setStream] = useState('010110111');
 
-  const codewords = rows.map((r) => r.code).filter((c) => c.length > 0);
+  const codeRows = rows.filter((r) => r.code.length > 0);
+  const codewords = codeRows.map((r) => r.code);
   const lengths = codewords.map((c) => c.length);
   const probs = rows.map((r) => r.prob);
 
   const prefixFree = isPrefixFree(codewords);
   const kraft = kraftSum(lengths);
   const ud = isUniquelyDecodable(codewords);
-  const Lbar = avgLength(probs, rows.map((r) => r.code.length));
+  // Align L̄/η to the same coded symbols used by the verdicts above.
+  const Lbar = avgLength(codeRows.map((r) => r.prob), lengths);
   const H = entropy(probs);
   const layout = useMemo(() => layoutBinaryTree(codesToTree(rows)), [rows]);
   const codeToSymbol = useMemo(
