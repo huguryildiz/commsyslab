@@ -4,7 +4,7 @@ import { linScale, drawAxes, drawLine, drawVLine } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import { t } from '@/i18n';
 import { outputSnrDb, emphasisGainDb } from '@/lib/dsp/analognoise';
-import type { Derived, ScenarioParams } from '../model';
+import { MESSAGE_POWER, type Derived, type ScenarioParams } from '../model';
 
 interface Props {
   params: ScenarioParams;
@@ -13,9 +13,10 @@ interface Props {
 
 export function ThresholdEmphasisSection({ params, d }: Props) {
   const x = Array.from(d.cnrSweep);
-  const sp = { amIndex: params.amIndex, beta: params.beta, messagePower: 0.5, emphasis: false, W: params.W };
+  const sp = { amIndex: params.amIndex, beta: params.beta, messagePower: MESSAGE_POWER, emphasis: false, W: params.W };
   const spE = { ...sp, emphasis: true };
-  // FM output SNR with and without emphasis, clamped to a floor below threshold to show the knee.
+  // FM output SNR with and without emphasis. Below the threshold FM collapses, so we clamp the
+  // curve to cnr-10 to make the knee visible; above the threshold we use the theoretical SNR.
   const noEmph = x.map((cnr) => (cnr < d.fmThresholdDb ? cnr - 10 : outputSnrDb('fm', cnr, sp)));
   const withEmph = x.map((cnr) => (cnr < d.fmThresholdDb ? cnr - 10 : outputSnrDb('fm', cnr, spE)));
   const yMax = Math.max(1, ...withEmph);
