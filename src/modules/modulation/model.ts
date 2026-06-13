@@ -1,8 +1,15 @@
 import { makeConstellation, type Scheme, type Constellation } from '@/lib/dsp/modulation';
 import { theoreticalSer } from '@/lib/dsp/ser';
-import { n0FromEbN0Db, sigmaFromN0 } from '@/lib/dsp/awgn';
-import { mapThreshold1D } from '@/lib/dsp/detector';
-import { matchedFilter, pulseEnergy, peakSnr } from '@/lib/dsp/matchedfilter';
+import { n0FromEbN0Db, sigmaFromN0, gaussian } from '@/lib/dsp/awgn';
+import { mapThreshold1D, detectML } from '@/lib/dsp/detector';
+import {
+  matchedFilter,
+  matchedFilterOutput,
+  runningCorrelation,
+  correlate,
+  pulseEnergy,
+  peakSnr,
+} from '@/lib/dsp/matchedfilter';
 import { linspace } from '@/lib/dsp/math';
 
 export type Decision = 'ml' | 'map';
@@ -238,4 +245,52 @@ export function buildOptRxView(p: OptRxParams): OptRxView {
     theoreticalPe: theoreticalSer(set.scheme, set.M, p.ebN0Db),
     extent,
   };
+}
+
+export interface OptRxReception {
+  txIndex: number;
+  received: number[]; // r[n] = s[n] + w[n]
+  mfOutput: number[]; // matched-filter output (full convolution)
+  runningCorr: number[]; // cumulative correlator integral over [0, T]
+  statistic: number; // decision statistic = ∫ r·φ
+  decided: number; // detected symbol index (into ascending amplitudes)
+}
+
+/** One noisy reception of symbol `txIndex` through correlator + matched filter. Pure given rng. */
+export function simulateReception(
+  view: OptRxView,
+  txIndex: number,
+  rng: () => number,
+): OptRxReception {
+  const tx = Math.min(Math.max(txIndex, 0), view.M - 1);
+  const s = view.basis.map((b) => view.amplitudes[tx] * b);
+  const received = s.map((v) => v + view.sigmaW * gaussian(rng));
+  const mfOutput = matchedFilterOutput(received, view.basis);
+  const runningCorr = runningCorrelation(received, view.basis);
+  const statistic = correlate(received, view.basis);
+  const decided = detectML(
+    [statistic],
+    view.amplitudes.map((a) => [a]),
+  );
+  return { txIndex: tx, received, mfOutput, runningCorr, statistic, decided };
+}
+
+/**
+ * Monte-Carlo symbol-error count for the optimum receiver. Uses the statistically
+ * identical shortcut T = a_tx + N(0, N0/2) (correlator output, since Σφ² = 1) so the
+ * loop is cheap; the displayed reception uses the full waveform path above.
+ */
+export function monteCarloPe(
+  view: OptRxView,
+  n: number,
+  rng: () => number,
+): { errors: number; total: number } {
+  const points = view.amplitudes.map((a) => [a]);
+  let errors = 0;
+  for (let i = 0; i < n; i++) {
+    const tx = Math.min(view.M - 1, Math.floor(rng() * view.M));
+    const stat = view.amplitudes[tx] + view.sigmaW * gaussian(rng);
+    if (detectML([stat], points) !== tx) errors++;
+  }
+  return { errors, total: n };
 }
