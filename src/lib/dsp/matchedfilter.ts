@@ -35,3 +35,19 @@ export function correlate(received: number[], pulse: number[]): number {
 export function peakSnr(pulseEnergyValue: number, n0: number): number {
   return (2 * pulseEnergyValue) / n0;
 }
+
+/**
+ * Cumulative correlator integral S[k] = Σ_{i≤k} r[i]·p[i] (Proakis §7.5.1).
+ * S[N−1] equals correlate(received, pulse) and the matched-filter output sampled
+ * at full overlap — this is the correlator/matched-filter equivalence at t = T.
+ */
+export function runningCorrelation(received: number[], pulse: number[]): number[] {
+  const n = Math.min(received.length, pulse.length);
+  const out = new Array<number>(n);
+  let acc = 0;
+  for (let i = 0; i < n; i++) {
+    acc += received[i] * pulse[i];
+    out[i] = acc;
+  }
+  return out;
+}

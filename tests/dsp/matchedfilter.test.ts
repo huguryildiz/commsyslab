@@ -4,6 +4,7 @@ import {
   matchedFilter,
   matchedFilterOutput,
   correlate,
+  runningCorrelation,
   pulseEnergy,
   peakSnr,
 } from '@/lib/dsp/matchedfilter';
@@ -45,5 +46,25 @@ describe('pulseEnergy & peakSnr', () => {
   });
   it('peak SNR is 2E/N0', () => {
     expect(peakSnr(3, 2)).toBeCloseTo(3, 12);
+  });
+});
+
+describe('runningCorrelation', () => {
+  it('accumulates r·p and ends at correlate (= matched-filter peak)', () => {
+    const p = [0.4, 0.8, -0.2, 0.6];
+    const r = [0.5, 0.7, -0.1, 0.9];
+    const run = runningCorrelation(r, p);
+    expect(run).toHaveLength(4);
+    // each entry is the partial sum so far
+    expect(run[0]).toBeCloseTo(0.5 * 0.4, 12);
+    expect(run[1]).toBeCloseTo(0.5 * 0.4 + 0.7 * 0.8, 12);
+    // final value equals the full correlator output and the MF peak
+    expect(run[run.length - 1]).toBeCloseTo(correlate(r, p), 12);
+    const mf = matchedFilterOutput(r, p);
+    expect(run[run.length - 1]).toBeCloseTo(mf[p.length - 1], 12);
+  });
+
+  it('runs over the shorter of the two lengths', () => {
+    expect(runningCorrelation([1, 1, 1], [2, 2])).toEqual([2, 4]);
   });
 });
