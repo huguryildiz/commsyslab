@@ -5,6 +5,9 @@ import {
   coherenceBandwidth,
   coherenceTime,
   channelFreqResponse,
+  rayleighPdf,
+  ricianPdf,
+  envelopeSeries,
   type Tap,
 } from '@/lib/dsp/fading';
 import { makeRng } from '@/lib/dsp/random';
@@ -61,5 +64,44 @@ describe('channelFreqResponse', () => {
     const max = Math.max(...mag);
     const min = Math.min(...mag);
     expect(max - min).toBeGreaterThan(0.1); // selective, not flat
+  });
+});
+
+describe('rayleighPdf', () => {
+  it('integrates to ~1 over a wide range', () => {
+    const sigma = 1;
+    let area = 0;
+    const dr = 0.01;
+    for (let r = 0; r < 12; r += dr) area += rayleighPdf(r, sigma) * dr;
+    expect(area).toBeCloseTo(1, 2);
+  });
+  it('peaks at r = sigma', () => {
+    const sigma = 1;
+    expect(rayleighPdf(1, sigma)).toBeGreaterThan(rayleighPdf(0.5, sigma));
+    expect(rayleighPdf(1, sigma)).toBeGreaterThan(rayleighPdf(1.5, sigma));
+  });
+});
+
+describe('ricianPdf', () => {
+  it('reduces to Rayleigh when K = 0 (s = 0)', () => {
+    const sigma = 1;
+    for (const r of [0.5, 1, 2]) {
+      expect(ricianPdf(r, sigma, 0)).toBeCloseTo(rayleighPdf(r, sigma), 9);
+    }
+  });
+});
+
+describe('envelopeSeries', () => {
+  it('is deterministic for a fixed seed', () => {
+    const a = envelopeSeries({ fD: 100, K: 0, nSamples: 64, fs: 1000 }, makeRng(3));
+    const b = envelopeSeries({ fD: 100, K: 0, nSamples: 64, fs: 1000 }, makeRng(3));
+    expect(Array.from(a)).toEqual(Array.from(b));
+    expect(a).toHaveLength(64);
+  });
+  it('fD → 0 yields a (near) constant envelope', () => {
+    const e = envelopeSeries({ fD: 0, K: 0, nSamples: 64, fs: 1000 }, makeRng(5));
+    const max = Math.max(...e);
+    const min = Math.min(...e);
+    expect(max - min).toBeLessThan(1e-9);
   });
 });
