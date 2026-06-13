@@ -54,8 +54,11 @@ export function sqnrTheoreticalDb(signalPower: number, mMax: number, bits: numbe
   return 10 * Math.log10((3 * signalPower) / (mMax * mMax)) + 20 * bits * Math.log10(2);
 }
 
-/** Measured SQNR in dB from the actual signal and quantization error. */
+/** Measured SQNR in dB from the actual signal and quantization error.
+ *  Returns Infinity for perfect reconstruction (zero error power). */
 export function sqnrMeasuredDb(values: number[], quantized: number[]): number {
   const err = quantizationError(values, quantized);
-  return 10 * Math.log10(meanSquare(values) / meanSquare(err));
+  const noisePower = meanSquare(err);
+  if (noisePower === 0) return Infinity;
+  return 10 * Math.log10(meanSquare(values) / noisePower);
 }

@@ -74,3 +74,12 @@ describe('sqnrMeasuredDb', () => {
     expect(sqnrMeasuredDb(values, q)).toBeLessThan(28);
   });
 });
+
+describe('sqnrMeasuredDb edge cases', () => {
+  it('returns Infinity when reconstruction is perfect (zero error power)', () => {
+    const values = [0.25, -0.25, 0.75, -0.75];
+    // these land exactly on midrise levels for mMax=1, bits=2 -> zero error
+    const q = quantizeSignal(values, 1, 2, 'midrise');
+    expect(sqnrMeasuredDb(values, q)).toBe(Infinity);
+  });
+});

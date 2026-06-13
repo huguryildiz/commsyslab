@@ -7,7 +7,9 @@ export interface Samples {
   Ts: number;
 }
 
-/** Sample a signal at rate fs over [tStart, tEnd] (inclusive of tEnd within Ts/2). */
+/** Sample a signal at rate fs over [tStart, tEnd] (inclusive of tEnd within Ts/2).
+ *  Precondition: fs > 0. Callers (UI sliders) enforce this; with fs <= 0 the
+ *  result is degenerate (empty or single sample), not an error. */
 export function sample(tones: Tone[], fs: number, tStart: number, tEnd: number): Samples {
   const Ts = 1 / fs;
   const times: number[] = [];
@@ -21,7 +23,8 @@ export function sample(tones: Tone[], fs: number, tStart: number, tEnd: number):
   return { times, values, Ts };
 }
 
-/** Whittaker-Shannon ideal reconstruction at time t from samples. */
+/** Whittaker-Shannon ideal reconstruction at time t from samples.
+ *  Precondition: s.Ts > 0 (guaranteed by sample() for fs > 0). */
 export function sincReconstruct(s: Samples, t: number): number {
   let v = 0;
   for (let n = 0; n < s.times.length; n++) {
