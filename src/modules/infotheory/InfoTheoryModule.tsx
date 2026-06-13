@@ -4,17 +4,15 @@ import { EntropySection } from './EntropySection';
 import { PrefixKraftSection } from './PrefixKraftSection';
 import { HuffmanSection } from './HuffmanSection';
 import { LempelZivSection } from './LempelZivSection';
-import { CapacitySection } from './CapacitySection';
 import './infotheory.css';
 
-type Tab = 'entropy' | 'prefix' | 'huffman' | 'lz' | 'capacity';
+type Tab = 'entropy' | 'prefix' | 'huffman' | 'lz';
 
 const TABS: { id: Tab; key: string }[] = [
   { id: 'entropy', key: 'it.tab.entropy' },
   { id: 'prefix', key: 'it.tab.prefix' },
   { id: 'huffman', key: 'it.tab.huffman' },
   { id: 'lz', key: 'it.tab.lz' },
-  { id: 'capacity', key: 'it.tab.capacity' },
 ];
 
 export function InfoTheoryModule() {
@@ -37,7 +35,6 @@ export function InfoTheoryModule() {
       {tab === 'prefix' && <PrefixKraftSection />}
       {tab === 'huffman' && <HuffmanSection />}
       {tab === 'lz' && <LempelZivSection />}
-      {tab === 'capacity' && <CapacitySection />}
     </div>
   );
 }
