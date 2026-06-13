@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { outputSnrDb, demodulationGainDb, fmThresholdCnrDb, emphasisGainDb, addNoiseAtSnr, measuredSnrDb, type AnalogScheme } from '@/lib/dsp/analognoise';
+import { outputSnrDb, demodulationGainDb, fmThresholdCnrDb, emphasisGainDb, addNoiseAtSnr, measuredSnrDb } from '@/lib/dsp/analognoise';
 import { makeRng } from '@/lib/dsp/random';
 
 const p = { amIndex: 0.5, beta: 5, messagePower: 0.5, emphasis: false, W: 15000 };
