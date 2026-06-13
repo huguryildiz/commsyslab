@@ -4,6 +4,16 @@
 covering sampling & quantization, digital modulation & detection (with MAP/ML), baseband
 transmission & eye diagrams, and Huffman coding & entropy, plus an end-to-end link simulation.
 
+**Live:** [digicommlab.vercel.app](https://digicommlab.vercel.app)
+
+## Status
+
+- ✅ **Sampling & Quantization** (CH7) — live, interactive (sampling theorem, aliasing, sinc
+  reconstruction, PCM, SQNR, Web Audio playback).
+- 🚧 **Modulation & Detection** (CH9) — DSP layer complete (constellations, AWGN, ML/MAP,
+  theoretical + Monte-Carlo SER); interactive UI in progress.
+- ⏳ Baseband & Eye Diagram (CH8), Huffman & Entropy (CH10), End-to-End Link — planned.
+
 ## Develop
 
     npm install
@@ -14,9 +24,10 @@ transmission & eye diagrams, and Huffman coding & entropy, plus an end-to-end li
 
 ## Deploy
 
-Pushing to the default branch builds and publishes to GitHub Pages via
-`.github/workflows/deploy.yml`. Enable Pages -> "GitHub Actions" in the repo settings.
-The Vite `base` is `./` (relative), so the app works under any Pages subpath.
+Deployed via **Vercel** (git integration). Pushing to `master` publishes production at
+[digicommlab.vercel.app](https://digicommlab.vercel.app); every branch / pull request gets an
+automatic preview deployment. Vercel auto-detects the Vite preset (build `npm run build`, output
+`dist`). The Vite `base` is `./` (relative), so assets resolve at any path.
 
 ## Architecture
 
