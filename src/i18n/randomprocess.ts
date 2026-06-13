@@ -1,0 +1,16 @@
+export const randomprocess: Record<string, string> = {
+  'nav.randomProcess': 'Random Processes',
+  'rp.title': 'Random Processes',
+  'rp.subtitle': 'Ensemble, autocorrelation, spectrum, and filtering — Proakis Ch 4',
+  'rp.gen.title': 'Process generator',
+  'rp.gen.kind': 'Process',
+  'rp.gen.kind.sine': 'Random-phase sine',
+  'rp.gen.kind.white': 'White Gaussian',
+  'rp.gen.kind.colored': 'Filtered / colored',
+  'rp.gen.kind.nrz': 'Binary NRZ',
+  'rp.gen.resample': 'Resample',
+  'rp.ensemble.title': 'Ensemble & mean (§4.2)',
+  'rp.autocorr.title': 'Autocorrelation & ergodicity (§4.2)',
+  'rp.psd.title': 'Power spectral density (§4.3)',
+  'rp.filter.title': 'LTI filtering (§4.3–4.4)',
+};
