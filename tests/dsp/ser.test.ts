@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { theoreticalSer, simulateSer } from '@/lib/dsp/ser';
+import { theoreticalSer, simulateSer, unionBoundSer } from '@/lib/dsp/ser';
 import { makeConstellation } from '@/lib/dsp/modulation';
 import { qfunc } from '@/lib/dsp/math';
 
@@ -78,5 +78,24 @@ describe('simulateSer (Monte-Carlo)', () => {
     const ml = simulateSer({ ...common, decision: 'ml' });
     const map = simulateSer({ ...common, decision: 'map', priors: [0.5, 0.5] });
     expect(map.errors).toBe(ml.errors);
+  });
+});
+
+describe('unionBoundSer', () => {
+  it('antipodal points reduce to Q(d/√(2N₀))', () => {
+    // points ±1 ⇒ d = 2, d² = 4; with n0 = 1 ⇒ Q(√(4/2)) = Q(√2)
+    expect(unionBoundSer([[1], [-1]], 1)).toBeCloseTo(qfunc(Math.sqrt(2)), 12);
+  });
+
+  it('matches the BPSK closed form for ±√Eb', () => {
+    const eb = 1;
+    const n0 = 0.5;
+    const expected = qfunc(Math.sqrt((2 * eb) / n0)); // Q(√(2Eb/N0))
+    expect(unionBoundSer([[Math.sqrt(eb)], [-Math.sqrt(eb)]], n0)).toBeCloseTo(expected, 12);
+  });
+
+  it('is clamped to at most 1 and 0 for a single point', () => {
+    expect(unionBoundSer([[0]], 1)).toBe(0);
+    expect(unionBoundSer([[0.01], [-0.01]], 1e-6)).toBeLessThanOrEqual(1);
   });
 });

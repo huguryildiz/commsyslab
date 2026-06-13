@@ -81,3 +81,27 @@ export function simulateSer(o: SimSerOptions): SimSerResult {
   }
   return { errors, total: numSymbols, ser: errors / numSymbols };
 }
+
+/**
+ * Nearest-neighbour union bound on symbol-error probability for an arbitrary
+ * constellation (Proakis §7.6.1):  P(e) ≤ (1/M) Σₘ Σ_{n≠m} Q(dₘₙ / √(2N₀)),
+ * where dₘₙ = ‖sₘ − sₙ‖. Clamped to [0,1]. Used for custom signal sets that have
+ * no closed-form SER.
+ */
+export function unionBoundSer(points: number[][], n0: number): number {
+  const M = points.length;
+  if (M < 2) return 0;
+  let sum = 0;
+  for (let m = 0; m < M; m++) {
+    for (let n = 0; n < M; n++) {
+      if (n === m) continue;
+      let d2 = 0;
+      for (let k = 0; k < points[m].length; k++) {
+        const df = points[m][k] - points[n][k];
+        d2 += df * df;
+      }
+      sum += qfunc(Math.sqrt(d2 / (2 * n0)));
+    }
+  }
+  return Math.min(sum / M, 1);
+}
