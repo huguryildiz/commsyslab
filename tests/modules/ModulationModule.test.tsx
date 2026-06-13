@@ -45,4 +45,20 @@ describe('ModulationModule', () => {
     // the carrier-cycles control appears for non-1-D schemes
     expect(screen.getByLabelText(/Carrier cycles/i)).toBeInTheDocument();
   });
+
+  it('on the optimum-receiver tab, selecting Custom shows the editor and the dim≥3 min-distance panel', () => {
+    render(<ModulationModule />);
+    fireEvent.click(screen.getByRole('tab', { name: 'Optimum receiver' }));
+    const setSelect = screen.getByLabelText('Signal set') as HTMLSelectElement;
+    fireEvent.change(setSelect, { target: { value: 'custom' } });
+    // editor grid present (Example 7.1.1 → 4×3 cells)
+    expect(screen.getByLabelText('Signal 1 segment 1')).toBeInTheDocument();
+    expect(screen.getByLabelText('Signal 4 segment 3')).toBeInTheDocument();
+    // default preset has dim 3 → MinDistancePanel renders
+    expect(
+      screen.getByLabelText(/Distances from the received vector to each candidate/i),
+    ).toBeInTheDocument();
+    // carrier-cycles control is hidden for custom (basis comes from Gram-Schmidt)
+    expect(screen.queryByLabelText(/Carrier cycles/i)).not.toBeInTheDocument();
+  });
 });
