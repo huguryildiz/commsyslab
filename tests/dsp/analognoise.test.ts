@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { outputSnrDb, demodulationGainDb, fmThresholdCnrDb, emphasisGainDb, type AnalogScheme } from '@/lib/dsp/analognoise';
+import { outputSnrDb, demodulationGainDb, fmThresholdCnrDb, emphasisGainDb, addNoiseAtSnr, measuredSnrDb, type AnalogScheme } from '@/lib/dsp/analognoise';
+import { makeRng } from '@/lib/dsp/random';
 
 const p = { amIndex: 0.5, beta: 5, messagePower: 0.5, emphasis: false, W: 15000 };
 
@@ -43,5 +44,27 @@ describe('FM threshold & emphasis', () => {
   it('pre/de-emphasis provides a positive SNR gain that grows with beta', () => {
     expect(emphasisGainDb(2, 15000)).toBeGreaterThan(0);
     expect(emphasisGainDb(10, 15000)).toBeGreaterThan(emphasisGainDb(2, 15000));
+  });
+});
+
+describe('addNoiseAtSnr / measuredSnrDb', () => {
+  const ref = Float64Array.from({ length: 4096 }, (_, n) => Math.sin((2 * Math.PI * 5 * n) / 256));
+
+  it('measuredSnrDb of an identical signal is very high', () => {
+    expect(measuredSnrDb(ref, ref)).toBeGreaterThan(100);
+  });
+
+  it('addNoiseAtSnr produces a signal whose measured SNR ~ target', () => {
+    const rng = makeRng(7);
+    const noisy = addNoiseAtSnr(ref, 10, rng);
+    expect(noisy.length).toBe(ref.length);
+    expect(measuredSnrDb(noisy, ref)).toBeCloseTo(10, 0); // within ~1 dB at this length
+  });
+
+  it('higher target SNR yields higher measured SNR', () => {
+    const rng = makeRng(3);
+    expect(measuredSnrDb(addNoiseAtSnr(ref, 20, rng), ref)).toBeGreaterThan(
+      measuredSnrDb(addNoiseAtSnr(ref, 5, rng), ref),
+    );
   });
 });

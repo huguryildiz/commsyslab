@@ -1,6 +1,7 @@
 // Analog noise & SNR (Proakis & Salehi Ch 5). Pure, framework-free.
 // Verify exact FM/threshold/emphasis constants against refs/Book.pdf §5.3 (PDF ~256-260).
 import { amEfficiency } from './analog';
+import { gaussian } from './awgn';
 
 export type AnalogScheme = 'dsb' | 'ssb' | 'am' | 'fm';
 
@@ -54,4 +55,33 @@ export function emphasisGainDb(beta: number, _W: number): number {
  *  confirm the constant vs Proakis §5.3.1 (p. 245, eq. 5.3.27). */
 export function fmThresholdCnrDb(beta: number): number {
   return 10 * Math.log10(20 * (beta + 1));
+}
+
+function power(x: Float64Array): number {
+  let s = 0;
+  for (let i = 0; i < x.length; i++) s += x[i] * x[i];
+  return s / x.length;
+}
+
+/** Return reference + white Gaussian noise scaled so the SNR equals snrDb. */
+export function addNoiseAtSnr(reference: Float64Array, snrDb: number, rng: () => number): Float64Array {
+  const sigP = power(reference) || 1e-12;
+  const noiseP = sigP / 10 ** (snrDb / 10);
+  const sigma = Math.sqrt(noiseP);
+  const out = new Float64Array(reference.length);
+  for (let i = 0; i < reference.length; i++) out[i] = reference[i] + sigma * gaussian(rng);
+  return out;
+}
+
+/** Measured SNR (dB) of a noisy signal relative to its clean reference. */
+export function measuredSnrDb(noisy: Float64Array, reference: Float64Array): number {
+  let errP = 0;
+  for (let i = 0; i < reference.length; i++) {
+    const e = noisy[i] - reference[i];
+    errP += e * e;
+  }
+  errP /= reference.length;
+  const sigP = power(reference);
+  if (errP <= 0) return 999;
+  return 10 * Math.log10(sigP / errP);
 }
