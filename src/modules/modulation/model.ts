@@ -1,5 +1,7 @@
 import { makeConstellation, type Scheme, type Constellation } from '@/lib/dsp/modulation';
-import { theoreticalSer } from '@/lib/dsp/ser';
+import { theoreticalSer, unionBoundSer } from '@/lib/dsp/ser';
+import { gramSchmidt } from '@/lib/dsp/gram-schmidt';
+import { expandPiecewise, signalLabels, DEFAULT_CUSTOM_AMPLITUDES } from './custom-signals';
 import { n0FromEbN0Db, sigmaFromN0, gaussian, addAwgn } from '@/lib/dsp/awgn';
 import { mapThreshold1D, detectML } from '@/lib/dsp/detector';
 import {
@@ -156,7 +158,7 @@ export function buildModulationView(p: ModulationParams): ModulationView {
 
 // ── Optimum receiver (Proakis §7.5–7.6), generalized to N dimensions ──────────────
 
-export type OptRxKind = '1d' | '2d' | 'orthogonal';
+export type OptRxKind = '1d' | '2d' | 'orthogonal' | 'custom';
 
 export interface OptRxSignalSet {
   id: string;
@@ -179,6 +181,8 @@ export const OPT_RX_SIGNAL_SETS: OptRxSignalSet[] = [
   { id: 'qam16', labelKey: 'modulation.optrx.set.qam16', scheme: 'mqam', M: 16, kind: '2d' },
   { id: 'bfsk', labelKey: 'modulation.optrx.set.bfsk', scheme: 'bfsk', M: 2, kind: 'orthogonal' },
   { id: 'fsk4', labelKey: 'modulation.optrx.set.fsk4', scheme: 'mfsk', M: 4, kind: 'orthogonal' },
+  // Phase 3: user-defined waveforms → Gram-Schmidt. scheme/M are placeholders (GS derives them).
+  { id: 'custom', labelKey: 'modulation.optrx.set.custom', scheme: 'bpsk', M: 0, kind: 'custom' },
 ];
 
 export interface OptRxParams {
@@ -190,6 +194,8 @@ export interface OptRxParams {
   sps: number;
   /** Carrier cycles per symbol (2d/orthogonal); ignored for 1d. */
   cycles: number;
+  /** Phase 3 only: M×L piecewise-constant amplitudes for the custom Gram-Schmidt path. */
+  custom?: { amplitudes: number[][] };
 }
 
 export interface OptRxView {
@@ -209,6 +215,8 @@ export interface OptRxView {
   peakSnr: number; // 2E/N0 for the displayed symbol
   theoreticalPe: number;
   extent: number; // half-extent of the decision axis/plane (data units)
+  /** Custom path only: per-signal linear-dependence flags (length M). */
+  dependent?: boolean[];
 }
 
 /**
@@ -226,6 +234,7 @@ function buildBasis(set: OptRxSignalSet, sps: number, cycles: number): number[][
 /** Assemble the optimum-receiver view for a signal set. Pure. */
 export function buildOptRxView(p: OptRxParams): OptRxView {
   const set = OPT_RX_SIGNAL_SETS.find((s) => s.id === p.signalSetId) ?? OPT_RX_SIGNAL_SETS[0];
+  if (set.kind === 'custom') return buildCustomOptRxView(set, p);
   const c = makeConstellation(set.scheme, set.M);
   const eb = c.EsAvg / c.bitsPerSymbol;
   const n0 = n0FromEbN0Db(p.ebN0Db, eb);
@@ -281,6 +290,71 @@ export function buildOptRxView(p: OptRxParams): OptRxView {
     peakSnr: peakSnr(symbolEnergy, n0),
     theoreticalPe: theoreticalSer(set.scheme, set.M, p.ebN0Db),
     extent,
+  };
+}
+
+/** Build the optimum-receiver view for a user-defined signal set via Gram-Schmidt (§7.1). Pure. */
+function buildCustomOptRxView(set: OptRxSignalSet, p: OptRxParams): OptRxView {
+  const amplitudes = p.custom?.amplitudes ?? DEFAULT_CUSTOM_AMPLITUDES;
+  const signals = expandPiecewise(amplitudes, p.sps);
+  const gs = gramSchmidt(signals);
+  const M = signals.length;
+  const dim = gs.dim;
+
+  // Order ascending for the 1-D axis; otherwise keep signal order. Keep labels/dependent aligned.
+  let points = gs.coeffs;
+  let labels = signalLabels(M);
+  let dependent = gs.dependent;
+  const thresholds: number[] = [];
+  if (dim === 1) {
+    const order = points.map((_, i) => i).sort((a, b) => points[a][0] - points[b][0]);
+    points = order.map((i) => gs.coeffs[i]);
+    labels = order.map((i) => signalLabels(M)[i]);
+    dependent = order.map((i) => gs.dependent[i]);
+    for (let k = 0; k < points.length - 1; k++) {
+      thresholds.push((points[k][0] + points[k + 1][0]) / 2);
+    }
+  }
+
+  const EsAvg = gs.energies.reduce((s, e) => s + e, 0) / Math.max(M, 1);
+  const bitsPerSymbol = Math.log2(Math.max(M, 2));
+  const eb = EsAvg / bitsPerSymbol;
+  const n0 = n0FromEbN0Db(p.ebN0Db, eb);
+  const sigmaW = sigmaFromN0(n0);
+
+  const idx = Math.min(Math.max(p.symbolIndex, 0), Math.max(points.length - 1, 0));
+  const coords = points[idx] ?? [];
+  const symbolWaveform = new Array<number>(p.sps).fill(0);
+  for (let k = 0; k < dim; k++) {
+    const ck = coords[k] ?? 0;
+    for (let n = 0; n < p.sps; n++) symbolWaveform[n] += ck * gs.basis[k][n];
+  }
+  const symbolEnergy = pulseEnergy(symbolWaveform);
+
+  const maxCoord = points.reduce(
+    (m, q) => Math.max(m, ...q.map((v) => Math.abs(v))),
+    Math.sqrt(Math.max(eb, 1e-6)),
+  );
+  const extent = maxCoord + 3.5 * sigmaW;
+
+  return {
+    signalSet: set,
+    kind: 'custom',
+    M,
+    dim,
+    points,
+    labels,
+    basis: gs.basis,
+    symbolWaveform,
+    thresholds,
+    eb,
+    n0,
+    sigmaW,
+    symbolEnergy,
+    peakSnr: peakSnr(symbolEnergy, n0),
+    theoreticalPe: unionBoundSer(points, n0),
+    extent,
+    dependent,
   };
 }
 
