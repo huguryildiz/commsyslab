@@ -3,6 +3,7 @@ import { HashRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { t } from '@/i18n';
 import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
+import { SamplingModule } from '@/modules/sampling/SamplingModule';
 import './theme/global.css';
 import './components/components.css';
 import './pages/pages.css';
@@ -43,7 +44,7 @@ export default function App() {
         <main className="app__main">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/sampling" element={<ModulePlaceholder title={t('nav.sampling')} />} />
+            <Route path="/sampling" element={<SamplingModule />} />
             <Route
               path="/modulation"
               element={<ModulePlaceholder title={t('nav.modulation')} />}
