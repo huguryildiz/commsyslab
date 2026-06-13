@@ -1,0 +1,18 @@
+export const analognoise: Record<string, string> = {
+  'nav.analogNoise': 'Analog Noise & SNR',
+  'an.title': 'Analog Noise & SNR',
+  'an.subtitle': 'Output SNR, demodulation gain, FM threshold, and pre/de-emphasis — Proakis Ch 5',
+  'an.gen.title': 'Channel scenario',
+  'an.gen.scheme': 'Modulation',
+  'an.gen.scheme.dsb': 'DSB-SC',
+  'an.gen.scheme.ssb': 'SSB',
+  'an.gen.scheme.am': 'Conventional AM',
+  'an.gen.scheme.fm': 'FM',
+  'an.gen.cnr': 'Channel CNR (dB)',
+  'an.gen.amIndex': 'AM index a',
+  'an.gen.beta': 'FM β',
+  'an.gen.emphasis': 'Pre/de-emphasis',
+  'an.demod.title': 'Channel & demodulated output (§5.1/§5.3)',
+  'an.compare.title': 'Output SNR vs CNR — comparison (§5.4)',
+  'an.threshold.title': 'FM threshold & pre/de-emphasis (§5.3)',
+};
