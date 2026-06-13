@@ -102,7 +102,7 @@ export const LANDING_MODULES: LandingModule[] = [
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
     route: '/baseband',
-    status: 'live',
+    status: 'soon',
     area: 'base',
   },
   {
