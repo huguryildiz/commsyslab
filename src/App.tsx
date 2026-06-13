@@ -4,6 +4,7 @@ import { t } from '@/i18n';
 import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
 import { SamplingModule } from '@/modules/sampling/SamplingModule';
+import { ModulationModule } from '@/modules/modulation/ModulationModule';
 import './theme/global.css';
 import './components/components.css';
 import './pages/pages.css';
@@ -45,10 +46,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/sampling" element={<SamplingModule />} />
-            <Route
-              path="/modulation"
-              element={<ModulePlaceholder title={t('nav.modulation')} />}
-            />
+            <Route path="/modulation" element={<ModulationModule />} />
             <Route path="/baseband" element={<ModulePlaceholder title={t('nav.baseband')} />} />
             <Route path="/huffman" element={<ModulePlaceholder title={t('nav.huffman')} />} />
             <Route
