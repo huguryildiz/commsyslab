@@ -1,11 +1,10 @@
 /**
- * Landing module map — single source of truth for bento grid, signal chain, and routing.
- * Follows the communication chain order:
- * source → sampling → source coding → modulation → channel → detection → sink.
+ * Landing module map — single source of truth for the landing cards, the /start launcher,
+ * and the top-bar module menu. Ordered by book chapter (Proakis & Salehi); see the `num`
+ * field and `docs/book-reference.md`.
  */
 export type ModuleStatus = 'live' | 'soon';
 export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse' | 'fourier' | 'amfm';
-export type BentoArea = 'mod' | 'rp' | 'samp' | 'info' | 'base' | 'e2e' | 'four' | 'anal';
 
 export interface LandingModule {
   id: string;
@@ -15,7 +14,6 @@ export interface LandingModule {
   chapter: string;
   route: string;
   status: ModuleStatus;
-  area: BentoArea;
   viz?: VizKind;
   flagship?: boolean;
   /** Compact live tile: description hidden, viz fills bottom half. */
@@ -31,7 +29,6 @@ export const LANDING_MODULES: LandingModule[] = [
     chapter: 'CH 2',
     route: '/fourier',
     status: 'live',
-    area: 'four',
     viz: 'fourier',
     compact: true,
   },
@@ -43,7 +40,6 @@ export const LANDING_MODULES: LandingModule[] = [
     chapter: 'CH 3',
     route: '/analog',
     status: 'live',
-    area: 'anal',
     viz: 'amfm',
     compact: true,
   },
@@ -55,21 +51,8 @@ export const LANDING_MODULES: LandingModule[] = [
     chapter: 'CH 4',
     route: '/random-process',
     status: 'live',
-    area: 'rp',
     viz: 'sampling',
     compact: true,
-  },
-  {
-    id: 'modulation',
-    num: '06',
-    titleKey: 'landing.mod.modulation.title',
-    descKey: 'landing.mod.modulation.desc',
-    chapter: 'CH 7',
-    route: '/modulation',
-    status: 'live',
-    area: 'mod',
-    viz: 'constellation',
-    flagship: true,
   },
   {
     id: 'sampling',
@@ -79,41 +62,59 @@ export const LANDING_MODULES: LandingModule[] = [
     chapter: 'CH 4·6',
     route: '/sampling',
     status: 'live',
-    area: 'samp',
     viz: 'sampling',
     compact: true,
   },
   {
-    id: 'infotheory',
+    id: 'analog-noise',
     num: '05',
+    titleKey: 'an.title',
+    descKey: 'an.subtitle',
+    chapter: 'CH 5',
+    route: '/analog-noise',
+    status: 'live',
+    viz: 'amfm',
+    compact: true,
+  },
+  {
+    id: 'infotheory',
+    num: '06',
     titleKey: 'landing.mod.infotheory.title',
     descKey: 'landing.mod.infotheory.desc',
     chapter: 'CH 6',
     route: '/information-theory',
     status: 'live',
-    area: 'info',
     viz: 'entropy',
     compact: true,
   },
   {
-    id: 'baseband',
+    id: 'modulation',
     num: '07',
+    titleKey: 'landing.mod.modulation.title',
+    descKey: 'landing.mod.modulation.desc',
+    chapter: 'CH 7',
+    route: '/modulation',
+    status: 'live',
+    viz: 'constellation',
+    flagship: true,
+  },
+  {
+    id: 'baseband',
+    num: '08',
     titleKey: 'landing.mod.baseband.title',
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
     route: '/baseband',
     status: 'soon',
-    area: 'base',
   },
   {
     id: 'end-to-end',
-    num: '08',
+    num: '09',
     titleKey: 'landing.mod.e2e.title',
     descKey: 'landing.mod.e2e.desc',
     chapter: 'All',
     route: '/end-to-end',
     status: 'soon',
-    area: 'e2e',
     viz: 'linkpulse',
   },
 ];
