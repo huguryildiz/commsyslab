@@ -1,6 +1,7 @@
 // Random-process DSP (Proakis & Salehi §4.2–4.4). Pure, framework-free.
 
 import { gaussian, sigmaFromN0 } from './awgn';
+import { fft, ifft } from './fft';
 
 /** Deterministic small PRNG (mulberry32). Returns a function yielding [0,1). */
 export function makeRng(seed: number): () => number {
@@ -74,11 +75,56 @@ export function generateEnsemble(p: ProcessParams): Float64Array[] {
   }
 }
 
-// Temporary stubs (implemented in Task 3)
-function genColored(p: ProcessParams, rng: () => number): Float64Array[] {
-  return genWhite(p, rng);
+/** One-pole RC low-pass applied sample-by-sample: y[n] = α x[n] + (1-α) y[n-1]. */
+function rcSmooth(x: Float64Array, fc: number, fs: number): Float64Array {
+  const dt = 1 / fs;
+  const rc = 1 / (2 * Math.PI * fc);
+  const alpha = dt / (rc + dt);
+  const y = new Float64Array(x.length);
+  let prev = 0;
+  for (let n = 0; n < x.length; n++) {
+    prev = prev + alpha * (x[n] - prev);
+    y[n] = prev;
+  }
+  return y;
 }
 
+/** Ideal LPF via FFT brick-wall mask at ±fc. */
+function idealLpf(x: Float64Array, fc: number, fs: number): Float64Array {
+  const N = x.length;
+  const X = fft(Array.from(x));
+  const out = X.map((c, k) => {
+    const f = k <= N / 2 ? (k * fs) / N : ((k - N) * fs) / N;
+    return Math.abs(f) <= fc ? c : { re: 0, im: 0 };
+  });
+  return Float64Array.from(ifft(out).map((c) => c.re));
+}
+
+function genColored(p: ProcessParams, rng: () => number): Float64Array[] {
+  const white = genWhite(p, rng);
+  return white.map((x) =>
+    p.filterKind === 'ideal-lpf' ? idealLpf(x, p.cutoff, p.fs) : rcSmooth(x, p.cutoff, p.fs),
+  );
+}
+
+/** Random ±A NRZ with a uniform start delay so the process is WSS (Proakis §4.2). */
 function genNrz(p: ProcessParams, rng: () => number): Float64Array[] {
-  return genWhite(p, rng);
+  const samplesPerSymbol = Math.max(1, Math.round(p.fs / p.f0)); // T = 1/f0
+  const out: Float64Array[] = [];
+  for (let m = 0; m < p.M; m++) {
+    const x = new Float64Array(p.N);
+    const delay = Math.floor(rng() * samplesPerSymbol); // D ~ U[0,T)
+    let level = rng() < 0.5 ? p.amplitude : -p.amplitude;
+    let count = delay;
+    for (let n = 0; n < p.N; n++) {
+      if (count >= samplesPerSymbol) {
+        level = rng() < 0.5 ? p.amplitude : -p.amplitude;
+        count = 0;
+      }
+      x[n] = level;
+      count++;
+    }
+    out.push(x);
+  }
+  return out;
 }

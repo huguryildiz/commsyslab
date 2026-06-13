@@ -69,3 +69,17 @@ describe('generateEnsemble', () => {
     expect(variance(e[0])).toBeGreaterThan(0);
   });
 });
+
+describe('colored & nrz generators', () => {
+  it('colored noise is lower-power than its white input variance (LPF removes power)', () => {
+    const white = generateEnsemble({ ...base, kind: 'white-gaussian', N: 4096 });
+    const colored = generateEnsemble({ ...base, kind: 'colored', cutoff: 10, N: 4096 });
+    expect(variance(colored[0])).toBeLessThan(variance(white[0]));
+  });
+
+  it('binary NRZ takes only ±A values', () => {
+    const e = generateEnsemble({ ...base, kind: 'binary-nrz', amplitude: 1, f0: 10, N: 512 });
+    const vals = new Set(Array.from(e[0]).map((v) => Math.round(v * 1000) / 1000));
+    for (const v of vals) expect([1, -1]).toContain(v);
+  });
+});
