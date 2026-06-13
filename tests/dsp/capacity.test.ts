@@ -5,6 +5,9 @@ import {
   gaussianCapacity,
   snrDbToLinear,
   becCapacity,
+  bscTransition,
+  becTransition,
+  mutualInformation,
 } from '@/lib/dsp/capacity';
 
 describe('bscCapacity = 1 − H_b(ε)', () => {
@@ -47,5 +50,34 @@ describe('becCapacity = 1 − p (binary erasure channel, Problem 9.2)', () => {
     expect(becCapacity(0)).toBeCloseTo(1, 12);
     expect(becCapacity(1)).toBeCloseTo(0, 12);
     expect(becCapacity(0.2)).toBeCloseTo(0.8, 12);
+  });
+});
+
+describe('mutualInformation I(X;Y) = H(Y) − H(Y|X) (Eq. 9.2.5)', () => {
+  it('equals BSC capacity at a uniform input', () => {
+    for (const eps of [0.05, 0.1, 0.25]) {
+      const I = mutualInformation([0.5, 0.5], bscTransition(eps));
+      expect(I).toBeCloseTo(bscCapacity(eps), 10);
+    }
+  });
+  it('equals 1 − p for the BEC at a uniform input', () => {
+    expect(mutualInformation([0.5, 0.5], becTransition(0.2))).toBeCloseTo(0.8, 10);
+  });
+  it('is 0 for a deterministic input', () => {
+    expect(mutualInformation([1, 0], bscTransition(0.1))).toBeCloseTo(0, 12);
+  });
+  it('is maximized at P(X=0)=0.5 for the BSC', () => {
+    const P = bscTransition(0.1);
+    let best = 0;
+    let bestVal = -1;
+    for (let i = 0; i <= 100; i++) {
+      const a = i / 100;
+      const v = mutualInformation([a, 1 - a], P);
+      if (v > bestVal) {
+        bestVal = v;
+        best = a;
+      }
+    }
+    expect(best).toBeCloseTo(0.5, 2);
   });
 });
