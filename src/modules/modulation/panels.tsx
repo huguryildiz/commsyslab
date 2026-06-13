@@ -12,21 +12,22 @@ import {
   type Axes,
 } from '@/lib/plot/draw';
 import { detectML, detectMAP } from '@/lib/dsp/detector';
+import { CHART, alpha } from '@/lib/plot/colors';
 import type { ModulationView, Pt2 } from './model';
 
 const COL = {
-  axis: 'rgba(154,167,180,0.5)',
-  point: '#4aa3ff',
-  label: '#cdd6e0',
-  cloud: 'rgba(74,163,255,0.35)',
-  cloudErr: 'rgba(255,92,92,0.6)',
-  dmin: 'rgba(255,180,84,0.9)',
-  ml: '#46c93a',
-  map: '#ff7c7c',
-  theory: '#4aa3ff',
-  sim: '#ffb454',
-  live: '#46c93a',
-  marker: 'rgba(255,92,92,0.8)',
+  axis: alpha(CHART.dim, 0.5),
+  point: CHART.blue,
+  label: CHART.text,
+  cloud: alpha(CHART.blue, 0.35),
+  cloudErr: alpha(CHART.red, 0.6),
+  dmin: alpha(CHART.orange, 0.9),
+  ml: CHART.green,
+  map: CHART.red,
+  theory: CHART.blue,
+  sim: CHART.orange,
+  live: CHART.green,
+  marker: alpha(CHART.red, 0.8),
 };
 
 const PAD = { l: 34, r: 12, t: 12, b: 24 };
@@ -220,9 +221,9 @@ export function BitmapView({
       draw={(ctx, w, h) => {
         const cw = w / width;
         const ch = h / height;
-        ctx.fillStyle = '#0b0e13';
+        ctx.fillStyle = CHART.bgDeep;
         ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#cdd6e0';
+        ctx.fillStyle = CHART.text;
         for (let r = 0; r < height; r++) {
           for (let col = 0; col < width; col++) {
             if (bits[r * width + col]) ctx.fillRect(col * cw, r * ch, cw + 0.5, ch + 0.5);

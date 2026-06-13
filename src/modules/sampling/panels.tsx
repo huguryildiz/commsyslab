@@ -13,19 +13,20 @@ import { levelValues } from '@/lib/dsp/quantize';
 import type { SamplingView } from './model';
 import type { Tone } from '@/lib/dsp/signals';
 import type { QuantizerType } from '@/lib/dsp/quantize';
+import { CHART, alpha } from '@/lib/plot/colors';
 
 const COL = {
-  analog: '#4aa3ff',
-  sample: '#ffb454',
-  recon: '#9aa7b4',
-  quant: '#46c93a',
-  level: 'rgba(154,167,180,0.25)',
-  error: '#ff7c7c',
-  base: '#4aa3ff',
-  replica: 'rgba(154,167,180,0.5)',
-  alias: 'rgba(255,92,92,0.22)',
-  marker: 'rgba(255,92,92,0.8)',
-  cursor: 'rgba(255,180,84,0.9)',
+  analog: CHART.blue,
+  sample: CHART.orange,
+  recon: CHART.dim,
+  quant: CHART.green,
+  level: alpha(CHART.dim, 0.25),
+  error: CHART.red,
+  base: CHART.blue,
+  replica: alpha(CHART.dim, 0.5),
+  alias: alpha(CHART.red, 0.22),
+  marker: alpha(CHART.red, 0.8),
+  cursor: alpha(CHART.orange, 0.9),
 };
 
 const PAD = { l: 8, r: 8, t: 10, b: 10 };

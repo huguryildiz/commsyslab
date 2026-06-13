@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Panel, NumberInput, Readout, Formula, TheoryBox } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawText } from '@/lib/plot/draw';
+import { CHART } from '@/lib/plot/colors';
 import { entropy, maxEntropy, selfInfo, binaryEntropy } from '@/lib/dsp/entropy';
 import { t } from '@/i18n';
 
@@ -71,10 +72,10 @@ export function EntropySection() {
               for (let i = 0; i < n; i++) {
                 const x0 = ax.x(i + 0.15);
                 const x1 = ax.x(i + 0.85);
-                ctx.fillStyle = '#4aa3ff';
+                ctx.fillStyle = CHART.blue;
                 ctx.fillRect(x0, ax.y(norm[i]), x1 - x0, ax.y(0) - ax.y(norm[i]));
-                drawText(ctx, ax, i + 0.5, -0.04, `s${i}`, '#9aa7b4', -6, 12);
-                drawText(ctx, ax, i + 0.5, norm[i], `I=${selfInfo(norm[i]).toFixed(1)}`, '#cdd6e0', -14, -6);
+                drawText(ctx, ax, i + 0.5, -0.04, `s${i}`, CHART.dim, -6, 12);
+                drawText(ctx, ax, i + 0.5, norm[i], `I=${selfInfo(norm[i]).toFixed(1)}`, CHART.text, -14, -6);
               }
             }}
           />
@@ -95,10 +96,10 @@ export function EntropySection() {
                 xs.push(p);
                 ys.push(binaryEntropy(p));
               }
-              drawLine(ctx, ax, xs, ys, '#46c93a', 2);
+              drawLine(ctx, ax, xs, ys, CHART.green, 2);
               if (norm.length === 2) {
                 const p = norm[0];
-                drawText(ctx, ax, p, binaryEntropy(p), '●', '#ffb454', -4, -2);
+                drawText(ctx, ax, p, binaryEntropy(p), '●', CHART.orange, -4, -2);
               }
             }}
           />

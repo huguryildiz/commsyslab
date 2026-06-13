@@ -1,6 +1,7 @@
 import { Panel, Slider, Readout, Formula, TheoryBox } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, drawScatter } from '@/lib/plot/draw';
+import { CHART, alpha } from '@/lib/plot/colors';
 import { bscCapacity, shannonCapacity, snrDbToLinear } from '@/lib/dsp/capacity';
 import { binaryEntropy } from '@/lib/dsp/entropy';
 import { useState } from 'react';
@@ -42,9 +43,9 @@ export function CapacitySection() {
                 xs.push(i / 100);
                 ys.push(bscCapacity(i / 100));
               }
-              drawLine(ctx, ax, xs, ys, '#4aa3ff', 2);
-              drawVLine(ctx, ax, eps, 0, 1.05, 'rgba(255,180,84,0.9)', true, 1.5);
-              drawScatter(ctx, ax, [eps], [bscCapacity(eps)], '#ffb454', 4);
+              drawLine(ctx, ax, xs, ys, CHART.blue, 2);
+              drawVLine(ctx, ax, eps, 0, 1.05, alpha(CHART.orange, 0.9), true, 1.5);
+              drawScatter(ctx, ax, [eps], [bscCapacity(eps)], CHART.orange, 4);
             }}
           />
         </Panel>
@@ -63,9 +64,9 @@ export function CapacitySection() {
                 xs.push(d);
                 ys.push(shannonCapacity(bw, snrDbToLinear(d)));
               }
-              drawLine(ctx, ax, xs, ys, '#46c93a', 2);
-              drawVLine(ctx, ax, snrDb, 0, cMax, 'rgba(255,180,84,0.9)', true, 1.5);
-              drawScatter(ctx, ax, [snrDb], [shannonCapacity(bw, snr)], '#ffb454', 4);
+              drawLine(ctx, ax, xs, ys, CHART.green, 2);
+              drawVLine(ctx, ax, snrDb, 0, cMax, alpha(CHART.orange, 0.9), true, 1.5);
+              drawScatter(ctx, ax, [snrDb], [shannonCapacity(bw, snr)], CHART.orange, 4);
             }}
           />
         </Panel>
