@@ -5,6 +5,7 @@ import { Home } from '@/pages/Home';
 import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
 import { SamplingModule } from '@/modules/sampling/SamplingModule';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
+import { BasebandModule } from '@/modules/baseband/BasebandModule';
 import { InfoTheoryModule } from '@/modules/infotheory/InfoTheoryModule';
 import './theme/global.css';
 import './components/components.css';
@@ -48,7 +49,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/sampling" element={<SamplingModule />} />
             <Route path="/modulation" element={<ModulationModule />} />
-            <Route path="/baseband" element={<ModulePlaceholder title={t('nav.baseband')} />} />
+            <Route path="/baseband" element={<BasebandModule />} />
             <Route path="/information-theory" element={<InfoTheoryModule />} />
             <Route
               path="/end-to-end"
