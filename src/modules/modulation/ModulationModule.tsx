@@ -62,11 +62,33 @@ export function ModulationModule() {
   const cloudRef = useRef<CloudPt[]>([]);
   const rngRef = useRef(makeRng(12345));
 
+  // Clear accumulated live/sweep results so visuals never mix data from a
+  // previous constellation or decision rule.
+  const resetResults = () => {
+    setSimPoints([]);
+    setCloud([]);
+    setArrow(undefined);
+    setLiveSer(null);
+    cloudRef.current = [];
+    errRef.current = 0;
+    totRef.current = 0;
+  };
+
   const handleScheme = (s: Scheme) => {
     setScheme(s);
     const opts = M_OPTIONS[s];
     if (!opts.includes(M)) setM(opts[0]);
-    setSimPoints([]);
+    resetResults();
+  };
+
+  const handleM = (m: number) => {
+    setM(m);
+    resetResults();
+  };
+
+  const handleDecision = (d: Decision) => {
+    setDecision(d);
+    resetResults();
   };
 
   const view = useMemo(
@@ -173,10 +195,7 @@ export function ModulationModule() {
           <Select<string>
             label={t('modulation.M')}
             value={String(M)}
-            onChange={(v) => {
-              setM(Number(v));
-              setSimPoints([]);
-            }}
+            onChange={(v) => handleM(Number(v))}
             options={M_OPTIONS[scheme].map((m) => ({ value: String(m), label: String(m) }))}
           />
           <Slider
@@ -199,7 +218,7 @@ export function ModulationModule() {
           <Select<Decision>
             label={t('modulation.decision')}
             value={decision}
-            onChange={setDecision}
+            onChange={handleDecision}
             options={[
               { value: 'ml', label: t('modulation.decision.ml') },
               { value: 'map', label: t('modulation.decision.map') },
