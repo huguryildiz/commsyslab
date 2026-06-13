@@ -1,0 +1,44 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.app__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.app__brand {
+  font-weight: 700;
+  margin-right: var(--space-3);
+}
+.app__nav a {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.app__nav a.active {
+  color: var(--accent);
+}
+.app__spacer {
+  flex: 1;
+}
+.app__main {
+  flex: 1;
+  padding: var(--space-3);
+}
+.module-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-3);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+@media (max-width: 820px) {
+  .module-layout {
+    grid-template-columns: 1fr;
+  }
+}
