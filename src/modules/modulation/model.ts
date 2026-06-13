@@ -10,6 +10,7 @@ import {
   peakSnr,
 } from '@/lib/dsp/matchedfilter';
 import { linspace } from '@/lib/dsp/math';
+import { quadratureBasis } from '@/lib/dsp/carrierbasis';
 
 export type Decision = 'ml' | 'map';
 
@@ -173,6 +174,9 @@ export const OPT_RX_SIGNAL_SETS: OptRxSignalSet[] = [
   { id: 'binary', labelKey: 'modulation.optrx.set.binary', scheme: 'bpsk', M: 2, kind: '1d' },
   { id: 'pam4', labelKey: 'modulation.optrx.set.pam4', scheme: 'mask', M: 4, kind: '1d' },
   { id: 'pam8', labelKey: 'modulation.optrx.set.pam8', scheme: 'mask', M: 8, kind: '1d' },
+  { id: 'qpsk', labelKey: 'modulation.optrx.set.qpsk', scheme: 'mpsk', M: 4, kind: '2d' },
+  { id: 'psk8', labelKey: 'modulation.optrx.set.psk8', scheme: 'mpsk', M: 8, kind: '2d' },
+  { id: 'qam16', labelKey: 'modulation.optrx.set.qam16', scheme: 'mqam', M: 16, kind: '2d' },
 ];
 
 export interface OptRxParams {
@@ -207,11 +211,11 @@ export interface OptRxView {
 
 /**
  * Synthesize the orthonormal basis waveforms for a signal set.
- * - 1d: a single unit-energy rectangular pulse φ[n]=1/√sps.
- * (2d quadrature and orthogonal FSK bases are added in later tasks.)
+ * - 2d: quadrature carrier φ₁=cos, φ₂=sin (Proakis §7.3).
+ * - 1d (and any not-yet-implemented kind): single unit-energy rectangular pulse.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function buildBasis(_set: OptRxSignalSet, sps: number, _cycles: number): number[][] {
+function buildBasis(set: OptRxSignalSet, sps: number, cycles: number): number[][] {
+  if (set.kind === '2d') return quadratureBasis(sps, cycles);
   return [new Array<number>(sps).fill(1 / Math.sqrt(sps))];
 }
 

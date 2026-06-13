@@ -1,6 +1,17 @@
 import { Canvas } from '@/lib/plot/Canvas';
-import { linScale, drawLine, drawScatter, drawVLine, drawText, type Axes } from '@/lib/plot/draw';
+import {
+  linScale,
+  drawLine,
+  drawScatter,
+  drawVLine,
+  drawText,
+  drawArrow,
+  drawRegions,
+  regionColors,
+  type Axes,
+} from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
+import { detectML } from '@/lib/dsp/detector';
 import { t } from '@/i18n';
 import type { OptRxView, OptRxReception } from './model';
 
@@ -134,6 +145,40 @@ export function DecisionAxisPanel({
           6,
           12,
         );
+      }}
+    />
+  );
+}
+
+/** (c-2d) Signal-space constellation with decision regions and the received point (r₁,r₂). */
+export function ConstellationLandingPanel({
+  view,
+  reception,
+}: {
+  view: OptRxView;
+  reception: OptRxReception;
+}) {
+  const e = view.extent;
+  const colors = regionColors(view.M);
+  const correct = reception.decided === reception.txIndex;
+  const rx = reception.statistic;
+  const ideal = view.points[reception.txIndex];
+  return (
+    <Canvas
+      height={320}
+      ariaLabel="Constellation with decision regions and the received point"
+      deps={[view, reception]}
+      draw={(ctx, w, h) => {
+        const ax = axesFor(w, h, [-e, e], [-e, e]);
+        drawRegions(ctx, ax, [-e, e], [-e, e], (x, y) => detectML([x, y], view.points), colors, 72);
+        drawLine(ctx, ax, [-e, e], [0, 0], COL.axis, 1);
+        drawLine(ctx, ax, [0, 0], [-e, e], COL.axis, 1);
+        for (let k = 0; k < view.points.length; k++) {
+          drawScatter(ctx, ax, [view.points[k][0]], [view.points[k][1]], COL.point, 4.5);
+          drawText(ctx, ax, view.points[k][0], view.points[k][1], view.labels[k], COL.label, 6, -6);
+        }
+        drawArrow(ctx, ax, ideal[0], ideal[1], rx[0], rx[1], correct ? COL.sample : COL.err, 1.5);
+        drawScatter(ctx, ax, [rx[0]], [rx[1]], correct ? COL.sample : COL.err, 5.5);
       }}
     />
   );

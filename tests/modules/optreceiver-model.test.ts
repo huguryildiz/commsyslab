@@ -100,3 +100,48 @@ describe('monteCarloPe', () => {
     expect(peHi).toBeLessThan(peLo);
   });
 });
+
+describe('buildOptRxView (2-D PSK/QAM)', () => {
+  it('QPSK: kind 2d, dim 2, 4 points, two orthonormal carrier basis', () => {
+    const v = buildOptRxView({
+      signalSetId: 'qpsk',
+      ebN0Db: 8,
+      symbolIndex: 0,
+      sps: 64,
+      cycles: 4,
+    });
+    expect(v.kind).toBe('2d');
+    expect(v.dim).toBe(2);
+    expect(v.M).toBe(4);
+    expect(v.points).toHaveLength(4);
+    expect(v.points[0]).toHaveLength(2);
+    expect(v.thresholds).toHaveLength(0);
+    const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0);
+    expect(dot(v.basis[0], v.basis[0])).toBeCloseTo(1, 9);
+    expect(dot(v.basis[0], v.basis[1])).toBeCloseTo(0, 9);
+  });
+
+  it('QPSK reception: 2-component statistic, correct decision at high SNR', () => {
+    const v = buildOptRxView({
+      signalSetId: 'qpsk',
+      ebN0Db: 40,
+      symbolIndex: 2,
+      sps: 64,
+      cycles: 4,
+    });
+    const rx = simulateReception(v, 2, makeRng(7));
+    expect(rx.statistic).toHaveLength(2);
+    expect(rx.branchMf).toBeNull();
+    expect(rx.decided).toBe(2);
+  });
+
+  it('16-QAM: kind 2d, 16 points; Monte-Carlo Pe drops with Eb/N0', () => {
+    const lo = buildOptRxView({ signalSetId: 'qam16', ebN0Db: 4, symbolIndex: 0, sps: 64, cycles: 4 });
+    const hi = buildOptRxView({ signalSetId: 'qam16', ebN0Db: 16, symbolIndex: 0, sps: 64, cycles: 4 });
+    expect(lo.M).toBe(16);
+    expect(lo.kind).toBe('2d');
+    const peLo = monteCarloPe(lo, 4000, makeRng(2)).errors;
+    const peHi = monteCarloPe(hi, 4000, makeRng(2)).errors;
+    expect(peHi).toBeLessThan(peLo);
+  });
+});

@@ -4,7 +4,12 @@ import { t } from '@/i18n';
 import { makeRng } from '@/lib/sim/sources';
 import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import { OPT_RX_SIGNAL_SETS, buildOptRxView, simulateReception, monteCarloPe } from './model';
-import { WaveformPanel, DemodPanel, DecisionAxisPanel } from './optreceiver-panels';
+import {
+  WaveformPanel,
+  DemodPanel,
+  DecisionAxisPanel,
+  ConstellationLandingPanel,
+} from './optreceiver-panels';
 
 const SPS = 64;
 const BATCH = 200;
@@ -63,6 +68,11 @@ export function OptimumReceiverSection() {
     view.kind === '1d'
       ? reception.statistic[0].toFixed(3)
       : `(${reception.statistic.map((s) => s.toFixed(2)).join(', ')})`;
+
+  const decisionTitle =
+    view.kind === '2d'
+      ? t('modulation.optrx.panel.landing')
+      : t('modulation.optrx.panel.decision');
 
   return (
     <div className="module-layout">
@@ -139,8 +149,9 @@ export function OptimumReceiverSection() {
           </Panel>
         </div>
 
-        <Panel title={t('modulation.optrx.panel.decision')}>
+        <Panel title={decisionTitle}>
           {view.kind === '1d' && <DecisionAxisPanel view={view} reception={reception} />}
+          {view.kind === '2d' && <ConstellationLandingPanel view={view} reception={reception} />}
         </Panel>
 
         <TheoryBox title={t('modulation.optrx.theory.title')}>
