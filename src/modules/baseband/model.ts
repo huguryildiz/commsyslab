@@ -8,7 +8,7 @@ import {
   type PulseKind,
 } from '@/lib/dsp/pulse';
 import { matchedFilter, matchedFilterOutput, correlate, pulseEnergy, peakSnr, convolve } from '@/lib/dsp/matchedfilter';
-import { sigmaFromN0 } from '@/lib/dsp/awgn';
+import { sigmaFromN0, gaussian } from '@/lib/dsp/awgn';
 import { makeRng } from '@/lib/sim/sources';
 import { eyeTraces, eyeMetrics, type EyeTrace } from '@/lib/dsp/eye';
 import { zeroForcingTaps, mmseTaps, residualIsi } from '@/lib/dsp/equalizer';
@@ -80,7 +80,7 @@ export function buildReceiverView(p: ReceiverParams): ReceiverView {
   if (p.noise) {
     const sigma = sigmaFromN0(p.n0);
     const rng = makeRng(7);
-    received = received.map((v) => v + sigma * (rng() - 0.5) * 2);
+    received = received.map((v) => v + sigma * gaussian(rng));
   }
   const mfOutput = matchedFilterOutput(received, pulse);
   const energy = pulseEnergy(pulse);
