@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { bscCapacity, shannonCapacity, gaussianCapacity, snrDbToLinear } from '@/lib/dsp/capacity';
+import {
+  bscCapacity,
+  shannonCapacity,
+  gaussianCapacity,
+  snrDbToLinear,
+  becCapacity,
+} from '@/lib/dsp/capacity';
 
 describe('bscCapacity = 1 − H_b(ε)', () => {
   it('is 1 at ε=0 and ε=1, and 0 at ε=0.5 (book Fig. 9.7)', () => {
@@ -33,5 +39,13 @@ describe('snrDbToLinear', () => {
     expect(snrDbToLinear(0)).toBeCloseTo(1, 10);
     expect(snrDbToLinear(10)).toBeCloseTo(10, 10);
     expect(snrDbToLinear(20)).toBeCloseTo(100, 10);
+  });
+});
+
+describe('becCapacity = 1 − p (binary erasure channel, Problem 9.2)', () => {
+  it('is 1 with no erasures and 0 with certain erasure', () => {
+    expect(becCapacity(0)).toBeCloseTo(1, 12);
+    expect(becCapacity(1)).toBeCloseTo(0, 12);
+    expect(becCapacity(0.2)).toBeCloseTo(0.8, 12);
   });
 });

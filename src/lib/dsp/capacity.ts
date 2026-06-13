@@ -21,3 +21,9 @@ export function gaussianCapacity(P: number, Pn: number): number {
 export function snrDbToLinear(db: number): number {
   return 10 ** (db / 10);
 }
+
+// Ref: Proakis & Salehi §9.2, Problem 9.2 — binary erasure channel.
+/** Capacity of a binary erasure channel with erasure probability p: C = 1 − p. */
+export function becCapacity(p: number): number {
+  return 1 - p;
+}
