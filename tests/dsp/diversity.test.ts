@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { awgnBerAntipodal, rayleighBerAntipodal, rayleighBerOrthogonal } from '@/lib/dsp/diversity';
+import { awgnBerAntipodal, rayleighBerAntipodal, rayleighBerOrthogonal, mrcBerAntipodal } from '@/lib/dsp/diversity';
 import { qfunc } from '@/lib/dsp/math';
 
 describe('awgnBerAntipodal', () => {
@@ -31,5 +31,24 @@ describe('rayleighBerOrthogonal', () => {
     const g = 10 ** (6 / 10);
     expect(rayleighBerOrthogonal(6)).toBeCloseTo(0.5 * (1 - Math.sqrt(g / (2 + g))), 12);
     expect(rayleighBerOrthogonal(6)).toBeGreaterThan(rayleighBerAntipodal(6));
+  });
+});
+
+describe('mrcBerAntipodal', () => {
+  it('reduces to the single-branch Rayleigh form when L = 1', () => {
+    expect(mrcBerAntipodal(6, 1)).toBeCloseTo(rayleighBerAntipodal(6), 12);
+  });
+  it('improves (lowers BER) as the diversity order grows', () => {
+    const l1 = mrcBerAntipodal(10, 1);
+    const l2 = mrcBerAntipodal(10, 2);
+    const l4 = mrcBerAntipodal(10, 4);
+    expect(l2).toBeLessThan(l1);
+    expect(l4).toBeLessThan(l2);
+  });
+  it('matches the high-SNR diversity asymptote C(2L-1, L)/(4 γ̄)^L for L = 2', () => {
+    const g = 10 ** (25 / 10); // high SNR so the asymptote dominates
+    // L = 2: C(2L-1, L) = C(3, 2) = 3, so P_b ≈ 3 / (4 γ̄)^2
+    const expected = 3 / (4 * g) ** 2;
+    expect(mrcBerAntipodal(25, 2)).toBeCloseTo(expected, 6);
   });
 });
