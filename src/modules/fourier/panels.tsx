@@ -11,7 +11,6 @@ import type {
   SeriesSynthView,
   SpectrumAnalyzerView,
   FilterView,
-  PairsView,
   AnalyticView,
 } from './model';
 
@@ -190,49 +189,6 @@ export const FilterPlots: React.FC<{ data: FilterView }> = ({ data }) => {
         deps={[data]}
         draw={drawSpectrumComparison}
       />
-    </>
-  );
-};
-
-/** Panel 4: FT Pairs */
-export const PairsPlots: React.FC<{ data: PairsView }> = ({ data }) => {
-  const drawTime = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    ctx.clearRect(0, 0, w, h);
-
-    const tMin = Math.min(...data.timeDomain.t);
-    const tMax = Math.max(...data.timeDomain.t);
-    const xMin = Math.min(...data.timeDomain.x) - 0.1;
-    const xMax = Math.max(...data.timeDomain.x) + 0.1;
-
-    const ax: Axes = {
-      x: linScale([tMin, tMax], [PAD.l, w - PAD.r]),
-      y: linScale([xMin, xMax], [h - PAD.b, PAD.t]),
-    };
-
-    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t$', yLabel: '$x(t)$' });
-    drawLine(ctx, ax, data.timeDomain.t, data.timeDomain.x, CHART.green, 2);
-  };
-
-  const drawFreq = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    ctx.clearRect(0, 0, w, h);
-
-    const fMin = Math.min(...data.freqDomain.f);
-    const fMax = Math.max(...data.freqDomain.f);
-    const mMax = Math.max(...data.freqDomain.mag, 0.1) * 1.1;
-
-    const ax: Axes = {
-      x: linScale([fMin, fMax], [PAD.l, w - PAD.r]),
-      y: linScale([0, mMax], [h - PAD.b, PAD.t]),
-    };
-
-    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f$', yLabel: '$|X(f)|$' });
-    drawLine(ctx, ax, data.freqDomain.f, data.freqDomain.mag, CHART.blue, 1.5);
-  };
-
-  return (
-    <>
-      <Canvas height={160} ariaLabel="Time domain" deps={[data]} draw={drawTime} />
-      <Canvas height={160} ariaLabel="Frequency domain" deps={[data]} draw={drawFreq} />
     </>
   );
 };

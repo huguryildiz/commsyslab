@@ -175,40 +175,6 @@ export function buildFilter(
   };
 }
 
-/** Panel 4: FT Pairs & Properties */
-export interface PairsView {
-  timeDomain: { t: number[]; x: number[] };
-  freqDomain: { f: number[]; mag: number[] };
-}
-
-export function buildPairs(
-  kind: 'rect' | 'tri' | 'gauss',
-  param: number,
-  timeShift: number = 0,
-  ampScale: number = 1,
-): PairsView {
-  const pair = ftPair(kind, param);
-
-  // Time shift t₀ does not affect |X(f)| (only the phase), so the magnitude plot
-  // is unchanged; the time pulse slides. Proakis §2.2.2: x(t−t₀) ↔ X(f)e^{−j2πft₀}.
-  const freqShifted = pair.freq.mag.map((mag) => mag * ampScale);
-
-  // Slide the time pulse by t₀ via a circular roll of the sample array.
-  const t = pair.time.t;
-  const x = pair.time.x;
-  const n = x.length;
-  const dt = n > 1 ? t[1] - t[0] : 1;
-  const shiftIdx = Math.round(timeShift / dt);
-  const timeShifted = x.map((_, i) => {
-    const j = (((i - shiftIdx) % n) + n) % n;
-    return x[j] * ampScale;
-  });
-
-  return {
-    timeDomain: { t, x: timeShifted },
-    freqDomain: { f: pair.freq.f, mag: freqShifted },
-  };
-}
 
 /** Tab 3: interactive Fourier-transform property demonstrator (§2.3.2). */
 export type FtProperty = 'shift' | 'modulate' | 'scale' | 'amp';
