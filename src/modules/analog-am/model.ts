@@ -1,7 +1,8 @@
 import { linspace } from '@/lib/dsp/math';
 import { evalSignal } from '@/lib/dsp/signals';
 import type { AmMode } from '@/lib/dsp/analog';
-import { amSignal, amEnvelope, amEfficiency, pllRecoverPhase } from '@/lib/dsp/analog';
+import { amSignal, amEnvelope, amEfficiency, pllRecoverPhase, vsbFilter } from '@/lib/dsp/analog';
+import { spectrum } from '@/lib/dsp/fft';
 
 /**
  * AM modulation view parameters.
@@ -91,6 +92,52 @@ export interface AnalogSuperView {
   ifLine: number; // where everything lands after mixing (f_IF)
 }
 
+/** Hann window of length N — tapers the FFT buffer to suppress spectral leakage. */
+function hann(N: number): number[] {
+  const w = new Array<number>(N);
+  for (let n = 0; n < N; n++) w[n] = 0.5 - 0.5 * Math.cos((2 * Math.PI * n) / (N - 1));
+  return w;
+}
+
+/**
+ * FFT magnitude spectrum |U(f)| of the AM signal around the carrier.
+ * Approach A: the spectrum is computed from a real, windowed time buffer via
+ * `spectrum()` rather than hardcoded. VSB is generated as DSB-SC and then shaped
+ * by the real vestigial filter (Proakis §3.2.4).
+ */
+export function buildAmSpectrum(p: AnalogAmParams): { specFreq: number[]; specMag: number[] } {
+  const fm = p.messageFreq;
+  const fc = p.carrierFreq;
+  const fs = 8 * fc; // oversample so carrier + sidebands sit well below Nyquist
+  const N = 8192; // power of two for the radix-2 FFT
+  const msg = [{ freq: fm, amp: 1 }];
+  // VSB is DSB-SC filtered; generate the DSB buffer, then shape the spectrum.
+  const genMode: AmMode = p.mode === 'vsb' ? 'dsb' : p.mode;
+  const win = hann(N);
+  const x = new Array<number>(N);
+  for (let n = 0; n < N; n++) {
+    x[n] = amSignal(genMode, msg, fc, p.carrierAmp, p.modIndex, n / fs) * win[n];
+  }
+  const sp = spectrum(x, fs);
+  // Keep only the positive-frequency display band around the carrier.
+  const lo = Math.max(0, fc - 4 * fm);
+  const hi = fc + 4 * fm;
+  const specFreq: number[] = [];
+  let specMag: number[] = [];
+  for (let i = 0; i < sp.freq.length; i++) {
+    if (sp.freq[i] >= lo && sp.freq[i] <= hi) {
+      specFreq.push(sp.freq[i]);
+      specMag.push(sp.mag[i]);
+    }
+  }
+  if (p.mode === 'vsb') {
+    // vestige half-width = 2·fm so the lower sideband at f_c-fm lands mid-ramp
+    // (H = 0.25), leaving a visible vestige rather than being fully removed.
+    specMag = vsbFilter(specMag, specFreq, fc, 2 * fm);
+  }
+  return { specFreq, specMag };
+}
+
 /**
  * Build AM modulation view: time-domain waveforms + spectrum.
  */
@@ -115,39 +162,7 @@ export function buildAnalogAmView(p: AnalogAmParams, tStart = 0): AnalogAmView {
   const envelope =
     p.mode === 'conventional' ? time.map((t) => amEnvelope(msg, Ac, a, tStart + t)) : undefined;
 
-  // Spectrum: compute FFT and extract positive frequencies
-  // For simplicity, use analytic spectrum for single-tone message
-  const specFreq: number[] = [];
-  const specMag: number[] = [];
-
-  // Analytical spectrum for AM modes:
-  switch (p.mode) {
-    case 'dsb':
-      // Sidebands only at fc±fm
-      specFreq.push(fc - fm, fc, fc + fm);
-      specMag.push(0.5, 0, 0.5); // Ac/2 at each sideband
-      break;
-    case 'conventional':
-      // Carrier at fc + sidebands at fc±fm
-      specFreq.push(fc - fm, fc, fc + fm);
-      specMag.push(a * 0.5, 1, a * 0.5); // Carrier normalized to 1, sidebands to a/2
-      break;
-    case 'ssb-usb':
-      // Upper sideband only at fc+fm
-      specFreq.push(fc + fm);
-      specMag.push(0.5);
-      break;
-    case 'ssb-lsb':
-      // Lower sideband only at fc-fm
-      specFreq.push(fc - fm);
-      specMag.push(0.5);
-      break;
-    case 'vsb':
-      // Partial sidebands (vestige)
-      specFreq.push(fc - fm, fc, fc + fm);
-      specMag.push(0.4, 0.8, 0.5);
-      break;
-  }
+  const { specFreq, specMag } = buildAmSpectrum(p);
 
   const isOvermodulated = a > 1;
 
