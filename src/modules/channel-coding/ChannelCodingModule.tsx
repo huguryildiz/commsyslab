@@ -6,9 +6,10 @@ import { BlockCodesSection } from './BlockCodesSection';
 import { ConvCodesSection } from './ConvCodesSection';
 import { CyclicCodesSection } from './CyclicCodesSection';
 import { GfBchSection } from './GfBchSection';
+import { ReedSolomonSection } from './ReedSolomonSection';
 import './channel-coding.css';
 
-type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch';
+type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch' | 'rs';
 
 const TABS: { id: Tab; key: string }[] = [
   { id: 'channels', key: 'cc.tab.channels' },
@@ -17,6 +18,7 @@ const TABS: { id: Tab; key: string }[] = [
   { id: 'conv', key: 'cc.tab.conv' },
   { id: 'cyclic', key: 'cc.tab.cyclic' },
   { id: 'gfbch', key: 'cc.tab.gfbch' },
+  { id: 'rs', key: 'cc.tab.rs' },
 ];
 
 export function ChannelCodingModule() {
@@ -45,6 +47,7 @@ export function ChannelCodingModule() {
       {tab === 'conv' && <ConvCodesSection />}
       {tab === 'cyclic' && <CyclicCodesSection />}
       {tab === 'gfbch' && <GfBchSection />}
+      {tab === 'rs' && <ReedSolomonSection />}
     </div>
   );
 }
