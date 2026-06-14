@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { erf, qfunc, clamp, linspace } from '@/lib/dsp/math';
+import { erf, qfunc, qfuncInv, clamp, linspace } from '@/lib/dsp/math';
 
 describe('erf', () => {
   it('erf(0) is 0', () => {
@@ -39,5 +39,22 @@ describe('linspace', () => {
   });
   it('handles n=1', () => {
     expect(linspace(2, 9, 1)).toEqual([2]);
+  });
+});
+
+describe('qfuncInv (inverse Q-function)', () => {
+  it('inverts qfunc: qfuncInv(qfunc(x)) ≈ x', () => {
+    for (const x of [-2, -0.5, 0, 1.5, 3]) {
+      expect(qfuncInv(qfunc(x))).toBeCloseTo(x, 5);
+    }
+  });
+  it('qfuncInv(0.5) = 0 (median)', () => {
+    expect(qfuncInv(0.5)).toBeCloseTo(0, 6);
+  });
+  it('matches the standard normal upper-tail quantile (~1.6449 at p=0.05)', () => {
+    expect(qfuncInv(0.05)).toBeCloseTo(1.6449, 3);
+  });
+  it('is decreasing in p', () => {
+    expect(qfuncInv(0.01)).toBeGreaterThan(qfuncInv(0.1));
   });
 });
