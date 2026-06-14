@@ -691,3 +691,35 @@ export function drawRegions(
     }
   }
 }
+
+/**
+ * Draw a bandwidth annotation on a magnitude-spectrum plot: a shaded
+ * frequency span [fLo, fHi] with a centered "W = …" label. Proakis §2.7.
+ */
+export function drawBandwidthSpan(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  fLo: number,
+  fHi: number,
+  label: string,
+): void {
+  const x0 = ax.x(fLo);
+  const x1 = ax.x(fHi);
+  ctx.save();
+  ctx.fillStyle = 'rgba(124,131,253,0.12)'; // accent-blue, low alpha
+  ctx.fillRect(Math.min(x0, x1), 0, Math.abs(x1 - x0), ctx.canvas.height);
+  ctx.strokeStyle = 'rgba(124,131,253,0.6)';
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  ctx.moveTo(x0, 0);
+  ctx.lineTo(x0, ctx.canvas.height);
+  ctx.moveTo(x1, 0);
+  ctx.lineTo(x1, ctx.canvas.height);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(230,232,255,0.9)';
+  ctx.font = '12px ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, (x0 + x1) / 2, 14);
+  ctx.restore();
+}
