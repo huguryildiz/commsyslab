@@ -158,4 +158,14 @@ export const wireless: Record<string, string> = {
   'wl.fhss.readout.worstBeta': 'Worst-case β*',
   'wl.fhss.readout.worstBer': 'Worst-case BER @ op',
   'wl.fhss.readout.betaBer': 'BER at chosen β @ op',
+
+  // CPM / MSK section
+  'wl.tab.cpm': 'CPM / MSK',
+  'wl.cpm.title': 'Continuous-phase modulation',
+  'wl.cpm.h': 'Modulation index h',
+  'wl.cpm.depth': 'Phase-tree depth (symbols)',
+  'wl.cpm.tree.title': 'CPFSK phase tree',
+  'wl.cpm.psd.title': 'Power spectrum: MSK vs QPSK',
+  'wl.cpm.readout.mode': 'Scheme',
+  'wl.cpm.readout.phase': 'Phase change per symbol',
 };
