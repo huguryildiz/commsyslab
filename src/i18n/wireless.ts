@@ -47,4 +47,21 @@ export const wireless: Record<string, string> = {
   'wl.ss.ber.title': 'BER vs jammer power — spread vs unspread',
   'wl.ss.readout.gp': 'Processing gain G_p',
   'wl.ss.readout.N': 'Chips per bit N',
+
+  // OFDM / multicarrier section
+  'wl.tab.ofdm': 'OFDM',
+  'wl.ofdm.title': 'OFDM / multicarrier',
+  'wl.ofdm.subcarriers': 'Number of subcarriers N',
+  'wl.ofdm.cp': 'Cyclic-prefix length (samples)',
+  'wl.ofdm.taps': 'Channel delay spread L (taps)',
+  'wl.ofdm.ebN0': 'E_b/N₀ (dB)',
+  'wl.ofdm.time.title': 'OFDM symbol with cyclic prefix (time domain)',
+  'wl.ofdm.channel.title': 'Channel |H(f)| across subcarriers',
+  'wl.ofdm.preeq.title': 'Received constellation (before equalization)',
+  'wl.ofdm.posteq.title': 'After one-tap equalization',
+  'wl.ofdm.readout.cp': 'Cyclic prefix',
+  'wl.ofdm.readout.evm': 'Post-EQ error (EVM)',
+  'wl.ofdm.readout.cpState': 'CP vs delay spread',
+  'wl.ofdm.cp.ok': 'sufficient (no ISI)',
+  'wl.ofdm.cp.bad': 'too short → ISI/ICI',
 };
