@@ -26,3 +26,22 @@ export function ofdmModulate(symbols: Complex[]): Complex[] {
 export function ofdmDemodulate(time: Complex[]): Complex[] {
   return fft(time);
 }
+
+/**
+ * Prepend a cyclic prefix: copy the last `cpLen` samples of the body to the
+ * front. The guard interval absorbs the channel's transient so the remaining
+ * block looks like a circular convolution. Proakis Ch. 10 (OFDM).
+ */
+export function addCyclicPrefix(time: Complex[], cpLen: number): Complex[] {
+  const N = time.length;
+  const prefix = time.slice(N - cpLen, N);
+  return [...prefix, ...time];
+}
+
+/**
+ * Remove the cyclic prefix at the receiver: drop the first `cpLen` samples and
+ * keep the next `n` body samples. Proakis Ch. 10 (OFDM).
+ */
+export function removeCyclicPrefix(rx: Complex[], cpLen: number, n: number): Complex[] {
+  return rx.slice(cpLen, cpLen + n);
+}
