@@ -86,3 +86,71 @@
   flex-direction: column;
   gap: var(--space-3);
 }
+
+.signal-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.signal-editor__hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.signal-editor__grid {
+  display: grid;
+  gap: 6px;
+  align-items: center;
+}
+
+.signal-editor__col {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.signal-editor__rowlabel {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+}
+
+.signal-editor__rowlabel.is-dependent {
+  color: var(--text-dim);
+}
+
+.signal-editor__rowlabel em {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--accent-2);
+}
+
+.signal-editor__grid input {
+  width: 100%;
+  text-align: center;
+}
+
+.signal-editor__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.signal-editor__seg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.signal-editor__seg input {
+  width: 56px;
+}

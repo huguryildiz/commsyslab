@@ -10,7 +10,10 @@ import {
   DecisionAxisPanel,
   ConstellationLandingPanel,
   CorrelatorBankPanel,
+  MinDistancePanel,
 } from './optreceiver-panels';
+import { SignalEditor } from './SignalEditor';
+import { DEFAULT_CUSTOM_AMPLITUDES } from './custom-signals';
 
 const SPS = 64;
 const BATCH = 200;
@@ -22,14 +25,23 @@ export function OptimumReceiverSection() {
   const [cycles, setCycles] = useState(4);
   const [nonce, setNonce] = useState(0);
   const [livePe, setLivePe] = useState<{ errors: number; total: number } | null>(null);
+  const [customAmplitudes, setCustomAmplitudes] = useState<number[][]>(DEFAULT_CUSTOM_AMPLITUDES);
 
   const errRef = useRef(0);
   const totRef = useRef(0);
   const mcRngRef = useRef(makeRng(2024));
 
   const view = useMemo(
-    () => buildOptRxView({ signalSetId, ebN0Db, symbolIndex, sps: SPS, cycles }),
-    [signalSetId, ebN0Db, symbolIndex, cycles],
+    () =>
+      buildOptRxView({
+        signalSetId,
+        ebN0Db,
+        symbolIndex,
+        sps: SPS,
+        cycles,
+        custom: { amplitudes: customAmplitudes },
+      }),
+    [signalSetId, ebN0Db, symbolIndex, cycles, customAmplitudes],
   );
 
   const reception = useMemo(
@@ -53,6 +65,14 @@ export function OptimumReceiverSection() {
     resetCounts();
   };
 
+  const isCustom = view.kind === 'custom';
+
+  const handleCustom = (next: number[][]) => {
+    setCustomAmplitudes(next);
+    setSymbolIndex((i) => Math.min(i, Math.max(next.length - 1, 0)));
+    resetCounts();
+  };
+
   const loop = useSimulationLoop({
     ticksPerSecond: 30,
     onTick: () => {
@@ -70,8 +90,13 @@ export function OptimumReceiverSection() {
       ? reception.statistic[0].toFixed(3)
       : `(${reception.statistic.map((s) => s.toFixed(2)).join(', ')})`;
 
-  const decisionTitle =
-    view.kind === '2d'
+  const decisionTitle = isCustom
+    ? view.dim === 1
+      ? t('modulation.optrx.panel.decision')
+      : view.dim === 2
+        ? t('modulation.optrx.panel.landing')
+        : t('modulation.optrx.panel.minDist')
+    : view.kind === '2d'
       ? t('modulation.optrx.panel.landing')
       : view.kind === 'orthogonal'
         ? t('modulation.optrx.panel.bank')
@@ -96,7 +121,7 @@ export function OptimumReceiverSection() {
             unit="dB"
             onChange={handleEbN0}
           />
-          {view.kind !== '1d' && (
+          {(view.kind === '2d' || view.kind === 'orthogonal') && (
             <Slider
               label={t('modulation.optrx.cycles')}
               value={cycles}
@@ -115,6 +140,13 @@ export function OptimumReceiverSection() {
           <button type="button" onClick={() => setNonce((n) => n + 1)}>
             {t('modulation.optrx.resample')}
           </button>
+          {isCustom && (
+            <SignalEditor
+              amplitudes={customAmplitudes}
+              dependent={view.dependent}
+              onChange={handleCustom}
+            />
+          )}
           <TransportControls loop={loop} />
         </Panel>
       </aside>
@@ -136,6 +168,9 @@ export function OptimumReceiverSection() {
             label={t('modulation.optrx.readout.errors')}
             value={livePe ? `${livePe.errors} / ${livePe.total}` : '—'}
           />
+          {isCustom && (
+            <Readout label={t('modulation.optrx.readout.dim')} value={`${view.dim} / ${view.M}`} />
+          )}
         </div>
 
         <div className="modulation__plots">
@@ -153,9 +188,24 @@ export function OptimumReceiverSection() {
         </div>
 
         <Panel title={decisionTitle}>
-          {view.kind === '1d' && <DecisionAxisPanel view={view} reception={reception} />}
-          {view.kind === '2d' && <ConstellationLandingPanel view={view} reception={reception} />}
-          {view.kind === 'orthogonal' && <CorrelatorBankPanel view={view} reception={reception} />}
+          {view.dim === 0 ? (
+            <div className="modulation__notice">{t('modulation.optrx.custom.degenerate')}</div>
+          ) : (
+            <>
+              {(view.kind === '1d' || (isCustom && view.dim === 1)) && (
+                <DecisionAxisPanel view={view} reception={reception} />
+              )}
+              {(view.kind === '2d' || (isCustom && view.dim === 2)) && (
+                <ConstellationLandingPanel view={view} reception={reception} />
+              )}
+              {view.kind === 'orthogonal' && (
+                <CorrelatorBankPanel view={view} reception={reception} />
+              )}
+              {isCustom && view.dim >= 3 && (
+                <MinDistancePanel view={view} reception={reception} />
+              )}
+            </>
+          )}
         </Panel>
 
         <TheoryBox title={t('modulation.optrx.theory.title')}>

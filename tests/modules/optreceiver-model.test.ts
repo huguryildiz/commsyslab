@@ -177,3 +177,67 @@ describe('buildOptRxView (orthogonal FSK)', () => {
     expect(peHi).toBeLessThan(peLo);
   });
 });
+
+describe('buildOptRxView (custom / Gram-Schmidt)', () => {
+  it('default custom set reproduces Example 7.1.1: M=4, dim=3, s₄ dependent', () => {
+    const v = buildOptRxView({ ...base, signalSetId: 'custom' });
+    expect(v.kind).toBe('custom');
+    expect(v.M).toBe(4);
+    expect(v.dim).toBe(3);
+    expect(v.points).toHaveLength(4);
+    expect(v.points[0]).toHaveLength(3);
+    expect(v.labels).toEqual(['s₁', 's₂', 's₃', 's₄']);
+    expect(v.dependent).toEqual([false, false, false, true]);
+    expect(v.basis).toHaveLength(3);
+    expect(v.basis[0]).toHaveLength(base.sps);
+  });
+
+  it('derives Eb/N0 from the set energy and a valid union-bound Pₑ', () => {
+    const v = buildOptRxView({ ...base, signalSetId: 'custom', ebN0Db: 8 });
+    expect(v.sigmaW).toBeGreaterThan(0);
+    expect(v.theoreticalPe).toBeGreaterThan(0);
+    expect(v.theoreticalPe).toBeLessThanOrEqual(1);
+  });
+
+  it('explicit orthogonal pair → dim 2 and a constellation-plane view', () => {
+    const v = buildOptRxView({
+      ...base,
+      signalSetId: 'custom',
+      custom: {
+        amplitudes: [
+          [1, 1],
+          [1, -1],
+        ],
+      },
+    });
+    expect(v.dim).toBe(2);
+    expect(v.M).toBe(2);
+    expect(v.dependent).toEqual([false, false]);
+  });
+
+  it('1-D custom set sorts points ascending with midpoint thresholds', () => {
+    const v = buildOptRxView({
+      ...base,
+      signalSetId: 'custom',
+      custom: {
+        amplitudes: [
+          [2, 2],
+          [-2, -2],
+        ],
+      },
+    });
+    expect(v.dim).toBe(1);
+    expect(v.points[0][0]).toBeLessThan(v.points[1][0]);
+    expect(v.thresholds).toHaveLength(1);
+    expect(v.thresholds[0]).toBeCloseTo(0, 10);
+  });
+
+  it('Monte-Carlo runs on the derived constellation', () => {
+    const v = buildOptRxView({ ...base, signalSetId: 'custom' });
+    const r = monteCarloPe(v, 200, makeRng(7));
+    expect(r.total).toBe(200);
+    expect(r.errors).toBeGreaterThanOrEqual(0);
+    const rec = simulateReception(v, 0, makeRng(3));
+    expect(rec.statistic).toHaveLength(v.dim);
+  });
+});

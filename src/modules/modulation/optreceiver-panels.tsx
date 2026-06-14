@@ -222,3 +222,49 @@ export function CorrelatorBankPanel({
     />
   );
 }
+
+/** (c-dim≥3) Bar chart of Euclidean distances ‖r − sₘ‖; the smallest (= decision) is highlighted. */
+export function MinDistancePanel({
+  view,
+  reception,
+}: {
+  view: OptRxView;
+  reception: OptRxReception;
+}) {
+  const M = view.M;
+  const r = reception.statistic;
+  const dists = view.points.map((s) => {
+    let d = 0;
+    for (let k = 0; k < s.length; k++) {
+      const df = r[k] - s[k];
+      d += df * df;
+    }
+    return Math.sqrt(d);
+  });
+  const correct = reception.decided === reception.txIndex;
+  const ymax = Math.max(...dists, 1e-6) * 1.2;
+  const bw = 0.62;
+  return (
+    <Canvas
+      height={220}
+      ariaLabel="Distances from the received vector to each candidate; the smallest is the decision"
+      deps={[view, reception]}
+      draw={(ctx, w, h) => {
+        const ax = axesFor(w, h, [-0.5, M - 0.5], [0, ymax]);
+        drawLine(ctx, ax, [-0.5, M - 0.5], [0, 0], COL.axis, 1);
+        for (let k = 0; k < M; k++) {
+          const isDecided = k === reception.decided;
+          const fill = isDecided ? (correct ? COL.sample : COL.err) : alpha(CHART.blue, 0.55);
+          const left = ax.x(k - bw / 2);
+          const right = ax.x(k + bw / 2);
+          const yTop = ax.y(dists[k]);
+          const yBot = ax.y(0);
+          ctx.fillStyle = fill;
+          ctx.fillRect(left, yTop, right - left, yBot - yTop);
+          drawText(ctx, ax, k, dists[k], view.labels[k], COL.label, -6, -8);
+          if (k === reception.txIndex) drawText(ctx, ax, k, 0, 'tx', COL.tx, -4, 14);
+        }
+      }}
+    />
+  );
+}
