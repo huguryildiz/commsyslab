@@ -94,6 +94,8 @@ export function ModulatorCircuit({ kind, phase }: { kind: ModulatorKind; phase: 
           <Diode x={120} y={45} rot={90} active={phase === 1} />
           <Diode x={60} y={45} rot={90} active={phase === 1} />
           <Transformer x={160} y={45} />
+          {/* Diamond diode ring linking the two transformer taps. */}
+          <Wire points={[60, 45, 90, 25, 120, 45, 90, 65, 60, 45]} />
           <Wire points={[42, 45, 60, 45]} />
           <Wire points={[120, 45, 148, 45]} />
           <Label x={95} y={84} text="square carrier fc" />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Panel, Slider, Select, Segmented, Readout, TheoryBox, Formula, TransportControls } from '@/components';
 import { t } from '@/i18n';
 import type { AmMode } from '@/lib/dsp/analog';
@@ -33,12 +33,12 @@ export function ModDemodSection({ clock, loop }: SectionProps) {
   // Slow conduction phase (toggles ~1 Hz) so diodes visibly switch.
   const phase: 0 | 1 = Math.floor(clock * 2) % 2 === 0 ? 0 : 1;
 
-  const modView = buildModulatorView({
-    modulator: modKind,
-    messageFreq: msgFreq,
-    carrierFreq,
-    carrierAmp: 1,
-  });
+  // The modulator view runs 4 FFTs and does not depend on the clock, so memoize
+  // it on the control values — otherwise it recomputes on every animation tick.
+  const modView = useMemo(
+    () => buildModulatorView({ modulator: modKind, messageFreq: msgFreq, carrierFreq, carrierAmp: 1 }),
+    [modKind, msgFreq, carrierFreq],
+  );
 
   const amParams: AnalogAmParams = {
     mode: 'conventional' as AmMode,
@@ -159,6 +159,10 @@ export function ModDemodSection({ clock, loop }: SectionProps) {
               <p>
                 <strong>{t('analog.demod.method.envelope')}:</strong>
                 <Formula tex="v(t) \\propto A_c[1 + a\\,m_n(t)], \\quad a \\le 1" block />
+              </p>
+              <p>
+                <strong>{t('analog.demod.method.pll')}:</strong>
+                <Formula tex="\\dot{\\hat{\\theta}}(t) = 2\\pi f_c + G\\,e(t)" block />
               </p>
             </TheoryBox>
           </>

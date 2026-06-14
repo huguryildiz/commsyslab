@@ -49,7 +49,9 @@ function msgNorm(msg: Tone[], t: number): number {
 /** Default brick-wall passband: ~one message bandwidth either side of the carrier. */
 function passband(fc: number, msg: Tone[]): [number, number] {
   const w = Math.max(...msg.map((m) => m.freq)) * 1.5 || fc * 0.1;
-  return [fc - w, fc + w];
+  // Clamp the lower edge to 0 so an extreme fm/fc ratio cannot push the band
+  // below DC (which would turn the bandpass into a lowpass).
+  return [Math.max(0, fc - w), fc + w];
 }
 
 /**
