@@ -28,6 +28,26 @@ export const analogam: Record<string, string> = {
   'analog.am.vestige': 'Vestige width',
   'analog.am.observe': 'Watch how the spectrum and envelope change as you switch schemes and raise the modulation index a.',
 
+  // §3.3 Modulators & Demodulators
+  'analog.mod.group': 'Modulator',
+  'analog.mod.kind': 'Modulator type',
+  'analog.mod.kind.power-law': 'Power-law',
+  'analog.mod.kind.switching': 'Switching',
+  'analog.mod.kind.balanced': 'Balanced',
+  'analog.mod.kind.ring': 'Ring',
+  'analog.mod.block': 'Block diagram',
+  'analog.mod.circuit': 'Circuit schematic',
+  'analog.mod.dirty': 'Before bandpass filter',
+  'analog.mod.clean': 'After bandpass filter',
+  'analog.mod.outputType': 'Output type',
+  'analog.mod.producesDsb': 'DSB-SC (carrier cancelled)',
+  'analog.mod.producesConv': 'Conventional AM (carrier retained)',
+  'analog.mod.observe.powerLaw': 'The square-law term creates the carrier + sidebands plus unwanted DC and 2fc terms; the bandpass filter keeps only the AM band.',
+  'analog.mod.observe.switching': 'Multiplying by the square wave s(t) produces the AM band plus odd-harmonic images; the bandpass filter isolates fc.',
+  'analog.mod.observe.balanced': 'Two AM modulators are differenced so the carrier cancels at the summing node — leaving DSB-SC.',
+  'analog.mod.observe.ring': 'The diode ring multiplies m(t) by a ±1 square-wave carrier; the bandpass filter extracts the DSB-SC signal.',
+  'analog.demod.group': 'Demodulator',
+
   // AM Modulator panel
   'analog.am.title': 'AM Modulator',
   'analog.am.mode': 'Modulation mode',
