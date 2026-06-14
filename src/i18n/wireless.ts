@@ -100,4 +100,18 @@ export const wireless: Record<string, string> = {
   'wl.lb.readout.range': 'Max range',
   'wl.lb.closes': 'Link closes',
   'wl.lb.fails': 'Link fails',
+
+  // RAKE receiver section
+  'wl.tab.rake': 'RAKE',
+  'wl.rake.title': 'RAKE receiver',
+  'wl.rake.nTaps': 'Number of paths (taps)',
+  'wl.rake.tauRms': 'Delay spread τ_rms (ns)',
+  'wl.rake.tapSpacing': 'Tap spacing (ns)',
+  'wl.rake.chipRate': 'Chip rate (Mcps)',
+  'wl.rake.ebN0': 'E_b/N₀ for finger SNRs (dB)',
+  'wl.rake.pdp.title': 'Power-delay profile & resolvable fingers',
+  'wl.rake.ber.title': 'BER vs E_b/N₀ — RAKE diversity',
+  'wl.rake.snr.title': 'Per-finger SNR',
+  'wl.rake.readout.fingers': 'Resolvable fingers L',
+  'wl.rake.readout.chip': 'Chip duration',
 };
