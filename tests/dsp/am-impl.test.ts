@@ -30,9 +30,15 @@ describe('bandpassFilterFFT', () => {
     const x: number[] = [];
     for (let n = 0; n < N; n++) x.push(Math.cos((2*Math.PI*fIn*n)/fs) + Math.cos((2*Math.PI*fOut*n)/fs));
     const y = bandpassFilterFFT(x, fs, 600, 1400);
+    // In-band 1000 Hz tone preserved: power ≈ 0.5 (amplitude 1).
     const power = y.reduce((s, v) => s + v * v, 0) / N;
-    expect(power).toBeGreaterThan(0.3);
-    expect(power).toBeLessThan(0.7);
+    expect(power).toBeGreaterThan(0.4);
+    expect(power).toBeLessThan(0.6);
+    // Out-of-band 200 Hz tone independently rejected to near zero.
+    const outOnly = Array.from({ length: N }, (_, n) => Math.cos((2 * Math.PI * fOut * n) / fs));
+    const yOut = bandpassFilterFFT(outOnly, fs, 600, 1400);
+    const outPower = yOut.reduce((s, v) => s + v * v, 0) / N;
+    expect(outPower).toBeLessThan(0.01);
   });
 });
 
