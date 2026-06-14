@@ -21,6 +21,24 @@ export function qfunc(x: number): number {
   return 0.5 * erfc(x / Math.SQRT2);
 }
 
+/**
+ * Inverse Q-function: returns x such that qfunc(x) = p, for 0 < p < 1.
+ * Q is strictly decreasing, so a bisection on the existing qfunc is robust and
+ * accurate. Used for log-normal shadowing fade margins. Proakis §7.7.
+ */
+export function qfuncInv(p: number): number {
+  if (p <= 0) return Infinity;
+  if (p >= 1) return -Infinity;
+  let lo = -40; // qfunc(-40) ≈ 1
+  let hi = 40; // qfunc(40) ≈ 0
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2;
+    if (qfunc(mid) > p) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
 /** Constrain x to [lo, hi]. */
 export function clamp(x: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, x));
