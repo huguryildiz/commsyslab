@@ -92,7 +92,7 @@ function Shell() {
           <Route path="/" element={<Home />} />
           <Route path="/start" element={<StartPage />} />
           <Route path="/fourier" element={<FourierModule />} />
-          <Route path="/analog" element={<AnalogAmModule />} />
+          <Route path="/analog-am" element={<AnalogAmModule />} />
           <Route path="/analog-fm" element={<AnalogFmModule />} />
           <Route path="/analog-noise" element={<AnalogNoiseModule />} />
           <Route path="/random-process" element={<RandomProcessModule />} />

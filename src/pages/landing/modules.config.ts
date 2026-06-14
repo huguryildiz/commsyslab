@@ -52,7 +52,7 @@ export const LANDING_MODULES: LandingModule[] = [
     titleKey: 'landing.mod.analog-am.title',
     descKey: 'landing.mod.analog-am.desc',
     chapter: 'CH 3',
-    route: '/analog',
+    route: '/analog-am',
     status: 'live',
     viz: 'am',
     compact: true,
