@@ -26,3 +26,31 @@ export function shadowingPdfDb(xDb: number, muDb: number, sigmaDb: number): numb
 export function rayleighOutage(gammaThDb: number, gammaBarDb: number): number {
   return 1 - Math.exp(-lin(gammaThDb) / lin(gammaBarDb));
 }
+
+/**
+ * Composite (shadowed) outage: the average SNR itself is log-normal, with its dB
+ * value Gaussian about `medianGammaBarDb` with standard deviation `sigmaDb`. The
+ * outage is the Rayleigh outage averaged over that distribution:
+ *   P_out = ∫ [1 − exp(−γ_th/γ̄)] · f_dB(10·log10 γ̄) d(dB).
+ * Computed by trapezoidal integration over ±4σ of the dB-domain normal (the
+ * "Suzuki" / composite-fading outage). sigmaDb = 0 ⇒ plain Rayleigh outage.
+ * Proakis §10.1.1.
+ */
+export function compositeOutage(
+  gammaThDb: number,
+  medianGammaBarDb: number,
+  sigmaDb: number,
+): number {
+  if (sigmaDb <= 0) return rayleighOutage(gammaThDb, medianGammaBarDb);
+  const n = 400;
+  const lo = medianGammaBarDb - 4 * sigmaDb;
+  const hi = medianGammaBarDb + 4 * sigmaDb;
+  const dx = (hi - lo) / n;
+  let acc = 0;
+  for (let i = 0; i <= n; i++) {
+    const xDb = lo + i * dx;
+    const w = i === 0 || i === n ? 0.5 : 1; // trapezoid endpoints
+    acc += w * rayleighOutage(gammaThDb, xDb) * shadowingPdfDb(xDb, medianGammaBarDb, sigmaDb);
+  }
+  return acc * dx;
+}
