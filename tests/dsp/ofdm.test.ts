@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import type { Complex } from '@/lib/dsp/fft';
-import { ofdmModulate, ofdmDemodulate, cabs, addCyclicPrefix, removeCyclicPrefix, convolveChannel, channelFreqResponse } from '@/lib/dsp/ofdm';
+import { ofdmModulate, ofdmDemodulate, cabs, addCyclicPrefix, removeCyclicPrefix, convolveChannel, channelFreqResponse, equalizeZf } from '@/lib/dsp/ofdm';
+import { makeRng } from '@/lib/dsp/random';
 
 function expectComplexClose(a: Complex[], b: Complex[], digits = 9): void {
   expect(a.length).toBe(b.length);
@@ -74,5 +75,42 @@ describe('channelFreqResponse', () => {
     const H = channelFreqResponse(h, 8);
     expect(H).toHaveLength(8);
     for (const v of H) expect(cabs(v)).toBeCloseTo(1, 12);
+  });
+});
+
+describe('equalizeZf', () => {
+  it('divides each subcarrier by its channel gain (Y/H)', () => {
+    const Y: Complex[] = [{ re: 2, im: 0 }, { re: 0, im: 4 }];
+    const H: Complex[] = [{ re: 2, im: 0 }, { re: 0, im: 2 }];
+    const X = equalizeZf(Y, H);
+    expect(X[0].re).toBeCloseTo(1, 12);
+    expect(X[0].im).toBeCloseTo(0, 12);
+    expect(X[1].re).toBeCloseTo(2, 12);
+    expect(X[1].im).toBeCloseTo(0, 12);
+  });
+});
+
+describe('OFDM end-to-end (CP ≥ L−1, no noise) recovers symbols exactly', () => {
+  it('modulate → CP → channel → remove CP → demodulate → equalize ≈ input', () => {
+    const N = 16;
+    const cp = 4;
+    const rng = makeRng(7);
+    const X: Complex[] = Array.from({ length: N }, () => ({
+      re: rng() < 0.5 ? -Math.SQRT1_2 : Math.SQRT1_2,
+      im: rng() < 0.5 ? -Math.SQRT1_2 : Math.SQRT1_2,
+    }));
+    const h: Complex[] = [
+      { re: 0.8, im: 0.1 },
+      { re: 0.3, im: -0.2 },
+      { re: -0.1, im: 0.05 },
+    ];
+    const x = ofdmModulate(X);
+    const s = addCyclicPrefix(x, cp);
+    const r = convolveChannel(s, h);
+    const body = removeCyclicPrefix(r, cp, N);
+    const Y = ofdmDemodulate(body);
+    const H = channelFreqResponse(h, N);
+    const Xhat = equalizeZf(Y, H);
+    expectComplexClose(Xhat, X, 9);
   });
 });

@@ -16,6 +16,12 @@ function cmul(a: Complex, b: Complex): Complex {
   return { re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re };
 }
 
+/** Complex divide a/b. */
+function cdiv(a: Complex, b: Complex): Complex {
+  const d = b.re * b.re + b.im * b.im;
+  return { re: (a.re * b.re + a.im * b.im) / d, im: (a.im * b.re - a.re * b.im) / d };
+}
+
 /**
  * OFDM modulator: map N frequency-domain subcarrier symbols to N time-domain
  * samples via the inverse FFT. Proakis Ch. 10 (OFDM).
@@ -78,4 +84,14 @@ export function channelFreqResponse(h: Complex[], n: number): Complex[] {
     i < h.length ? { re: h[i].re, im: h[i].im } : { re: 0, im: 0 },
   );
   return fft(padded);
+}
+
+/**
+ * One-tap zero-forcing equalizer: invert each subcarrier's complex channel gain,
+ * X̂[k] = Y[k] / H[k]. Exact when the cyclic prefix covers the delay spread.
+ * Noise on deep-fade subcarriers (small |H[k]|) is amplified — the ZF penalty.
+ * Proakis Ch. 10 (OFDM).
+ */
+export function equalizeZf(rxSymbols: Complex[], H: Complex[]): Complex[] {
+  return rxSymbols.map((y, k) => cdiv(y, H[k]));
 }
