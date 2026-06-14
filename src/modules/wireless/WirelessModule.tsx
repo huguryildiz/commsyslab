@@ -5,13 +5,14 @@ import { FadingChannelSection } from './sections/FadingChannelSection';
 import { DopplerSection } from './sections/DopplerSection';
 import { RayleighBerSection } from './sections/RayleighBerSection';
 import { SpreadSpectrumSection } from './sections/SpreadSpectrumSection';
+import { FhssSection } from './sections/FhssSection';
 import { OfdmSection } from './sections/OfdmSection';
 import { LinkBudgetSection } from './sections/LinkBudgetSection';
 import { RakeSection } from './sections/RakeSection';
 import { MimoSection } from './sections/MimoSection';
 import './wireless.css';
 
-type Tab = 'fading' | 'doppler' | 'ber' | 'spread' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo';
+type Tab = 'fading' | 'doppler' | 'ber' | 'spread' | 'fhss' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo';
 
 export function WirelessModule() {
   const [tab, setTab] = useState<Tab>('fading');
@@ -30,6 +31,7 @@ export function WirelessModule() {
           { value: 'doppler', label: t('wl.tab.doppler') },
           { value: 'ber', label: t('wl.tab.ber') },
           { value: 'spread', label: t('wl.tab.spread') },
+          { value: 'fhss', label: t('wl.tab.fhss') },
           { value: 'ofdm', label: t('wl.tab.ofdm') },
           { value: 'linkbudget', label: t('wl.tab.linkbudget') },
           { value: 'rake', label: t('wl.tab.rake') },
@@ -42,6 +44,7 @@ export function WirelessModule() {
         {tab === 'doppler' && <DopplerSection />}
         {tab === 'ber' && <RayleighBerSection />}
         {tab === 'spread' && <SpreadSpectrumSection />}
+        {tab === 'fhss' && <FhssSection />}
         {tab === 'ofdm' && <OfdmSection />}
         {tab === 'linkbudget' && <LinkBudgetSection />}
         {tab === 'rake' && <RakeSection />}
