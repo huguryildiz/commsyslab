@@ -66,8 +66,19 @@ export const LANDING_MODULES: LandingModule[] = [
     compact: true,
   },
   {
-    id: 'analog-noise',
+    id: 'deltamod',
     num: '05',
+    titleKey: 'landing.mod.deltamod.title',
+    descKey: 'landing.mod.deltamod.desc',
+    chapter: 'CH 6',
+    route: '/delta-modulation',
+    status: 'live',
+    viz: 'sampling',
+    compact: true,
+  },
+  {
+    id: 'analog-noise',
+    num: '06',
     titleKey: 'an.title',
     descKey: 'an.subtitle',
     chapter: 'CH 5',
@@ -78,7 +89,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'infotheory',
-    num: '06',
+    num: '07',
     titleKey: 'landing.mod.infotheory.title',
     descKey: 'landing.mod.infotheory.desc',
     chapter: 'CH 6',
@@ -89,7 +100,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'modulation',
-    num: '07',
+    num: '08',
     titleKey: 'landing.mod.modulation.title',
     descKey: 'landing.mod.modulation.desc',
     chapter: 'CH 7',
@@ -100,7 +111,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'baseband',
-    num: '08',
+    num: '09',
     titleKey: 'landing.mod.baseband.title',
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
@@ -109,7 +120,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'channel-coding',
-    num: '09',
+    num: '10',
     titleKey: 'cc.title',
     descKey: 'cc.subtitle',
     chapter: 'CH 9',
@@ -120,7 +131,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'wireless',
-    num: '10',
+    num: '11',
     titleKey: 'wl.title',
     descKey: 'wl.subtitle',
     chapter: 'CH 10',
@@ -130,7 +141,7 @@ export const LANDING_MODULES: LandingModule[] = [
   },
   {
     id: 'end-to-end',
-    num: '11',
+    num: '12',
     titleKey: 'landing.mod.e2e.title',
     descKey: 'landing.mod.e2e.desc',
     chapter: 'All',

@@ -10,6 +10,7 @@ import { AnalogModule } from '@/modules/analog/AnalogModule';
 import { AnalogNoiseModule } from '@/modules/analog-noise/AnalogNoiseModule';
 import { RandomProcessModule } from '@/modules/random-process/RandomProcessModule';
 import { SamplingModule } from '@/modules/sampling-quantization/SamplingModule';
+import { DeltaModModule } from '@/modules/deltamod/DeltaModModule';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
 import { BasebandModule } from '@/modules/baseband/BasebandModule';
 import { InfoTheoryModule } from '@/modules/infotheory/InfoTheoryModule';
@@ -91,6 +92,7 @@ function Shell() {
           <Route path="/analog-noise" element={<AnalogNoiseModule />} />
           <Route path="/random-process" element={<RandomProcessModule />} />
           <Route path="/sampling" element={<SamplingModule />} />
+          <Route path="/delta-modulation" element={<DeltaModModule />} />
           <Route path="/modulation" element={<ModulationModule />} />
           <Route path="/information-theory" element={<InfoTheoryModule />} />
           <Route path="/channel-coding" element={<ChannelCodingModule />} />
