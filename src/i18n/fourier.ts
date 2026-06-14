@@ -98,6 +98,21 @@ export const fourier: Record<string, string> = {
   'fourier.preset.gibbs': 'Show Gibbs overshoot',
   'fourier.hint.gibbs': 'More harmonics sharpen the edges but the overshoot near jumps stays ~9% (Gibbs).',
 
+  // Tab 1 — Signals & Systems
+  'fourier.panel.signal': 'Signal Explorer',
+  'fourier.panel.conv': 'Convolution (LTI)',
+  'fourier.sig.kind': 'Signal',
+  'fourier.sig.shift': 'Time shift t₀',
+  'fourier.sig.scale': 'Time scale a',
+  'fourier.sig.amp': 'Amplitude',
+  'fourier.sig.reverse': 'Time reversal',
+  'fourier.conv.x': 'Input x(t)',
+  'fourier.conv.h': 'Impulse response h(t)',
+  'fourier.readout.type': 'Signal type',
+  'fourier.readout.sym': 'Symmetry',
+  'fourier.hint.signal': 'Green = original, orange = after shift/scale/reverse. Watch how operations move and stretch it.',
+  'fourier.hint.conv': 'y(t) (blue) is the running overlap of x (green) and the flipped, sliding h (orange).',
+
   // Tab 3 — Fourier Transform & Spectra
   'fourier.panel.properties': 'FT Properties',
   'fourier.prop.which': 'Property',
