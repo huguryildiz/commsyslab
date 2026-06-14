@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { textToBits, bitsToText, randomBitSource } from '@/lib/sim/sources';
+import { textToBits, bitsToText, randomBitSource, bitsToSymbols, symbolsToBits } from '@/lib/sim/sources';
 
 describe('textToBits', () => {
   it("encodes 'A' (65) as 8 MSB-first bits", () => {
@@ -28,5 +28,14 @@ describe('randomBitSource', () => {
       const bit = src();
       expect(bit === 0 || bit === 1).toBe(true);
     }
+  });
+});
+
+describe('bitsToSymbols / symbolsToBits', () => {
+  it('round-trips a bit array on whole-symbol boundaries (k=2)', () => {
+    const bits = [1, 0, 1, 1, 0, 0] as const;
+    const syms = bitsToSymbols([...bits], 2);
+    expect(syms).toEqual([2, 3, 0]);
+    expect(symbolsToBits(syms, 2)).toEqual([...bits]);
   });
 });

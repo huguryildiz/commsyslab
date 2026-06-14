@@ -135,7 +135,7 @@ export const LANDING_MODULES: LandingModule[] = [
     descKey: 'landing.mod.e2e.desc',
     chapter: 'All',
     route: '/end-to-end',
-    status: 'soon',
+    status: 'live',
     viz: 'linkpulse',
   },
 ];

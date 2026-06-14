@@ -18,6 +18,7 @@ describe('ModuleMenu', () => {
     expect(screen.getByRole('link', { name: /Fourier & Spectrum/i })).toHaveAttribute('href', '/fourier');
     expect(screen.getByRole('link', { name: /Analog Noise & SNR/i })).toHaveAttribute('href', '/analog-noise');
     expect(screen.getByRole('link', { name: /Modulation & Detection/i })).toHaveAttribute('href', '/modulation');
+    expect(screen.getByRole('link', { name: /End-to-End Link/i })).toHaveAttribute('href', '/end-to-end');
   });
 
   it('marks the active route with aria-current', () => {
@@ -29,6 +30,5 @@ describe('ModuleMenu', () => {
     renderMenu();
     expect(screen.getByText('Baseband & Eye')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Baseband & Eye/i })).toBeNull();
-    expect(screen.queryByRole('link', { name: /End-to-End Link/i })).toBeNull();
   });
 });

@@ -58,3 +58,17 @@ export function pcmStream(
   for (const v of values) out.push(...pcmCodeword(v, mMax, bits, type, coding));
   return out;
 }
+
+/** Inverse of `toGray`: reflected-binary code -> natural integer. */
+export function fromGray(code: number): number {
+  let num = code;
+  for (let mask = code >> 1; mask > 0; mask >>= 1) num ^= mask;
+  return num;
+}
+
+/** Decode one NBC PCM codeword (MSB-first) back to its quantizer code index. */
+export function indexFromCodeword(bits: Bit[], coding: PcmCoding): number {
+  let symbol = 0;
+  for (const b of bits) symbol = (symbol << 1) | b;
+  return coding === 'gray' ? fromGray(symbol) : symbol;
+}

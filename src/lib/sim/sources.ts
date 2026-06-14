@@ -38,3 +38,21 @@ export function randomBitSource(seed = 1): () => Bit {
   const rng = makeRng(seed);
   return () => (rng() < 0.5 ? 0 : 1);
 }
+
+/** Pack bits into symbol indices, k bits per symbol, MSB-first, zero-padded. */
+export function bitsToSymbols(bits: Bit[], k: number): number[] {
+  const syms: number[] = [];
+  for (let i = 0; i < bits.length; i += k) {
+    let v = 0;
+    for (let b = 0; b < k; b++) v = (v << 1) | (i + b < bits.length ? bits[i + b] : 0);
+    syms.push(v);
+  }
+  return syms;
+}
+
+/** Unpack symbol indices back into bits, k bits per symbol, MSB-first. */
+export function symbolsToBits(syms: number[], k: number): Bit[] {
+  const bits: Bit[] = [];
+  for (const s of syms) for (let b = k - 1; b >= 0; b--) bits.push(((s >> b) & 1) as Bit);
+  return bits;
+}

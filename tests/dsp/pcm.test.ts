@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { codeIndex, toNBC, toGray, pcmCodeword, pcmStream } from '@/lib/dsp/pcm';
+import { codeIndex, toNBC, toGray, pcmCodeword, pcmStream, fromGray, indexFromCodeword } from '@/lib/dsp/pcm';
 
 describe('codeIndex (mMax=1, bits=2 -> L=4, delta=0.5)', () => {
   it('midrise maps the four sub-ranges to indices 0..3', () => {
@@ -53,5 +53,24 @@ describe('pcmStream', () => {
   it('concatenates one codeword per sample (length = n*bits)', () => {
     const bits = pcmStream([-0.9, 0.9], 1, 2, 'midrise', 'nbc');
     expect(bits).toEqual([0, 0, 1, 1]); // index 0 -> 00, index 3 -> 11
+  });
+});
+
+describe('fromGray (inverse of toGray)', () => {
+  it('round-trips all 4-bit indices', () => {
+    for (let i = 0; i < 16; i++) expect(fromGray(toGray(i))).toBe(i);
+  });
+});
+
+describe('indexFromCodeword (inverse of pcmCodeword index mapping)', () => {
+  it('recovers the code index for nbc and gray', () => {
+    for (const coding of ['nbc', 'gray'] as const) {
+      for (let idx = 0; idx < 8; idx++) {
+        // value placed at the idx-th midrise level for mMax=1, bits=3
+        const value = ((idx - 4) + 0.5) * (2 / 8);
+        const word = pcmCodeword(value, 1, 3, 'midrise', coding);
+        expect(indexFromCodeword(word, coding)).toBe(idx);
+      }
+    }
   });
 });

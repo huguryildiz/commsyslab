@@ -5,7 +5,6 @@ import { BrandIcon } from '@/components/BrandIcon';
 import { ModuleMenu } from '@/components/ModuleMenu';
 import { Home } from '@/pages/Home';
 import { StartPage } from '@/pages/StartPage';
-import { ModulePlaceholder } from '@/pages/ModulePlaceholder';
 import { FourierModule } from '@/modules/fourier/FourierModule';
 import { AnalogModule } from '@/modules/analog/AnalogModule';
 import { AnalogNoiseModule } from '@/modules/analog-noise/AnalogNoiseModule';
@@ -16,6 +15,7 @@ import { BasebandModule } from '@/modules/baseband/BasebandModule';
 import { InfoTheoryModule } from '@/modules/infotheory/InfoTheoryModule';
 import { ChannelCodingModule } from '@/modules/channel-coding/ChannelCodingModule';
 import { WirelessModule } from '@/modules/wireless/WirelessModule';
+import { EndToEndModule } from '@/modules/end-to-end/EndToEndModule';
 import './theme/global.css';
 import './components/components.css';
 import './pages/pages.css';
@@ -96,7 +96,7 @@ function Shell() {
           <Route path="/channel-coding" element={<ChannelCodingModule />} />
           <Route path="/baseband" element={<BasebandModule />} />
           <Route path="/wireless" element={<WirelessModule />} />
-          <Route path="/end-to-end" element={<ModulePlaceholder title={t('nav.endToEnd')} />} />
+          <Route path="/end-to-end" element={<EndToEndModule />} />
         </Routes>
       </main>
     </div>

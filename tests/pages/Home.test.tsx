@@ -18,7 +18,7 @@ describe('Home (landing)', () => {
     expect(screen.getByRole('link', { name: /Browse the modules/i })).toHaveAttribute('href', '/start');
   });
 
-  it('links the three live modules to their routes', () => {
+  it('links the live modules to their routes', () => {
     renderHome();
     expect(screen.getByRole('link', { name: /Sampling & Quantization/i })).toHaveAttribute('href', '/sampling');
     expect(screen.getByRole('link', { name: /Information Theory/i })).toHaveAttribute(
@@ -26,13 +26,12 @@ describe('Home (landing)', () => {
       '/information-theory',
     );
     expect(screen.getByRole('link', { name: /Modulation & Detection/i })).toHaveAttribute('href', '/modulation');
+    expect(screen.getByRole('link', { name: /End-to-End Link/i })).toHaveAttribute('href', '/end-to-end');
   });
 
   it('renders coming-soon modules as non-interactive (not links)', () => {
     renderHome();
     expect(screen.getByText('Baseband & Eye')).toBeInTheDocument();
-    expect(screen.getByText('End-to-End Link')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Baseband & Eye/i })).toBeNull();
-    expect(screen.queryByRole('link', { name: /End-to-End Link/i })).toBeNull();
   });
 });
