@@ -28,3 +28,37 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 4-tab shell layout */
+.fourier__tabbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.fourier__section {
+  width: 100%;
+}
+
+/* Student-friendly preset button (inherits neon button styles from global.css) */
+.fourier__preset {
+  margin-top: var(--space-2);
+  width: 100%;
+}
+
+/* One-line "what to observe" caption under a plot */
+.fourier__hint {
+  margin: var(--space-2) 0 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-family: var(--font);
+}
+
+/* Collapsible all-properties formula list */
+.fourier__proplist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
