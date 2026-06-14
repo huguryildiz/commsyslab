@@ -197,6 +197,83 @@ export function buildPairs(
   };
 }
 
+/** Tab 3: interactive Fourier-transform property demonstrator (§2.3.2). */
+export type FtProperty = 'shift' | 'modulate' | 'scale' | 'amp';
+
+export interface FtPropertyParams {
+  t0: number;
+  fcShift: number;
+  scale: number;
+  amp: number;
+}
+
+export interface FtPropertyView {
+  timeDomain: { t: number[]; original: number[]; transformed: number[] };
+  freqDomain: { f: number[]; magOriginal: number[]; mag: number[] };
+}
+
+export function buildFtProperty(
+  kind: 'rect' | 'tri' | 'gauss',
+  property: FtProperty,
+  p: FtPropertyParams,
+): FtPropertyView {
+  const pair = ftPair(kind, 0.1);
+  const t = pair.time.t;
+  const f = pair.freq.f;
+  const x0 = pair.time.x;
+  const m0 = pair.freq.mag;
+  const n = x0.length;
+  const dt = n > 1 ? t[1] - t[0] : 1;
+
+  let transformed = x0.slice();
+  let mag = m0.slice();
+
+  switch (property) {
+    case 'shift': {
+      // x(t−t₀) ↔ X(f)·e^{−j2πft₀}: |X(f)| unchanged, only phase changes.
+      const k = Math.round(p.t0 / dt);
+      transformed = x0.map((_, i) => x0[(((i - k) % n) + n) % n]);
+      break;
+    }
+    case 'modulate': {
+      // x(t)·cos(2πf₀t) ↔ ½[X(f−f₀)+X(f+f₀)]: spectrum copies up to ±f₀.
+      transformed = x0.map((v, i) => v * Math.cos(2 * Math.PI * p.fcShift * t[i]));
+      const ksh = Math.round(p.fcShift / (f[1] - f[0])) || 0;
+      mag = m0.map(
+        (_, i) =>
+          0.5 *
+          (m0[(((i - ksh) % m0.length) + m0.length) % m0.length] +
+            m0[(((i + ksh) % m0.length) + m0.length) % m0.length]),
+      );
+      break;
+    }
+    case 'scale': {
+      // x(at) ↔ (1/|a|)·X(f/a): compress time ⇒ stretch frequency.
+      const a = p.scale || 1;
+      transformed = x0.map((_, i) => {
+        const src = Math.round((i - n / 2) / a + n / 2);
+        return src >= 0 && src < n ? x0[src] : 0;
+      });
+      mag = m0.map((_, i) => {
+        const src = Math.round((i - m0.length / 2) * a + m0.length / 2);
+        return (src >= 0 && src < m0.length ? m0[src] : 0) / Math.abs(a);
+      });
+      break;
+    }
+    case 'amp': {
+      // a·x(t) ↔ a·X(f).
+      transformed = x0.map((v) => v * p.amp);
+      mag = m0.map((v) => v * Math.abs(p.amp));
+      break;
+    }
+  }
+
+  return {
+    timeDomain: { t, original: x0, transformed },
+    freqDomain: { f, magOriginal: m0, mag },
+  };
+}
+
 /** Panel 5: Bandpass Signals & Hilbert */
 export interface AnalyticView {
   time: number[];
