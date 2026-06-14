@@ -19,6 +19,7 @@ export const endtoend: Record<string, string> = {
   'e2e.ctrl.bits': 'Bits/sample (R)',
   'e2e.ctrl.modulation': 'Modulation',
   'e2e.ctrl.scheme': 'Scheme',
+  'e2e.ctrl.m': 'Order M',
   'e2e.ctrl.channel': 'Channel',
   'e2e.ctrl.ebn0': 'Eb/N0',
   'e2e.ctrl.bandlimited': 'Bandlimited (pulse-shape + eye)',

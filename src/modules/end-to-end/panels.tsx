@@ -44,7 +44,7 @@ export function ModulationPanel(p: ModControls) {
         onChange={p.onScheme}
       />
       {p.scheme !== 'bpsk' && (
-        <Slider label="M" value={p.M} min={4} max={16} step={4} onChange={p.onM} />
+        <Slider label={t('e2e.ctrl.m')} value={p.M} min={4} max={16} step={4} onChange={p.onM} />
       )}
     </Panel>
   );
