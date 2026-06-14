@@ -4,7 +4,7 @@
  * Proakis & Salehi §2.1–§2.5.
  */
 
-import { linspace } from '@/lib/dsp/math';
+import { linspace, sinc } from '@/lib/dsp/math';
 import {
   seriesCoeffs,
   seriesPartialSum,
@@ -14,7 +14,20 @@ import {
   hilbert,
 } from '@/lib/dsp/fourier';
 import { spectrum } from '@/lib/dsp/fft';
-import { evalSignal, periodicWave, type Tone, type Periodic } from '@/lib/dsp/signals';
+import {
+  evalSignal,
+  periodicWave,
+  rectPulse,
+  triPulse,
+  unitStep,
+  sgn,
+  expSignal,
+  classifySignal,
+  type Tone,
+  type Periodic,
+  type SignalClass,
+} from '@/lib/dsp/signals';
+import { convolve } from '@/lib/dsp/convolution';
 import { window as windowFunc, type WindowType } from '@/lib/dsp/window';
 
 /** Panel 1: Fourier Series Synthesis */
@@ -333,4 +346,77 @@ export function buildBasebandBandpass(W: number, fc: number, fs = 1000): Baseban
   const baseband = freqs.map((f) => tri(f, 0, W));
   const bandpass = freqs.map((f) => tri(f, fc, W / 2) + tri(f, -fc, W / 2));
   return { freqs, baseband, bandpass, W, fc, fs };
+}
+
+// --- Tab 1: Signals & Systems (Proakis §2.1) ---
+
+export type BasicKind = 'rect' | 'tri' | 'sinc' | 'step' | 'sgn' | 'exp' | 'sine';
+
+export interface SignalOps {
+  shift: number;
+  scale: number;
+  amp: number;
+  reverse: boolean;
+}
+
+export interface SignalExplorerView {
+  time: number[];
+  original: number[];
+  transformed: number[];
+  classification: SignalClass;
+}
+
+function basicSignal(kind: BasicKind, t: number): number {
+  switch (kind) {
+    case 'rect':
+      return rectPulse(t, 1);
+    case 'tri':
+      return triPulse(t, 1);
+    case 'sinc':
+      return sinc(t);
+    case 'step':
+      return unitStep(t);
+    case 'sgn':
+      return sgn(t);
+    case 'exp':
+      return expSignal(t, 0.5);
+    case 'sine':
+      return Math.sin(2 * Math.PI * t);
+  }
+}
+
+/** Signal explorer: original vs operated signal + energy/symmetry classification. */
+export function buildSignalExplorer(kind: BasicKind, ops: SignalOps): SignalExplorerView {
+  const time = linspace(-2, 2, 401);
+  const original = time.map((t) => basicSignal(kind, t));
+  const a = ops.scale || 1;
+  const transformed = time.map((t) => {
+    const u = ((ops.reverse ? -1 : 1) * (t - ops.shift)) / a;
+    return ops.amp * basicSignal(kind, u);
+  });
+  return { time, original, transformed, classification: classifySignal(time, original) };
+}
+
+export interface ConvolutionView {
+  t: number[];
+  x: number[];
+  h: number[];
+  y: number[];
+  slideIndex: number;
+}
+
+/** Convolution (LTI): y(t) = x(t) * h(t), with an animated slide position. */
+export function buildConvolution(
+  xKind: 'rect' | 'tri',
+  hKind: 'rect' | 'exp',
+  clock: number,
+): ConvolutionView {
+  const t = linspace(-1, 3, 401);
+  const dt = t[1] - t[0];
+  const x = t.map((tt) => (xKind === 'rect' ? rectPulse(tt - 0.5, 1) : triPulse(tt - 0.5, 1)));
+  const h = t.map((tt) => (hKind === 'rect' ? rectPulse(tt - 0.5, 1) : expSignal(tt, 0.4)));
+  const full = convolve(x, h, dt);
+  const y = full.slice(0, t.length);
+  const slideIndex = Math.floor(((clock % 4) / 4) * t.length);
+  return { t, x, h, y, slideIndex };
 }
