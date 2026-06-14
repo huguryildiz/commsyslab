@@ -6,6 +6,7 @@ export const channelcoding: Record<string, string> = {
   'cc.tab.channels': 'Channels & Capacity',
   'cc.tab.shannon': 'Shannon Limit',
   'cc.tab.block': 'Block Codes',
+  'cc.tab.conv': 'Convolutional',
   'cc.theory': 'Theory',
 
   // Tab 1 — Channels & Capacity
@@ -53,4 +54,29 @@ export const channelcoding: Record<string, string> = {
   'cc.bc.errBits': 'error bit(s)',
   'cc.bc.curve': 'Coding gain: BER vs Eb/N₀',
   'cc.bc.cube': 'Hamming cube (n = 3)',
+
+  // Tab 4 — Convolutional
+  'cc.cv.params': 'Code parameters',
+  'cc.cv.L': 'Constraint length L',
+  'cc.cv.g1': 'Generator g₁ (taps)',
+  'cc.cv.g2': 'Generator g₂ (taps)',
+  'cc.cv.octal': 'octal',
+  'cc.cv.catWarn': '⚠ Catastrophic code — a zero-weight loop exists; avoid.',
+  'cc.cv.input': 'Input bits u',
+  'cc.cv.errors': 'Channel errors (toggle received bits)',
+  'cc.cv.errorsHint': 'Click a received bit to flip it (inject errors).',
+  'cc.cv.encoder': 'Encoder & state-transition diagram',
+  'cc.cv.encode': 'Encoding  u → c  (with tail flush)',
+  'cc.cv.trellis': 'Trellis & Viterbi decoding',
+  'cc.cv.curveCtl': 'Coding-gain curve',
+  'cc.cv.curve': 'Coding gain: BER vs Eb/N₀',
+  'cc.cv.step': 'Viterbi step',
+  'cc.cv.play': '▶ Play',
+  'cc.cv.pause': '⏸ Pause',
+  'cc.cv.reset': '⏮ Reset',
+  'cc.cv.decoded': 'Decoded û',
+  'cc.cv.ok': '✓ sequence recovered',
+  'cc.cv.fail': '✗ decoding failed (errors beyond capability)',
+  'cc.cv.tail': 'tail',
+  'cc.cv.metric': 'path metric',
 };

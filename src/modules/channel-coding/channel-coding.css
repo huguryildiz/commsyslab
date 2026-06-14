@@ -55,3 +55,19 @@
 .cc-bc-status { font-family: var(--mono); font-size: 13px; margin: 8px 0 0; }
 .cc-bc-status--ok { color: var(--ok); }
 .cc-bc-status--err { color: var(--err); }
+
+/* Convolutional tab */
+.cc-cv-taps { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.cc-cv-octal { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-left: 8px; }
+.cc-cv-warn { color: var(--err); font-family: var(--mono); font-size: 12px; margin: 8px 0 0; }
+.cc-cv-anim { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+.cc-cv-btn {
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; font-size: 12px;
+  font-family: var(--mono); transition: border-color var(--transition), box-shadow var(--transition);
+}
+.cc-cv-btn:hover { border-color: var(--accent); box-shadow: 0 0 8px rgba(57, 255, 133, 0.18); }
+.cc-cv-status { font-family: var(--mono); font-size: 13px; margin: 8px 0 0; }
+.cc-cv-status--ok { color: var(--ok); }
+.cc-cv-status--err { color: var(--err); }
+.cc-cv-line { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin: 6px 0; }
