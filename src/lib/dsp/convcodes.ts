@@ -72,3 +72,108 @@ export function encodeConv(bits: number[], code: ConvCode): number[] {
 
 // Proakis Example 9.7.1 (Fig 9.25): (2,1,3), d_free = 5, non-catastrophic.
 export const BOOK_CODE: ConvCode = makeConvCode(3, [1, 0, 1], [1, 1, 1]);
+
+/** Hamming weight of a bit vector. */
+function bitWeight(v: number[]): number {
+  let w = 0;
+  for (const b of v) w += b & 1;
+  return w;
+}
+
+/**
+ * Free distance: min output Hamming weight of a path that leaves state 0 and first
+ * returns to state 0 (Dijkstra over branch output-weights). §9.7.1 / Eq. 9.7.5.
+ * Returns Infinity if no remerge within the search bound (e.g. catastrophic input).
+ */
+export function freeDistance(code: ConvCode): number {
+  const { nStates, L } = code;
+  const CAP = 8 * L * nStates; // generous bound; non-catastrophic codes remerge quickly
+  // dist[s] = min output weight to reach s having diverged from state 0.
+  const dist = new Array<number>(nStates).fill(Infinity);
+  // Diverge via input 1 (input 0 keeps state 0 = the all-zero codeword, excluded).
+  const s1 = nextState(0, 1, L);
+  dist[s1] = bitWeight(branchOutputs(0, 1, code));
+  let best = Infinity;
+  // Simple bounded Dijkstra with a visited-pop loop.
+  const done = new Array<boolean>(nStates).fill(false);
+  for (let iter = 0; iter < CAP; iter++) {
+    // pick the unfinished state with the smallest dist
+    let s = -1;
+    let d = Infinity;
+    for (let i = 0; i < nStates; i++) {
+      if (!done[i] && dist[i] < d) {
+        d = dist[i];
+        s = i;
+      }
+    }
+    if (s === -1) break;
+    done[s] = true;
+    for (let input = 0; input < 2; input++) {
+      const ns = nextState(s, input, L);
+      const w = d + bitWeight(branchOutputs(s, input, code));
+      if (ns === 0) {
+        if (w < best) best = w; // remerged
+      } else if (w < dist[ns] && !done[ns]) {
+        dist[ns] = w;
+      }
+    }
+  }
+  return best;
+}
+
+/**
+ * Info-weight spectrum {d -> beta_d} for first-return paths of output weight <= maxD,
+ * where beta_d sums the input weights (info-bit errors) of weight-d paths. §9.7.3.
+ * Used for the leading union-bound term. DFS, pruned by output weight and a depth cap.
+ */
+export function weightSpectrum(code: ConvCode, maxD: number): Map<number, number> {
+  const { L } = code;
+  const beta = new Map<number, number>();
+  const CAP = 64;
+  const visit = (state: number, outW: number, inW: number, depth: number): void => {
+    if (depth > CAP) return;
+    for (let input = 0; input < 2; input++) {
+      const ns = nextState(state, input, L);
+      const no = outW + bitWeight(branchOutputs(state, input, code));
+      const ni = inW + input;
+      if (no > maxD) continue;
+      if (ns === 0) {
+        if (state !== 0) beta.set(no, (beta.get(no) ?? 0) + ni); // real first-return
+      } else {
+        visit(ns, no, ni, depth + 1);
+      }
+    }
+  };
+  // Start by diverging via input 1 (input 0 -> state 0 is the trivial all-zero path).
+  const s1 = nextState(0, 1, L);
+  visit(s1, bitWeight(branchOutputs(0, 1, code)), 1, 1);
+  return beta;
+}
+
+/** GF(2) polynomial from taps: bit i = coefficient of D^i. */
+function polyOf(taps: number[]): number {
+  let p = 0;
+  for (let i = 0; i < taps.length; i++) p |= (taps[i] & 1) << i;
+  return p;
+}
+
+/** GF(2) polynomial gcd via Euclid (XOR division). */
+function gf2Gcd(a: number, b: number): number {
+  const deg = (x: number) => (x === 0 ? -1 : 31 - Math.clz32(x));
+  while (b !== 0) {
+    while (deg(a) >= deg(b) && a !== 0) a ^= b << (deg(a) - deg(b));
+    [a, b] = [b, a];
+  }
+  return a;
+}
+
+/**
+ * A code is catastrophic iff gcd(g1(D), g2(D)) over GF(2) is not a monomial D^a
+ * (equivalently, a zero-output-weight loop through a nonzero state exists). §9.7.1.
+ */
+export function isCatastrophic(code: ConvCode): boolean {
+  const g = gf2Gcd(polyOf(code.g1), polyOf(code.g2));
+  if (g === 0) return true; // both generators zero — degenerate
+  const isMonomial = (g & (g - 1)) === 0; // single bit set => D^a
+  return !isMonomial;
+}

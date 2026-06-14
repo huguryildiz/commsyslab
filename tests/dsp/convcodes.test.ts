@@ -6,6 +6,9 @@ import {
   buildTrellis,
   encodeConv,
   BOOK_CODE,
+  freeDistance,
+  weightSpectrum,
+  isCatastrophic,
 } from '@/lib/dsp/convcodes';
 
 describe('convolutional encoder FSM', () => {
@@ -36,5 +39,19 @@ describe('convolutional encoder FSM', () => {
     expect(encodeConv([1, 0, 1, 1], BOOK_CODE)).toEqual([
       1, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1,
     ]);
+  });
+});
+
+describe('free distance, weight spectrum, catastrophic test', () => {
+  it('freeDistance(BOOK_CODE) = 5', () => {
+    expect(freeDistance(BOOK_CODE)).toBe(5);
+  });
+  it('weightSpectrum gives beta_dfree = 1 for the book code', () => {
+    expect(weightSpectrum(BOOK_CODE, 5).get(5)).toBe(1);
+  });
+  it('flags the book Fig 9.30 catastrophic code, accepts the good one', () => {
+    const bad = makeConvCode(3, [1, 1, 0], [0, 1, 1]); // gcd = 1+D (not a monomial)
+    expect(isCatastrophic(bad)).toBe(true);
+    expect(isCatastrophic(BOOK_CODE)).toBe(false);
   });
 });
