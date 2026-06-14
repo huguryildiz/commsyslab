@@ -16,6 +16,8 @@ import type {
   AnalogDemodView,
   AnalogSuperView,
   ModulatorView,
+  FdmView,
+  QamView,
 } from './model';
 
 const PAD = { l: 40, r: 20, t: 20, b: 40 };
@@ -351,6 +353,87 @@ export function ModulatorSpectrumPanel({ view }: { view: ModulatorView }) {
           deps={[view]}
           ariaLabel={t('analog.mod.clean')}
         />
+      </div>
+    </div>
+  );
+}
+
+/** FDM: composite spectrum (red when bands overlap) + recovered channel. */
+export function FdmPanel({ view }: { view: FdmView }) {
+  const drawSpec = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    if (view.specFreq.length === 0) return;
+    const maxMag = Math.max(...view.specMag, 1e-9) * 1.2;
+    const ax: Axes = {
+      x: linScale([view.specFreq[0], view.specFreq[view.specFreq.length - 1]], [PAD.l, w - PAD.r]),
+      y: linScale([0, maxMag], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [view.specFreq[0], view.specFreq[view.specFreq.length - 1]], {
+      grid: true,
+      domainY: [0, maxMag],
+      xLabel: '$f\\,[\\mathrm{Hz}]$',
+      yLabel: '$|U(f)|$',
+    });
+    drawLine(ctx, ax, view.specFreq, view.specMag, view.overlap ? CHART.red : CHART.blue, 1.5);
+  };
+  const drawRec = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    const lo = Math.min(...view.recovered) * 1.1 - 0.05;
+    const hi = Math.max(...view.recovered) * 1.1 + 0.05;
+    const ax: Axes = {
+      x: linScale([view.time[0], view.time[view.time.length - 1]], [PAD.l, w - PAD.r]),
+      y: linScale([lo, hi], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [view.time[0], view.time[view.time.length - 1]], {
+      grid: true,
+      domainY: [lo, hi],
+      xLabel: '$t\\,[\\mathrm{s}]$',
+      yLabel: '$\\hat{m}(t)$',
+    });
+    drawLine(ctx, ax, view.time, view.recovered, CHART.green, 1.8);
+  };
+  return (
+    <div className="analog__am-panel">
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mux.fdm.composite')}</div>
+        <Canvas height={180} draw={drawSpec} deps={[view]} ariaLabel={t('analog.mux.fdm.composite')} />
+      </div>
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mux.fdm.recovered')}</div>
+        <Canvas height={180} draw={drawRec} deps={[view]} ariaLabel={t('analog.mux.fdm.recovered')} />
+      </div>
+    </div>
+  );
+}
+
+/** QAM: each channel's original (green) vs recovered (blue dashed) — shows crosstalk. */
+export function QamPanel({ view }: { view: QamView }) {
+  const drawCh =
+    (orig: number[], rec: number[], yLabel: string) =>
+    (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+      const all = [...orig, ...rec];
+      const lo = Math.min(...all) * 1.1 - 0.05;
+      const hi = Math.max(...all) * 1.1 + 0.05;
+      const ax: Axes = {
+        x: linScale([view.time[0], view.time[view.time.length - 1]], [PAD.l, w - PAD.r]),
+        y: linScale([lo, hi], [h - PAD.b, PAD.t]),
+      };
+      drawAxes(ctx, ax, [view.time[0], view.time[view.time.length - 1]], {
+        grid: true,
+        domainY: [lo, hi],
+        xLabel: '$t\\,[\\mathrm{s}]$',
+        yLabel,
+      });
+      drawLine(ctx, ax, view.time, orig, CHART.green, 2);
+      drawLine(ctx, ax, view.time, rec, CHART.blue, 1.6, true);
+    };
+  return (
+    <div className="analog__am-panel">
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mux.qam.m1')}</div>
+        <Canvas height={180} draw={drawCh(view.m1, view.m1Hat, '$m_1$')} deps={[view]} ariaLabel={t('analog.mux.qam.m1')} />
+      </div>
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mux.qam.m2')}</div>
+        <Canvas height={180} draw={drawCh(view.m2, view.m2Hat, '$m_2$')} deps={[view]} ariaLabel={t('analog.mux.qam.m2')} />
       </div>
     </div>
   );
