@@ -10,9 +10,10 @@ import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import { AmSchemesSection } from './sections/AmSchemesSection';
 import { ModDemodSection } from './sections/ModDemodSection';
 import { AmRadioSection } from './sections/AmRadioSection';
+import { MultiplexingSection } from './sections/MultiplexingSection';
 import './analog-am.css';
 
-type Tab = 'schemes' | 'modimpl' | 'radio';
+type Tab = 'schemes' | 'modimpl' | 'mux' | 'radio';
 
 export function AnalogAmModule() {
   const [tab, setTab] = useState<Tab>('schemes');
@@ -42,6 +43,7 @@ export function AnalogAmModule() {
           options={[
             { value: 'schemes', label: t('analog.tab.schemes') },
             { value: 'modimpl', label: t('analog.tab.modimpl') },
+            { value: 'mux', label: t('analog.tab.mux') },
             { value: 'radio', label: t('analog.tab.radio') },
           ]}
           onChange={setTab}
@@ -50,6 +52,7 @@ export function AnalogAmModule() {
 
       {tab === 'schemes' && <AmSchemesSection clock={clock} loop={loop} />}
       {tab === 'modimpl' && <ModDemodSection clock={clock} loop={loop} />}
+      {tab === 'mux' && <MultiplexingSection clock={clock} loop={loop} />}
       {tab === 'radio' && <AmRadioSection clock={clock} loop={loop} />}
     </div>
   );
