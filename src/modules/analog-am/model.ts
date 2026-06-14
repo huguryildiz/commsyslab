@@ -8,6 +8,10 @@ import {
   switchingModulator,
   balancedModulator,
   ringModulator,
+  fdmCompose,
+  fdmSeparate,
+  qamModulate,
+  qamDemod,
 } from '@/lib/dsp/am-impl';
 
 /**
@@ -422,5 +426,101 @@ export function buildModulatorView(p: ModulatorParams): ModulatorView {
     cleanFreq: clean.f,
     cleanMag: clean.m,
     producesDsb,
+  };
+}
+
+export interface FdmParams {
+  messageFreqs: number[]; // one tone per channel (Hz)
+  spacing: number; // carrier separation (Hz)
+  bandwidth: number; // per-channel baseband bandwidth W (Hz)
+  selected: number; // channel index to recover at the receiver
+}
+export interface FdmView {
+  time: number[];
+  recovered: number[];
+  specFreq: number[];
+  specMag: number[];
+  carriers: number[];
+  overlap: boolean; // spacing < 2·bandwidth → adjacent-band interference
+}
+
+export interface QamParams {
+  m1Freq: number;
+  m2Freq: number;
+  carrierFreq: number;
+  phaseErrorDeg: number;
+}
+export interface QamView {
+  time: number[];
+  m1: number[];
+  m2: number[];
+  m1Hat: number[];
+  m2Hat: number[];
+  crosstalkDb: number;
+}
+
+/**
+ * Build the FDM multiplexer view: composite spectrum + one recovered channel.
+ * Each message is a single tone DSB-SC-modulated onto its own carrier; the
+ * channels are spaced by `spacing` Hz starting from fc0 = 20 kHz (Proakis §3.4.1).
+ * overlap = true when spacing < 2·bandwidth, indicating adjacent-band interference.
+ */
+export function buildFdmView(p: FdmParams): FdmView {
+  const K = p.messageFreqs.length;
+  const fc0 = 20000;
+  const carriers = Array.from({ length: K }, (_, k) => fc0 + k * p.spacing);
+  const fcMax = carriers[K - 1];
+  const fs = 8 * (fcMax + p.bandwidth);
+  const N = 8192;
+  const t = Array.from({ length: N }, (_, i) => i / fs);
+  const messages = p.messageFreqs.map((f) => [{ freq: f, amp: 1 }]);
+  const { composite } = fdmCompose(messages, carriers, t);
+  const sel = Math.min(p.selected, K - 1);
+  const recovered = fdmSeparate(composite, fs, carriers[sel], p.bandwidth, t);
+  const win = hann(N);
+  const sp = spectrum(
+    composite.map((v, i) => v * win[i]),
+    fs,
+  );
+  const { f, m } = bandSlice(sp.freq, sp.mag, 0, fcMax + 4 * p.bandwidth);
+  const showN = Math.min(N, Math.ceil(fs * 0.003));
+  return {
+    time: t.slice(0, showN),
+    recovered: recovered.slice(0, showN),
+    specFreq: f,
+    specMag: m,
+    carriers,
+    overlap: p.spacing < 2 * p.bandwidth,
+  };
+}
+
+/**
+ * Build the QAM view: modulated signal, recovered channels, and crosstalk.
+ * A phase error at the receiver couples the I and Q channels (Proakis §3.4.2).
+ * crosstalkDb = 20 log10(leak/own) measured at the message tone frequencies.
+ */
+export function buildQamView(p: QamParams): QamView {
+  const fc = p.carrierFreq;
+  const fs = 8 * fc;
+  const N = 8192;
+  const t = Array.from({ length: N }, (_, i) => i / fs);
+  const W = Math.max(p.m1Freq, p.m2Freq) * 1.5;
+  const m1 = [{ freq: p.m1Freq, amp: 1 }];
+  const m2 = [{ freq: p.m2Freq, amp: 1 }];
+  const u = qamModulate(m1, m2, fc, 1, t);
+  const { m1Hat, m2Hat } = qamDemod(u, fc, t, fs, W, (p.phaseErrorDeg * Math.PI) / 180);
+  const corr = (sig: number[], f: number) =>
+    Math.abs(sig.reduce((s, v, i) => s + v * Math.cos(2 * Math.PI * f * t[i]), 0)) / sig.length;
+  const own = corr(m1Hat, p.m1Freq);
+  const leak = corr(m1Hat, p.m2Freq);
+  const crosstalkDb = 20 * Math.log10((leak + 1e-9) / (own + 1e-9));
+  const showN = Math.min(N, Math.ceil(fs * Math.max(3 / p.m1Freq, 10 / fc)));
+  return {
+    time: t.slice(0, showN),
+    m1: t.slice(0, showN).map((tt) => Math.cos(2 * Math.PI * p.m1Freq * tt)),
+    m2: t.slice(0, showN).map((tt) => Math.cos(2 * Math.PI * p.m2Freq * tt)),
+    m1Hat: m1Hat.slice(0, showN),
+    m2Hat: m2Hat.slice(0, showN),
+    crosstalkDb,
   };
 }
