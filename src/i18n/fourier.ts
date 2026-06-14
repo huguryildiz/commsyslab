@@ -11,6 +11,12 @@ export const fourier: Record<string, string> = {
   // Animation
   'fourier.animation': 'Animation',
 
+  // Tabs
+  'fourier.tab.signals': 'Signals & Systems',
+  'fourier.tab.series': 'Fourier Series',
+  'fourier.tab.transform': 'Fourier Transform & Spectra',
+  'fourier.tab.filters': 'Filters & Bandpass',
+
   // Panel titles
   'fourier.panel.synthesis': 'Fourier Series Synthesis',
   'fourier.panel.analyzer': 'DFT / FFT Spectrum Analyzer',
