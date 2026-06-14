@@ -90,3 +90,9 @@
 .cc-cy-status--ok { color: var(--ok); }
 .cc-cy-status--none { color: var(--text-dim); }
 .cc-cy-line { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin: 6px 0; }
+
+/* Soft-decision panel */
+.cc-cv-soft { display: flex; gap: 4px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; }
+.cc-cv-soft span { min-width: 30px; text-align: center; }
+.cc-cv-soft .pos { color: var(--accent); }
+.cc-cv-soft .neg { color: var(--err); }

@@ -16,6 +16,7 @@ import {
 } from '@/lib/dsp/convcodes';
 import { uncodedBerBpsk } from '@/lib/dsp/blockcodes';
 import { TrellisDiagram } from './TrellisDiagram';
+import { SoftHardPanel } from './SoftHardPanel';
 import { t } from '@/i18n';
 
 // Sensible default taps per constraint length (book code for L=3).
@@ -258,6 +259,8 @@ export function ConvCodesSection() {
             {t('cc.cv.metric')} = {isFinite(result.finalMetric) ? result.finalMetric : '∞'})
           </p>
         </Panel>
+
+        <SoftHardPanel code={code} input={input} codeword={codeword} />
 
         <Panel title={t('cc.cv.curve')}>
           <Canvas
