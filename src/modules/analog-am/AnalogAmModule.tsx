@@ -1,7 +1,7 @@
 /**
- * Amplitude Modulation module — 3-tab shell (Proakis & Salehi Chapter 3).
- * Tabs: AM Schemes (§3.2) · Modulators & Demodulators (§3.3) · AM Radio (§3.5).
- * The Signal Multiplexing (§3.4) tab is added in Plan 3.
+ * Amplitude Modulation module — 4-tab shell (Proakis & Salehi Chapter 3).
+ * Tabs: AM Schemes (§3.2) · Modulators & Demodulators (§3.3) ·
+ * Signal Multiplexing (§3.4) · AM Radio Broadcasting (§3.5).
  */
 import { useEffect, useState } from 'react';
 import { Segmented } from '@/components';
