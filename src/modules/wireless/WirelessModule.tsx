@@ -6,9 +6,10 @@ import { RayleighBerSection } from './sections/RayleighBerSection';
 import { SpreadSpectrumSection } from './sections/SpreadSpectrumSection';
 import { OfdmSection } from './sections/OfdmSection';
 import { LinkBudgetSection } from './sections/LinkBudgetSection';
+import { RakeSection } from './sections/RakeSection';
 import './wireless.css';
 
-type Tab = 'fading' | 'ber' | 'spread' | 'ofdm' | 'linkbudget';
+type Tab = 'fading' | 'ber' | 'spread' | 'ofdm' | 'linkbudget' | 'rake';
 
 export function WirelessModule() {
   const [tab, setTab] = useState<Tab>('fading');
@@ -28,6 +29,7 @@ export function WirelessModule() {
           { value: 'spread', label: t('wl.tab.spread') },
           { value: 'ofdm', label: t('wl.tab.ofdm') },
           { value: 'linkbudget', label: t('wl.tab.linkbudget') },
+          { value: 'rake', label: t('wl.tab.rake') },
         ]}
         onChange={(v) => setTab(v as Tab)}
       />
@@ -37,6 +39,7 @@ export function WirelessModule() {
         {tab === 'spread' && <SpreadSpectrumSection />}
         {tab === 'ofdm' && <OfdmSection />}
         {tab === 'linkbudget' && <LinkBudgetSection />}
+        {tab === 'rake' && <RakeSection />}
       </div>
     </div>
   );
