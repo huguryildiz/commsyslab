@@ -30,7 +30,9 @@ test-output.txt
 refs/
 
 # Local AI / project config — not versioned.
+# docs/book-reference.md IS versioned; only the local design docs under
+# docs/superpowers/ (specs, plans, archives) stay out of the repo.
 .claude/
 CLAUDE.md
-docs/
+docs/superpowers/
 refs/

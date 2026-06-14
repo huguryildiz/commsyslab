@@ -1,7 +1,7 @@
 # Book.pdf — Reference Map (module ↔ chapter/page)
 
-**Source:** `refs/Book.pdf` — Proakis & Salehi, *Fundamentals of Communication Systems*
-(2nd ed.), 886 pp. This file is a map showing where to look in the book by module; it is
+**Source:** Proakis & Salehi, *Fundamentals of Communication Systems* (2nd ed.), 886 pp —
+[book listing](https://amzn.eu/d/09xJVegK). This file is a map showing where to look in the book by module; it is
 not the formulas themselves. When writing a simulation/formula, **read and verify the
 relevant pages from the PDF** (mandatory rule in CLAUDE.md). Page numbers are the book's
 printed numbers (PDF page offset ~+14).
