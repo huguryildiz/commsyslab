@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { mSequence, pnAutocorrelation, spreadBits, despreadChips, processingGainDb } from '@/lib/dsp/spread';
+import { mSequence, pnAutocorrelation, spreadBits, despreadChips, processingGainDb, dsssBer } from '@/lib/dsp/spread';
+import { qfunc } from '@/lib/dsp/math';
 
 describe('mSequence', () => {
   it('has maximal length N = 2^n - 1 with entries of ±1', () => {
@@ -50,5 +51,19 @@ describe('spreadBits / despreadChips', () => {
 describe('processingGainDb', () => {
   it('is 10*log10(N)', () => {
     expect(processingGainDb(31)).toBeCloseTo(10 * Math.log10(31), 12);
+  });
+});
+
+describe('dsssBer', () => {
+  it('reduces to AWGN BPSK when there is no jammer (JSR -> -inf)', () => {
+    const gb = 10 ** (8 / 10);
+    // very weak jammer: JSR = -60 dB
+    expect(dsssBer(8, -60, 31)).toBeCloseTo(qfunc(Math.sqrt(2 * gb)), 6);
+  });
+  it('a stronger jammer raises BER', () => {
+    expect(dsssBer(8, 10, 31)).toBeGreaterThan(dsssBer(8, 0, 31));
+  });
+  it('more processing gain lowers BER against the same jammer', () => {
+    expect(dsssBer(8, 10, 127)).toBeLessThan(dsssBer(8, 10, 31));
   });
 });
