@@ -139,3 +139,21 @@
   margin-top: 8px;
   font-family: var(--mono);
 }
+
+/* 4-tab shell */
+.analog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+.analog__tabbar {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.analog__hint {
+  color: var(--text-dim);
+  font-size: 0.9em;
+  margin-bottom: var(--space-2, 8px);
+}
