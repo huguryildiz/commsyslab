@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Canvas } from '@/lib/plot/Canvas';
-import { linScale, drawLine, drawStems, type Axes } from '@/lib/plot/draw';
+import { linScale, drawAxes, drawLine, drawStems, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import type {
   SeriesSynthView,
@@ -33,21 +33,12 @@ export const SeriesSynthPlots: React.FC<{ data: SeriesSynthView }> = ({ data }) 
       y: linScale([yMin, yMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t\\,(s)$', yLabel: '$x(t)$' });
+
     // Draw ideal waveform
     drawLine(ctx, ax, data.time, data.ideal, CHART.orange, 2);
     // Draw partial sum
     drawLine(ctx, ax, data.time, data.partial, CHART.green, 2);
-
-    // Axes labels
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t (s)', w / 2, h - 5);
-    ctx.save();
-    ctx.translate(10, h / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('x(t)', 0, 0);
-    ctx.restore();
   };
 
   const drawSpectrum = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -62,17 +53,8 @@ export const SeriesSynthPlots: React.FC<{ data: SeriesSynthView }> = ({ data }) 
       y: linScale([0, mMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$|c_n|$' });
     drawStems(ctx, ax, data.freqs, data.mags, CHART.green, 3);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f (Hz)', w / 2, h - 5);
-    ctx.save();
-    ctx.translate(10, h / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('|cₙ|', 0, 0);
-    ctx.restore();
   };
 
   return (
@@ -108,12 +90,8 @@ export const SpectrumAnalyzerPlots: React.FC<{ data: SpectrumAnalyzerView }> = (
       y: linScale([sMin, sMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t\\,(s)$', yLabel: '$x(t)$' });
     drawLine(ctx, ax, data.time, data.signal, CHART.green, 1.5);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t (s)', w / 2, h - 5);
   };
 
   const drawMagnitude = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -128,12 +106,8 @@ export const SpectrumAnalyzerPlots: React.FC<{ data: SpectrumAnalyzerView }> = (
       y: linScale([0, mMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$|X(f)|$' });
     drawLine(ctx, ax, data.freqs, data.mags, CHART.blue, 1);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f (Hz)', w / 2, h - 5);
   };
 
   const drawPhase = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -149,12 +123,8 @@ export const SpectrumAnalyzerPlots: React.FC<{ data: SpectrumAnalyzerView }> = (
       y: linScale([pMin, pMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$\\angle X(f)$' });
     drawLine(ctx, ax, data.freqs, data.phases, CHART.pink, 1);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f (Hz)', w / 2, h - 5);
   };
 
   return (
@@ -185,17 +155,8 @@ export const FilterPlots: React.FC<{ data: FilterView }> = ({ data }) => {
       y: linScale([0, mMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$|H(f)|$' });
     drawLine(ctx, ax, data.freqs, data.filterMag, CHART.orange, 2);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f (Hz)', w / 2, h - 5);
-    ctx.save();
-    ctx.translate(10, h / 2);
-    ctx.rotate(-Math.PI / 2);
-    ctx.fillText('|H(f)|', 0, 0);
-    ctx.restore();
   };
 
   const drawSpectrumComparison = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -210,13 +171,9 @@ export const FilterPlots: React.FC<{ data: FilterView }> = ({ data }) => {
       y: linScale([0, mMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$|X(f)|$' });
     drawLine(ctx, ax, data.freqs, data.inputMag, CHART.green, 1.5, false);
     drawLine(ctx, ax, data.freqs, data.outputMag, CHART.blue, 1.5, false);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f (Hz)', w / 2, h - 5);
   };
 
   return (
@@ -252,12 +209,8 @@ export const PairsPlots: React.FC<{ data: PairsView }> = ({ data }) => {
       y: linScale([xMin, xMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t$', yLabel: '$x(t)$' });
     drawLine(ctx, ax, data.timeDomain.t, data.timeDomain.x, CHART.green, 2);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t', w / 2, h - 5);
   };
 
   const drawFreq = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -272,12 +225,8 @@ export const PairsPlots: React.FC<{ data: PairsView }> = ({ data }) => {
       y: linScale([0, mMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [fMin, fMax], { xLabel: '$f$', yLabel: '$|X(f)|$' });
     drawLine(ctx, ax, data.freqDomain.f, data.freqDomain.mag, CHART.blue, 1.5);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('f', w / 2, h - 5);
   };
 
   return (
@@ -303,12 +252,8 @@ export const AnalyticPlots: React.FC<{ data: AnalyticView }> = ({ data }) => {
       y: linScale([sMin, sMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t$', yLabel: '$x(t)$' });
     drawLine(ctx, ax, data.time, data.signal, CHART.orange, 1.5);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t', w / 2, h - 5);
   };
 
   const drawIQ = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -324,13 +269,9 @@ export const AnalyticPlots: React.FC<{ data: AnalyticView }> = ({ data }) => {
       y: linScale([qMin, qMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t$', yLabel: '$I(t), Q(t)$' });
     drawLine(ctx, ax, data.time, data.iComponent, CHART.green, 1.5);
     drawLine(ctx, ax, data.time, data.qComponent, CHART.blue, 1.5);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t', w / 2, h - 5);
   };
 
   const drawEnvelope = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
@@ -346,12 +287,8 @@ export const AnalyticPlots: React.FC<{ data: AnalyticView }> = ({ data }) => {
       y: linScale([envMin, envMax], [h - PAD.b, PAD.t]),
     };
 
+    drawAxes(ctx, ax, [tMin, tMax], { xLabel: '$t$', yLabel: '$V(t)$' });
     drawLine(ctx, ax, data.time, data.envelope, CHART.pink, 2);
-
-    ctx.fillStyle = CHART.dim;
-    ctx.font = '12px var(--mono)';
-    ctx.textAlign = 'center';
-    ctx.fillText('t', w / 2, h - 5);
   };
 
   return (

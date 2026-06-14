@@ -32,9 +32,11 @@ function Viz({ kind }: { kind: VizKind }) {
 
 export function ModuleTile({ m }: { m: LandingModule }) {
   const soon = m.status === 'soon';
+  const description = t(m.descKey);
   const className = [
     'tile',
     m.flagship && 'tile--flagship',
+    m.feature && 'tile--feature',
     m.compact && 'tile--compact',
     soon && 'tile--soon',
   ]
@@ -43,19 +45,21 @@ export function ModuleTile({ m }: { m: LandingModule }) {
 
   const body = (
     <>
-      <div className="tile__top">
-        <span className="tile__num">
-          {t('landing.module')} {m.num}
-        </span>
-        {soon ? (
-          <span className="tile__soon">{t('landing.tile.soon')}</span>
-        ) : (
-          <span className="tile__chapter">{m.chapter}</span>
-        )}
+      <div className="tile__body">
+        <div className="tile__top">
+          <span className="tile__num">
+            {t('landing.module')} {m.num}
+          </span>
+          {soon ? (
+            <span className="tile__soon">{t('landing.tile.soon')}</span>
+          ) : (
+            <span className="tile__chapter">{m.chapter}</span>
+          )}
+        </div>
+        <h3 className="tile__title">{t(m.titleKey)}</h3>
+        {description ? <p className="tile__desc">{description}</p> : null}
+        <span className="tile__open">{soon ? m.chapter : `${t('landing.tile.open')} →`}</span>
       </div>
-      <h3 className="tile__title">{t(m.titleKey)}</h3>
-      <p className="tile__desc">{t(m.descKey)}</p>
-      <span className="tile__open">{soon ? m.chapter : `${t('landing.tile.open')} →`}</span>
       {m.viz ? (
         <div className={`tile__viz tile__viz--${m.viz}`} aria-hidden="true">
           <Viz kind={m.viz} />

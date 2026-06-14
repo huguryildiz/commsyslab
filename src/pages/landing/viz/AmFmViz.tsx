@@ -1,69 +1,84 @@
 import { useCanvasTicker, type DrawFn } from '../useCanvasTicker';
 import { VIZ } from './palette';
 
+const TAU = Math.PI * 2;
+
+function amEnvelope(x: number, frame: number, width: number): number {
+  const u = x / Math.max(1, width);
+  const messagePhase = frame * 0.018;
+  const message = Math.sin(u * TAU * 1.18 - messagePhase);
+  return 0.58 + 0.36 * message;
+}
+
+function amCarrier(x: number, frame: number, width: number): number {
+  const u = x / Math.max(1, width);
+  const carrierPhase = frame * 0.38;
+  return Math.sin(u * TAU * 17.5 - carrierPhase);
+}
+
 /**
- * AM/FM visualization: sinusoidal message fills a carrier frequency,
- * showing an AM envelope with a fast FM carrier underneath.
+ * AM/FM visualization: a moving AM carrier constrained by its envelope.
  */
 const draw: DrawFn = (ctx, t, w, h) => {
   ctx.clearRect(0, 0, w, h);
 
   const mid = h * 0.5;
-  const amEnvAmp = h * 0.15; // AM envelope amplitude
-  const carrierAmp = h * 0.08; // Carrier oscillation within envelope
-  const msgPhase = t * 0.02; // Message frequency
-  const carrierPhase = t * 0.15; // Carrier frequency (much faster)
+  const scale = h * 0.31;
 
-  const kMsg = 4 / w; // Message wavenumber
-  const kCarrier = 80 / w; // Carrier wavenumber
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 
-  // Draw AM envelope (slow modulation in orange)
+  ctx.strokeStyle = VIZ.axis;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, mid);
+  ctx.lineTo(w, mid);
+  ctx.stroke();
+
+  // Draw AM envelope rails.
   ctx.strokeStyle = VIZ.orange;
   ctx.lineWidth = 2.5;
   ctx.shadowColor = 'rgba(255, 140, 66, 0.4)';
   ctx.shadowBlur = 8;
   ctx.beginPath();
   for (let x = 0; x <= w; x += 2) {
-    const envY = amEnvAmp * Math.sin(x * kMsg + msgPhase);
-    const y = mid + envY;
+    const y = mid - amEnvelope(x, t, w) * scale;
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
   ctx.stroke();
 
-  // Negative envelope
   ctx.beginPath();
   for (let x = 0; x <= w; x += 2) {
-    const envY = amEnvAmp * Math.sin(x * kMsg + msgPhase);
-    const y = mid - envY;
+    const y = mid + amEnvelope(x, t, w) * scale;
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // Draw modulated carrier wave (fast oscillation in blue within envelope)
+  // Draw the AM waveform: carrier amplitude follows the envelope.
   ctx.strokeStyle = VIZ.blue;
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 1.65;
   ctx.shadowColor = 'rgba(123, 140, 255, 0.5)';
   ctx.shadowBlur = 10;
   ctx.beginPath();
   for (let x = 0; x <= w; x += 1) {
-    const envY = amEnvAmp * Math.sin(x * kMsg + msgPhase);
-    const carrierY = carrierAmp * Math.sin(x * kCarrier + carrierPhase);
-    const y = mid + envY + carrierY;
+    const y = mid - amEnvelope(x, t, w) * amCarrier(x, t, w) * scale;
     if (x === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // Highlight the envelope samples (carrier peaks)
+  // Highlight a few moving envelope samples without changing the tile theme.
   ctx.fillStyle = VIZ.pink;
-  for (let x = 0; x <= w; x += w / 12) {
-    const envY = amEnvAmp * Math.sin(x * kMsg + msgPhase);
+  const markerStep = w / 10;
+  const markerOffset = (t * 1.7) % markerStep;
+  for (let x = -markerStep + markerOffset; x <= w + markerStep; x += markerStep) {
+    const y = mid - amEnvelope(x, t, w) * scale;
     ctx.beginPath();
-    ctx.arc(x, mid + envY, 1.5, 0, Math.PI * 2);
+    ctx.arc(x, y, 1.6, 0, TAU);
     ctx.fill();
   }
 };

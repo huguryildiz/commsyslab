@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analog Noise Card V2 Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050715;
+      --panel: #0b1020;
+      --text: #f3f6ff;
+      --muted: #9aa4c7;
+      --blue: #7b8cff;
+      --green: #39ff85;
+      --orange: #ff8c42;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 36px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(123, 140, 255, 0.16), transparent 32%),
+        radial-gradient(circle at 84% 24%, rgba(57, 255, 133, 0.08), transparent 28%),
+        var(--bg);
+    }
+    h1 {
+      max-width: 860px;
+      margin: 0 auto 10px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.04;
+    }
+    .subtitle {
+      max-width: 860px;
+      margin: 0 auto 24px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .cards {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      border: 1px solid rgba(123, 140, 255, 0.32);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--panel);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+    }
+    .preview {
+      position: relative;
+      height: 190px;
+      background:
+        radial-gradient(circle at 20% 35%, rgba(123, 140, 255, 0.12), transparent 32%),
+        linear-gradient(180deg, #101829 0%, #050715 100%);
+    }
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font: 11px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: 0.12em;
+      color: var(--blue);
+    }
+    .badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      border: 1px solid rgba(255, 140, 66, 0.55);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--orange);
+      background: rgba(5, 7, 21, 0.65);
+    }
+    .body {
+      padding: 14px 15px 16px;
+    }
+    h2 {
+      margin: 0 0 7px;
+      font-size: 16px;
+    }
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .recommend {
+      color: var(--green);
+      font-weight: 700;
+    }
+    .axis {
+      stroke: rgba(123, 140, 255, 0.24);
+      stroke-width: 1;
+    }
+    .orange {
+      fill: none;
+      stroke: var(--orange);
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(255, 140, 66, 0.55));
+    }
+    .orange-soft {
+      fill: none;
+      stroke: rgba(255, 140, 66, 0.5);
+      stroke-width: 1.4;
+      stroke-linecap: round;
+    }
+    .blue {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(123, 140, 255, 0.7));
+    }
+    .blue-soft {
+      fill: none;
+      stroke: rgba(123, 140, 255, 0.36);
+      stroke-width: 1.1;
+      stroke-linecap: round;
+    }
+    .green {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 5px rgba(57, 255, 133, 0.5));
+    }
+    .green-soft {
+      fill: none;
+      stroke: rgba(57, 255, 133, 0.32);
+      stroke-width: 1.1;
+      stroke-linecap: round;
+    }
+    @media (max-width: 900px) {
+      body {
+        padding: 22px;
+      }
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Analog Noise kartı V2</h1>
+  <p class="subtitle">Noktalar kaldırıldı. Noise artık ayrı marker değil; her örnekte genlik/faz jitter'ı olarak waveform'un üstüne biniyor.</p>
+
+  <main class="cards">
+    <section class="card">
+      <div class="preview">
+        <div class="tag">MODULE 06</div>
+        <div class="badge">CH 5</div>
+        <svg viewBox="0 0 360 190" aria-hidden="true">
+          <line class="axis" x1="20" y1="74" x2="340" y2="74" />
+          <line class="axis" x1="20" y1="135" x2="340" y2="135" />
+          <text x="20" y="49" fill="#9aa4c7" font-size="11" font-family="monospace">AM + noise</text>
+          <text x="20" y="112" fill="#9aa4c7" font-size="11" font-family="monospace">FM + noise</text>
+
+          <path class="orange-soft" d="M22 75 C58 48 96 44 132 64 S206 100 252 71 S309 43 340 63" />
+          <path class="orange-soft" d="M22 75 C58 102 96 106 132 86 S206 50 252 79 S309 107 340 87" />
+          <path class="blue-soft" d="M20 74 C28 48 36 100 44 72 S60 46 68 76 S84 101 92 70 S108 45 116 77 S132 103 140 70 S156 44 164 77 S180 101 188 70 S204 47 212 75 S228 100 236 71 S252 45 260 76 S276 102 284 72 S300 45 308 76 S324 104 340 66" />
+          <path class="blue" d="M20 71 C28 46 36 104 44 68 S60 49 68 80 S84 97 92 72 S108 42 116 82 S132 108 140 66 S156 46 164 73 S180 105 188 66 S204 51 212 78 S228 96 236 73 S252 42 260 80 S276 106 284 70 S300 48 308 73 S324 101 340 69" />
+
+          <path class="green-soft" d="M22 134 C32 116 43 151 55 125 C67 106 76 153 90 121 C104 104 112 157 128 119 C142 106 151 148 165 122 C180 105 188 154 204 120 C221 103 230 154 246 122 C263 108 270 148 286 126 C303 108 314 151 340 124" />
+          <path class="green" d="M22 137 C31 117 41 153 53 123 C66 108 75 148 89 124 C102 103 111 159 127 116 C141 109 149 145 164 124 C179 102 187 157 203 118 C220 106 228 151 245 124 C262 105 269 151 287 123 C302 111 313 147 340 126" />
+        </svg>
+      </div>
+      <div class="body">
+        <h2><span class="recommend">Önerilen final:</span> Noise waveform'a gömülü</h2>
+        <p>AM'de genlik bozuluyor, FM'de faz/frekans çizgisi pürüzleniyor. Marker yok, sinyalin kendisi gürültülü.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="preview">
+        <div class="tag">NOISY CARRIER</div>
+        <div class="badge">SNR</div>
+        <svg viewBox="0 0 360 190" aria-hidden="true">
+          <line class="axis" x1="20" y1="96" x2="340" y2="96" />
+          <path class="orange" d="M20 96 C58 50 92 42 128 66 S202 139 247 91 S313 42 340 65" />
+          <path class="orange" d="M20 96 C58 142 92 150 128 126 S202 53 247 101 S313 150 340 127" />
+          <path class="blue" d="M20 97 C25 59 31 137 38 88 S51 52 58 107 S71 137 78 81 S92 53 99 111 S113 145 120 79 S134 44 141 112 S155 147 162 82 S176 55 183 105 S197 134 204 91 S218 50 225 101 S239 138 246 92 S260 46 267 105 S281 145 288 87 S302 57 309 106 S325 142 340 72" />
+        </svg>
+      </div>
+      <div class="body">
+        <h2>Tek dramatik noisy AM</h2>
+        <p>Çarpıcı ama analog modülasyon kartına benzer kalır.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="preview">
+        <div class="tag">DEMOD SNR</div>
+        <div class="badge">OUT</div>
+        <svg viewBox="0 0 360 190" aria-hidden="true">
+          <line class="axis" x1="22" y1="74" x2="170" y2="74" />
+          <line class="axis" x1="190" y1="116" x2="338" y2="116" />
+          <path class="blue" d="M22 74 C30 48 38 101 46 69 S62 48 70 77 S86 101 94 70 S110 48 118 77 S134 104 142 70 S158 50 170 75" />
+          <path class="orange" d="M190 116 C214 88 236 87 260 112 S306 144 338 111" />
+          <path class="green" d="M190 116 C214 103 236 101 260 114 S306 130 338 113" />
+          <text x="28" y="122" fill="#9aa4c7" font-size="10" font-family="monospace">RF input</text>
+          <text x="216" y="156" fill="#9aa4c7" font-size="10" font-family="monospace">output SNR</text>
+          <path d="M174 94 L188 94" stroke="#39ff85" stroke-width="2" />
+          <path d="M184 89 L190 94 L184 99" fill="none" stroke="#39ff85" stroke-width="2" />
+        </svg>
+      </div>
+      <div class="body">
+        <h2>Demod output karşılaştırması</h2>
+        <p>Modül içi açıklama için iyi, landing kartı için biraz kalabalık.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

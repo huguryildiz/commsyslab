@@ -240,8 +240,7 @@ export const en: Record<string, string> = {
   'landing.tile.open': 'Open module',
   'landing.tile.soon': 'SOON',
   'landing.mod.modulation.title': 'Modulation & Detection',
-  'landing.mod.modulation.desc':
-    'Signal-space constellations from BPSK to M-QAM. Drag Eb/N₀ and watch ML / MAP decision regions and the symbol-error rate respond — theory against a live run.',
+  'landing.mod.modulation.desc': '',
   'landing.mod.sampling.title': 'Sampling & Quantization',
   'landing.mod.sampling.desc':
     'Sample a band-limited signal, watch the spectral replicas and aliasing, then quantize with PCM coding and read the SQNR — theory vs measured.',

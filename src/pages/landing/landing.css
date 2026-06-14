@@ -397,6 +397,14 @@
   animation-delay: 0.47s;
 }
 
+.tile__body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+}
 .tile__top {
   display: flex;
   align-items: center;
@@ -482,7 +490,8 @@
   opacity: 0.92;
 }
 .tile__viz--fourier,
-.tile__viz--amfm {
+.tile__viz--amfm,
+.tile__viz--noise {
   left: 0;
   right: 0;
   bottom: 0;
@@ -499,11 +508,46 @@
 
 /* flagship */
 .tile--flagship .tile__title {
-  font-size: 1.55rem;
+  font-size: 1.18rem;
 }
 .tile--flagship .tile__desc {
   font-size: 0.9rem;
   max-width: 26ch;
+}
+.tile--feature {
+  gap: 0;
+  padding: 0;
+}
+.tile--feature .tile__body {
+  flex: 0 0 54%;
+  padding: var(--space-3) var(--space-4) 0;
+}
+.tile--feature .tile__top {
+  gap: var(--space-2);
+}
+.tile--feature .tile__title {
+  max-width: 100%;
+  margin: 0.65rem 0 0;
+  line-height: 0.98;
+  white-space: nowrap;
+}
+.tile--feature .tile__open {
+  margin-top: auto;
+  padding-bottom: 0.65rem;
+  font-size: 0.84rem;
+}
+.tile--feature .tile__viz--constellation {
+  position: relative;
+  inset: auto;
+  flex: 1;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0 0.65rem 0.35rem;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(3, 5, 22, 0.72);
+  opacity: 1;
 }
 
 /* compact live tiles: description hidden, viz fills bottom half */
@@ -664,6 +708,9 @@
   }
   .tile {
     min-height: 180px;
+  }
+  .tile--feature .tile__title {
+    max-width: 100%;
   }
 }
 

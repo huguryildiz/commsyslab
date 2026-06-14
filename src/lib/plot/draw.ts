@@ -1,11 +1,102 @@
-export type Scale = (v: number) => number;
+export type ScaleKind = 'linear' | 'log';
+
+export interface ScaleMeta {
+  kind: ScaleKind;
+  domain: [number, number];
+  range: [number, number];
+}
+
+export type Scale = ((v: number) => number) & { meta?: ScaleMeta };
+
+export interface PlotBounds {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+export interface PlotPoint {
+  x: number;
+  y: number;
+  px: number;
+  py: number;
+  color: string;
+  bounds?: PlotBounds;
+}
+
+interface PlotFrame {
+  points: PlotPoint[];
+}
+
+const plotFrames = new WeakMap<CanvasRenderingContext2D, PlotFrame>();
+
+const DEFAULT_AXIS = 'rgba(154,167,180,0.55)';
+const DEFAULT_GRID = 'rgba(122,130,166,0.16)';
+const DEFAULT_TICK = 'rgba(154,167,180,0.78)';
+const DEFAULT_LABEL = 'rgba(226,230,240,0.84)';
+
+const SUBSCRIPT: Record<string, string> = {
+  '0': '₀',
+  '1': '₁',
+  '2': '₂',
+  '3': '₃',
+  '4': '₄',
+  '5': '₅',
+  '6': '₆',
+  '7': '₇',
+  '8': '₈',
+  '9': '₉',
+  '+': '₊',
+  '-': '₋',
+  '=': '₌',
+  '(': '₍',
+  ')': '₎',
+  i: 'ᵢ',
+  j: 'ⱼ',
+  k: 'ₖ',
+  m: 'ₘ',
+  n: 'ₙ',
+};
+
+/** Prepare a canvas context for one plot frame so draw helpers can register cursor points. */
+export function beginPlotFrame(ctx: CanvasRenderingContext2D): void {
+  plotFrames.set(ctx, { points: [] });
+}
+
+/** Return the nearest registered data point to a CSS-pixel cursor position. */
+export function getNearestPlotPoint(
+  ctx: CanvasRenderingContext2D,
+  px: number,
+  py: number,
+  radius = 14,
+): PlotPoint | null {
+  const frame = plotFrames.get(ctx);
+  if (!frame) return null;
+  let best: PlotPoint | null = null;
+  let bestD2 = radius * radius;
+  for (const p of frame.points) {
+    const dx = p.px - px;
+    const dy = p.py - py;
+    const d2 = dx * dx + dy * dy;
+    if (d2 <= bestD2) {
+      best = p;
+      bestD2 = d2;
+    }
+  }
+  return best;
+}
+
+function withMeta(kind: ScaleKind, domain: [number, number], range: [number, number], fn: Scale) {
+  fn.meta = { kind, domain: [...domain], range: [...range] };
+  return fn;
+}
 
 /** Linear scale mapping a domain interval to a range interval. */
 export function linScale(domain: [number, number], range: [number, number]): Scale {
   const [d0, d1] = domain;
   const [r0, r1] = range;
   const m = (r1 - r0) / (d1 - d0);
-  return (v: number) => r0 + (v - d0) * m;
+  return withMeta('linear', domain, range, ((v: number) => r0 + (v - d0) * m) as Scale);
 }
 
 export interface Axes {
@@ -18,20 +109,345 @@ export function clear(ctx: CanvasRenderingContext2D, w: number, h: number): void
   ctx.clearRect(0, 0, w, h);
 }
 
-/** Draw x/y axes with a baseline at data y=0 if in range. */
+export interface DrawAxesOptions {
+  color?: string;
+  gridColor?: string;
+  tickColor?: string;
+  labelColor?: string;
+  domainY?: [number, number];
+  xTicks?: number[];
+  yTicks?: number[];
+  tickCount?: number;
+  grid?: boolean;
+  ticks?: boolean;
+  tickLabels?: boolean;
+  xLabel?: string;
+  yLabel?: string;
+}
+
+function finitePair(pair?: [number, number]): pair is [number, number] {
+  return !!pair && Number.isFinite(pair[0]) && Number.isFinite(pair[1]) && pair[0] !== pair[1];
+}
+
+function minMax(pair: [number, number]): [number, number] {
+  return pair[0] <= pair[1] ? pair : [pair[1], pair[0]];
+}
+
+function includes(domain: [number, number], value: number): boolean {
+  const [lo, hi] = minMax(domain);
+  return value >= lo && value <= hi;
+}
+
+function plotBounds(ax: Axes): PlotBounds | undefined {
+  const xr = ax.x.meta?.range;
+  const yr = ax.y.meta?.range;
+  if (!finitePair(xr) || !finitePair(yr)) return undefined;
+  const [left, right] = minMax(xr);
+  const [top, bottom] = minMax(yr);
+  return { left, right, top, bottom };
+}
+
+function niceNumber(value: number, round: boolean): number {
+  const exponent = Math.floor(Math.log10(value));
+  const fraction = value / 10 ** exponent;
+  let niceFraction: number;
+  if (round) {
+    if (fraction < 1.5) niceFraction = 1;
+    else if (fraction < 3) niceFraction = 2;
+    else if (fraction < 7) niceFraction = 5;
+    else niceFraction = 10;
+  } else if (fraction <= 1) niceFraction = 1;
+  else if (fraction <= 2) niceFraction = 2;
+  else if (fraction <= 5) niceFraction = 5;
+  else niceFraction = 10;
+  return niceFraction * 10 ** exponent;
+}
+
+function linearTicks(domain: [number, number], count: number): number[] {
+  const [lo, hi] = minMax(domain);
+  const span = hi - lo;
+  if (!Number.isFinite(span) || span <= 0) return [];
+  const step = niceNumber(span / Math.max(1, count - 1), true);
+  const start = Math.ceil(lo / step) * step;
+  const end = Math.floor(hi / step) * step;
+  const ticks: number[] = [];
+  for (let v = start; v <= end + step * 1e-9; v += step) {
+    ticks.push(Math.abs(v) < step * 1e-10 ? 0 : Number(v.toPrecision(12)));
+  }
+  return ticks;
+}
+
+function logTicks(domain: [number, number]): number[] {
+  const [lo, hi] = minMax(domain);
+  if (lo <= 0 || hi <= 0) return linearTicks(domain, 5);
+  const start = Math.ceil(Math.log10(lo));
+  const end = Math.floor(Math.log10(hi));
+  const ticks: number[] = [];
+  for (let e = start; e <= end; e++) ticks.push(10 ** e);
+  if (ticks.length === 0) return [lo, hi];
+  return ticks;
+}
+
+function ticksFor(domain: [number, number], kind: ScaleKind | undefined, count = 5): number[] {
+  return kind === 'log' ? logTicks(domain) : linearTicks(domain, count);
+}
+
+function formatTick(value: number): string {
+  if (!Number.isFinite(value)) return '';
+  if (Math.abs(value) < 1e-12) return '0';
+  const abs = Math.abs(value);
+  if (abs >= 10000 || abs < 0.001) return value.toExponential(0).replace('+', '');
+  if (abs >= 100) return value.toFixed(0);
+  if (abs >= 10) return Number(value.toFixed(1)).toString();
+  if (abs >= 1) return Number(value.toFixed(2)).toString();
+  return Number(value.toFixed(3)).toString();
+}
+
+function toSubscript(value: string): string {
+  return Array.from(value)
+    .map((ch) => SUBSCRIPT[ch] ?? `_${ch}`)
+    .join('');
+}
+
+/** Normalize a compact TeX-ish label into text Canvas can render legibly. */
+export function formatMathLabel(label: string): string {
+  return label
+    .trim()
+    .replace(/^\$(.*)\$$/, '$1')
+    .replace(/\\mathrm\{([^}]*)\}/g, '$1')
+    .replace(/\\text\{([^}]*)\}/g, '$1')
+    .replace(/\\left|\\right/g, '')
+    .replace(/\\lvert|\\rvert|\\vert/g, '|')
+    .replace(/\\angle/g, '∠')
+    .replace(/\\theta/g, 'θ')
+    .replace(/\\gamma/g, 'γ')
+    .replace(/\\pi/g, 'π')
+    .replace(/\\,/g, ' ')
+    .replace(/\\;/g, ' ')
+    .replace(/\\quad/g, ' ')
+    .replace(/_\{([^}]*)\}/g, (_, sub: string) => toSubscript(sub))
+    .replace(/_([0-9ijkmn+\-=()])/g, (_, sub: string) => toSubscript(sub))
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function drawAxisLabel(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  rotated = false,
+): void {
+  ctx.save();
+  ctx.fillStyle = DEFAULT_TICK;
+  ctx.font = '12px var(--mono)';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  if (rotated) {
+    ctx.translate(x, y);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(formatMathLabel(text), 0, 0);
+  } else {
+    ctx.fillText(formatMathLabel(text), x, y);
+  }
+  ctx.restore();
+}
+
+function drawTickLabels(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  bounds: PlotBounds,
+  xTicks: number[],
+  yTicks: number[],
+): void {
+  ctx.fillStyle = DEFAULT_TICK;
+  ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+  ctx.textBaseline = 'bottom';
+  ctx.textAlign = 'center';
+  for (const x of xTicks) {
+    const px = ax.x(x);
+    if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
+    ctx.fillText(formatTick(x), px, bounds.bottom - 4);
+  }
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  for (const y of yTicks) {
+    const py = ax.y(y);
+    if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
+    ctx.fillText(formatTick(y), bounds.left + 4, py);
+  }
+}
+
+/** Draw x/y axes, grid, tick marks, tick labels, and optional TeX-style axis labels. */
 export function drawAxes(
   ctx: CanvasRenderingContext2D,
   ax: Axes,
   domainX: [number, number],
-  color = 'rgba(154,167,180,0.5)',
+  colorOrOptions: string | DrawAxesOptions = DEFAULT_AXIS,
 ): void {
-  ctx.strokeStyle = color;
+  const options: DrawAxesOptions =
+    typeof colorOrOptions === 'string' ? { color: colorOrOptions } : colorOrOptions;
+  const bounds = plotBounds(ax);
+  const xDomain = finitePair(ax.x.meta?.domain) ? ax.x.meta.domain : domainX;
+  const yDomain = finitePair(options.domainY)
+    ? options.domainY
+    : finitePair(ax.y.meta?.domain)
+      ? ax.y.meta.domain
+      : undefined;
+  const xTicks = options.xTicks ?? ticksFor(xDomain, ax.x.meta?.kind, options.tickCount);
+  const yTicks = yDomain ? (options.yTicks ?? ticksFor(yDomain, ax.y.meta?.kind, options.tickCount)) : [];
+  const grid = options.grid ?? true;
+  const ticks = options.ticks ?? true;
+  const labels = options.tickLabels ?? Boolean(options.xLabel || options.yLabel);
+
+  if (bounds && grid) {
+    ctx.strokeStyle = options.gridColor ?? DEFAULT_GRID;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([]);
+    for (const x of xTicks) {
+      const px = ax.x(x);
+      if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
+      ctx.beginPath();
+      ctx.moveTo(px, bounds.top);
+      ctx.lineTo(px, bounds.bottom);
+      ctx.stroke();
+    }
+    for (const y of yTicks) {
+      const py = ax.y(y);
+      if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
+      ctx.beginPath();
+      ctx.moveTo(bounds.left, py);
+      ctx.lineTo(bounds.right, py);
+      ctx.stroke();
+    }
+  }
+
+  ctx.strokeStyle = options.color ?? DEFAULT_AXIS;
   ctx.lineWidth = 1;
-  const y0 = ax.y(0);
+  const y0 = yDomain && includes(yDomain, 0) ? ax.y(0) : bounds?.bottom ?? ax.y(0);
   ctx.beginPath();
   ctx.moveTo(ax.x(domainX[0]), y0);
   ctx.lineTo(ax.x(domainX[1]), y0);
   ctx.stroke();
+
+  if (!bounds) return;
+
+  const x0 = includes(xDomain, 0) ? ax.x(0) : bounds.left;
+  ctx.beginPath();
+  ctx.moveTo(x0, bounds.top);
+  ctx.lineTo(x0, bounds.bottom);
+  ctx.stroke();
+
+  if (ticks) {
+    ctx.strokeStyle = options.tickColor ?? DEFAULT_TICK;
+    ctx.lineWidth = 1;
+    const tickSize = 4;
+    for (const x of xTicks) {
+      const px = ax.x(x);
+      if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
+      ctx.beginPath();
+      ctx.moveTo(px, bounds.bottom);
+      ctx.lineTo(px, bounds.bottom - tickSize);
+      ctx.stroke();
+    }
+    for (const y of yTicks) {
+      const py = ax.y(y);
+      if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
+      ctx.beginPath();
+      ctx.moveTo(bounds.left, py);
+      ctx.lineTo(bounds.left + tickSize, py);
+      ctx.stroke();
+    }
+  }
+
+  if (labels) {
+    ctx.fillStyle = options.labelColor ?? DEFAULT_TICK;
+    drawTickLabels(ctx, ax, bounds, xTicks, yTicks);
+  }
+
+  if (options.xLabel) {
+    drawAxisLabel(ctx, options.xLabel, (bounds.left + bounds.right) / 2, bounds.bottom + 24);
+  }
+  if (options.yLabel) {
+    drawAxisLabel(ctx, options.yLabel, bounds.left - 34, (bounds.top + bounds.bottom) / 2, true);
+  }
+}
+
+function recordPlotPoints(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  xs: number[],
+  ys: number[],
+  color: string,
+): void {
+  const frame = plotFrames.get(ctx);
+  if (!frame) return;
+  const bounds = plotBounds(ax);
+  const n = Math.min(xs.length, ys.length);
+  const stride = Math.max(1, Math.floor(n / 1200));
+  for (let i = 0; i < n; i += stride) {
+    const x = xs[i];
+    const y = ys[i];
+    const px = ax.x(x);
+    const py = ax.y(y);
+    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(px) || !Number.isFinite(py)) {
+      continue;
+    }
+    frame.points.push({ x, y, px, py, color, bounds });
+  }
+}
+
+/** Draw a crosshair and coordinate badge for an interactive data cursor. */
+export function drawPointCursor(ctx: CanvasRenderingContext2D, point: PlotPoint): void {
+  const bounds = point.bounds;
+  const color = 'rgba(255,140,66,0.9)';
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  if (bounds) {
+    ctx.moveTo(point.px, bounds.top);
+    ctx.lineTo(point.px, bounds.bottom);
+    ctx.moveTo(bounds.left, point.py);
+    ctx.lineTo(bounds.right, point.py);
+  } else {
+    ctx.moveTo(point.px, point.py - 12);
+    ctx.lineTo(point.px, point.py + 12);
+    ctx.moveTo(point.px - 12, point.py);
+    ctx.lineTo(point.px + 12, point.py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = point.color || color;
+  ctx.beginPath();
+  ctx.arc(point.px, point.py, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  const label = `x=${formatTick(point.x)}, y=${formatTick(point.y)}`;
+  ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+  const metrics = ctx.measureText(label);
+  const pad = 6;
+  const bw = metrics.width + pad * 2;
+  const bh = 22;
+  const maxRight = bounds?.right ?? Number.POSITIVE_INFINITY;
+  const minLeft = bounds?.left ?? 0;
+  const minTop = bounds?.top ?? 0;
+  let bx = point.px + 10;
+  let by = point.py - bh - 10;
+  if (bx + bw > maxRight) bx = point.px - bw - 10;
+  if (bx < minLeft) bx = minLeft + 2;
+  if (by < minTop) by = point.py + 10;
+  ctx.fillStyle = 'rgba(10,10,22,0.9)';
+  ctx.fillRect(bx, by, bw, bh);
+  ctx.strokeStyle = 'rgba(255,140,66,0.45)';
+  ctx.strokeRect(bx, by, bw, bh);
+  ctx.fillStyle = DEFAULT_LABEL;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, bx + pad, by + bh / 2);
+  ctx.restore();
 }
 
 /** Draw a polyline through (xs[i], ys[i]). */
@@ -56,6 +472,7 @@ export function drawLine(
   }
   ctx.stroke();
   ctx.setLineDash([]);
+  recordPlotPoints(ctx, ax, xs, ys, color);
 }
 
 /** Draw stems (vertical lines from y=0) with dot heads — for sampled signals. */
@@ -82,6 +499,7 @@ export function drawStems(
     ctx.arc(px, py, radius, 0, Math.PI * 2);
     ctx.fill();
   }
+  recordPlotPoints(ctx, ax, xs, ys, color);
 }
 
 /** Draw a scatter of points. */
@@ -99,6 +517,7 @@ export function drawScatter(
     ctx.arc(ax.x(xs[i]), ax.y(ys[i]), radius, 0, Math.PI * 2);
     ctx.fill();
   }
+  recordPlotPoints(ctx, ax, xs, ys, color);
 }
 
 /** Fill a rectangular data region (e.g. spectral overlap). */
@@ -136,6 +555,7 @@ export function drawStep(
     ctx.lineTo(ax.x(xs[i]), ax.y(ys[i])); // step to new level
   }
   ctx.stroke();
+  recordPlotPoints(ctx, ax, xs, ys, color);
 }
 
 /** Draw a vertical line at data-x spanning data-y [y0, y1]. */
@@ -167,10 +587,10 @@ export function logScale(domain: [number, number], range: [number, number]): Sca
   const l0 = Math.log10(d0);
   const l1 = Math.log10(d1);
   const m = (r1 - r0) / (l1 - l0);
-  return (v: number) => {
+  return withMeta('log', domain, range, ((v: number) => {
     const lv = v <= d0 ? l0 : Math.log10(v);
     return r0 + (lv - l0) * m;
-  };
+  }) as Scale);
 }
 
 /** M evenly-spaced translucent hues for decision-region fills. */

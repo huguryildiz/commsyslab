@@ -24,6 +24,7 @@ export interface LandingModule {
   status: ModuleStatus;
   viz?: VizKind;
   flagship?: boolean;
+  feature?: boolean;
   /** Compact live tile: description hidden, viz fills bottom half. */
   compact?: boolean;
 }
@@ -116,6 +117,7 @@ export const LANDING_MODULES: LandingModule[] = [
     status: 'live',
     viz: 'constellation',
     flagship: true,
+    feature: true,
   },
   {
     id: 'baseband',
