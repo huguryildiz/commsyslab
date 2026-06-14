@@ -11,6 +11,7 @@ import {
   transferMag,
   ftPair,
   lowpassEquivalent,
+  hilbert,
 } from '@/lib/dsp/fourier';
 import { spectrum } from '@/lib/dsp/fft';
 import { evalSignal, periodicWave, type Tone, type Periodic } from '@/lib/dsp/signals';
@@ -223,13 +224,14 @@ export function buildAnalytic(
     return (1 + m * Math.cos(2 * Math.PI * fm * tt)) * Math.cos(2 * Math.PI * fc * tt);
   });
 
+  const xhat = hilbert(signal); // Proakis §2.6: x̂(t) = Hilbert{x(t)}
   const result = lowpassEquivalent(signal, fc, fs);
 
   return {
     time,
     signal,
     analyticRe: signal, // Real part of analytic signal
-    analyticIm: new Array(N).fill(0), // Will be filled with Hilbert(signal)
+    analyticIm: xhat, // Imag part = Hilbert transform (no longer stubbed to zeros)
     iComponent: result.i,
     qComponent: result.q,
     envelope: result.env,
