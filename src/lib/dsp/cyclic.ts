@@ -101,3 +101,47 @@ export function cyclicShiftRight(cw: number[]): number[] {
   for (let i = 0; i < n; i++) out[i] = cw[(i - 1 + n) % n];
   return out;
 }
+
+export interface LfsrSnapshot {
+  reg: number[]; // register contents (reg[j] = coeff of p^j), length deg g
+  inBit: number | null; // message bit clocked in this step (null = initial)
+  feedback: number | null; // feedback bit = inBit XOR reg_top (null = initial)
+}
+
+/**
+ * Trace the systematic division LFSR (Fig 9.21/9.22). Message bits are clocked MSB-first;
+ * feedback = inBit XOR reg[top], then reg[j] = reg[j-1] XOR (feedback & g[j]), reg[0] =
+ * feedback & g[0]. The final register equals crcRemainder(msg, g).
+ */
+export function lfsrTrace(msg: number[], g: number[]): LfsrSnapshot[] {
+  const dg = polyDeg(g);
+  let reg = new Array<number>(dg).fill(0);
+  const snaps: LfsrSnapshot[] = [{ reg: reg.slice(), inBit: null, feedback: null }];
+  for (let idx = msg.length - 1; idx >= 0; idx--) {
+    const b = msg[idx] & 1;
+    const feedback = b ^ reg[dg - 1];
+    const next = new Array<number>(dg).fill(0);
+    for (let j = dg - 1; j >= 1; j--) next[j] = reg[j - 1] ^ (feedback & g[j]);
+    next[0] = feedback & g[0];
+    reg = next;
+    snaps.push({ reg: reg.slice(), inBit: b, feedback });
+  }
+  return snaps;
+}
+
+export interface CyclicPreset {
+  id: string;
+  label: string;
+  g: number[]; // LSB-first generator polynomial
+  kind: 'cyclic' | 'crc';
+  msgLen: number; // default message length
+}
+
+// Textbook divisors of p^n+1 and standard CRC polynomials. §9.6 / Ex. 9.6.2.
+export const CYCLIC_PRESETS: CyclicPreset[] = [
+  { id: 'c74a', label: '(7,4) cyclic · g=p³+p²+1', g: [1, 0, 1, 1], kind: 'cyclic', msgLen: 4 },
+  { id: 'c74h', label: '(7,4) Hamming · g=p³+p+1', g: [1, 1, 0, 1], kind: 'cyclic', msgLen: 4 },
+  { id: 'c1511', label: '(15,11) Hamming · g=p⁴+p+1', g: [1, 1, 0, 0, 1], kind: 'cyclic', msgLen: 11 },
+  { id: 'crc4', label: 'CRC-4-ITU · g=p⁴+p+1', g: [1, 1, 0, 0, 1], kind: 'crc', msgLen: 8 },
+  { id: 'crc8', label: 'CRC-8-CCITT · g=p⁸+p²+p+1', g: [1, 1, 1, 0, 0, 0, 0, 0, 1], kind: 'crc', msgLen: 8 },
+];

@@ -10,6 +10,8 @@ import {
   encodeCyclic,
   syndrome,
   cyclicShiftRight,
+  lfsrTrace,
+  CYCLIC_PRESETS,
 } from '@/lib/dsp/cyclic';
 
 describe('GF(2) polynomial primitives', () => {
@@ -56,5 +58,32 @@ describe('cyclic encoding, syndrome, divisibility, shift', () => {
     const cw = encodeCyclic([1, 0, 0, 1], g);
     const shifted = cyclicShiftRight(cw);
     expect(syndrome(shifted, g).every((b) => b === 0)).toBe(true);
+  });
+});
+
+describe('LFSR trace + presets', () => {
+  it('lfsrTrace final register equals crcRemainder (7,4)', () => {
+    const g = [1, 0, 1, 1];
+    const trace = lfsrTrace([1, 0, 0, 1], g);
+    expect(trace[trace.length - 1].reg).toEqual(crcRemainder([1, 0, 0, 1], g));
+    // one snapshot per message bit, plus the initial state
+    expect(trace.length).toBe(4 + 1);
+  });
+  it('lfsrTrace agrees with crcRemainder for CRC-8 too', () => {
+    const crc8 = CYCLIC_PRESETS.find((p) => p.id === 'crc8')!;
+    const msg = [1, 0, 1, 1, 0, 0, 1, 0];
+    const trace = lfsrTrace(msg, crc8.g);
+    expect(trace[trace.length - 1].reg).toEqual(crcRemainder(msg, crc8.g));
+  });
+  it('presets: cyclic ones divide p^n+1; ids are stable', () => {
+    expect(CYCLIC_PRESETS.map((p) => p.id)).toEqual([
+      'c74a',
+      'c74h',
+      'c1511',
+      'crc4',
+      'crc8',
+    ]);
+    const c74a = CYCLIC_PRESETS.find((p) => p.id === 'c74a')!;
+    expect(dividesPn1(c74a.g, 7)).toBe(true);
   });
 });
