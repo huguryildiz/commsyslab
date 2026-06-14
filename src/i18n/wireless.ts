@@ -127,4 +127,20 @@ export const wireless: Record<string, string> = {
   'wl.mimo.readout.divSiso': 'SISO diversity order',
   'wl.mimo.readout.divAlamouti': 'Alamouti 2×N_r order',
   'wl.mimo.readout.capAt': 'Capacity (N_t×N_r) @ 10 dB',
+
+  // Doppler / time-selective fading section
+  'wl.tab.doppler': 'Doppler',
+  'wl.doppler.title': 'Doppler & mobility',
+  'wl.doppler.speed': 'Mobile speed (km/h)',
+  'wl.doppler.carrier': 'Carrier frequency (GHz)',
+  'wl.doppler.threshold': 'Fade threshold ρ (dB)',
+  'wl.doppler.seed': 'Envelope seed',
+  'wl.doppler.psd.title': 'Doppler power spectrum (classical/Jakes)',
+  'wl.doppler.env.title': 'Fading envelope vs time',
+  'wl.doppler.acf.title': 'Autocorrelation J₀(2π f_m τ)',
+  'wl.doppler.readout.fm': 'Max Doppler f_m',
+  'wl.doppler.readout.tc': 'Coherence time T_ct',
+  'wl.doppler.readout.tcRule': 'T_c ≈ 0.423/f_m',
+  'wl.doppler.readout.lcr': 'Level-crossing rate',
+  'wl.doppler.readout.afd': 'Average fade duration',
 };
