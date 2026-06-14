@@ -8,9 +8,10 @@ import { CyclicCodesSection } from './CyclicCodesSection';
 import { GfBchSection } from './GfBchSection';
 import { ReedSolomonSection } from './ReedSolomonSection';
 import { CodesVsShannonSection } from './CodesVsShannonSection';
+import { ConcatenatedSection } from './ConcatenatedSection';
 import './channel-coding.css';
 
-type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch' | 'rs' | 'compare';
+type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch' | 'rs' | 'compare' | 'concat';
 
 const TABS: { id: Tab; key: string }[] = [
   { id: 'channels', key: 'cc.tab.channels' },
@@ -21,6 +22,7 @@ const TABS: { id: Tab; key: string }[] = [
   { id: 'gfbch', key: 'cc.tab.gfbch' },
   { id: 'rs', key: 'cc.tab.rs' },
   { id: 'compare', key: 'cc.tab.compare' },
+  { id: 'concat', key: 'cc.tab.concat' },
 ];
 
 export function ChannelCodingModule() {
@@ -51,6 +53,7 @@ export function ChannelCodingModule() {
       {tab === 'gfbch' && <GfBchSection />}
       {tab === 'rs' && <ReedSolomonSection />}
       {tab === 'compare' && <CodesVsShannonSection />}
+      {tab === 'concat' && <ConcatenatedSection />}
     </div>
   );
 }
