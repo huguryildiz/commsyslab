@@ -89,3 +89,28 @@ describe('envelopeDetect', () => {
     expect(Math.sqrt(err / ref)).toBeLessThan(0.2);
   });
 });
+
+import { fdmCompose, fdmSeparate } from '@/lib/dsp/am-impl';
+
+describe('FDM', () => {
+  const FS2 = 200_000;
+  const t2 = Array.from({ length: 4096 }, (_, i) => i / FS2);
+  const W = 3000;
+  const msgs = [[{ freq: 1000, amp: 1 }], [{ freq: 1500, amp: 1 }], [{ freq: 2000, amp: 1 }]];
+  const carriers = [20_000, 40_000, 60_000];
+
+  it('separates each channel back to its own message frequency', () => {
+    const { composite } = fdmCompose(msgs, carriers, t2);
+    for (let ch = 0; ch < carriers.length; ch++) {
+      const rec = fdmSeparate(composite, FS2, carriers[ch], W, t2);
+      const fm = msgs[ch][0].freq;
+      const corr = rec.reduce((s, v, i) => s + v * Math.cos(2 * Math.PI * fm * t2[i]), 0);
+      const cross = rec.reduce(
+        (s, v, i) => s + v * Math.cos(2 * Math.PI * msgs[(ch + 1) % 3][0].freq * t2[i]),
+        0,
+      );
+      expect(Math.abs(corr)).toBeGreaterThan(Math.abs(cross) * 3);
+    }
+  });
+});
+

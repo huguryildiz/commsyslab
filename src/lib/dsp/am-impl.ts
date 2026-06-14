@@ -119,3 +119,36 @@ export function envelopeDetect(u: number[], fs: number, rc: number): number[] {
   }
   return out;
 }
+
+/**
+ * Frequency-division multiplexing (Proakis §3.4.1, Fig 3.31): each message
+ * DSB-SC-modulates its own carrier; the carriers are summed into one composite.
+ */
+export function fdmCompose(
+  messages: Tone[][],
+  carriers: number[],
+  t: number[],
+): { composite: number[]; channels: number[][] } {
+  const channels = messages.map((msg, k) =>
+    t.map((tt) => msgNorm(msg, tt) * Math.cos(2 * Math.PI * carriers[k] * tt)),
+  );
+  const composite = t.map((_, i) => channels.reduce((s, ch) => s + ch[i], 0));
+  return { composite, channels };
+}
+
+/**
+ * Recover one FDM channel (Proakis §3.4.1): bandpass around its carrier, then
+ * coherent demodulation (× carrier) + lowpass to baseband W.
+ */
+export function fdmSeparate(
+  composite: number[],
+  fs: number,
+  carrier: number,
+  W: number,
+  t: number[],
+): number[] {
+  const band = bandpassFilterFFT(composite, fs, carrier - W, carrier + W);
+  const mixed = band.map((v, i) => v * Math.cos(2 * Math.PI * carrier * t[i]));
+  return bandpassFilterFFT(mixed, fs, 0, W).map((v) => 2 * v);
+}
+
