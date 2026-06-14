@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { weight, hammingDistance, encode, syndrome } from '@/lib/dsp/blockcodes';
+import {
+  weight,
+  hammingDistance,
+  encode,
+  syndrome,
+  allCodewords,
+  minDistance,
+  errorCorrectionT,
+} from '@/lib/dsp/blockcodes';
 
 describe('GF(2) primitives', () => {
   it('weight counts ones', () => {
@@ -16,5 +24,20 @@ describe('GF(2) primitives', () => {
   it('syndrome computes s = rHᵀ mod 2', () => {
     // H = [[1,1,0],[1,0,1]] → r=[1,1,0] → s=[0,1]
     expect(syndrome([1, 1, 0], [[1, 1, 0], [1, 0, 1]])).toEqual([0, 1]);
+  });
+});
+
+describe('codewords & minimum distance', () => {
+  it('allCodewords enumerates 2^k words; rep(3,1) gives {000,111}', () => {
+    const cws = allCodewords([[1, 1, 1]]).map((c) => c.join(''));
+    expect(cws.sort()).toEqual(['000', '111']);
+  });
+  it('minDistance = min nonzero weight (Thm 9.5.1)', () => {
+    expect(minDistance([[1, 1, 1]])).toBe(3);
+  });
+  it('errorCorrectionT = floor((dmin-1)/2)', () => {
+    expect(errorCorrectionT(3)).toBe(1);
+    expect(errorCorrectionT(1)).toBe(0);
+    expect(errorCorrectionT(5)).toBe(2);
   });
 });

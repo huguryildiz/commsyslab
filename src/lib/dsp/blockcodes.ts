@@ -44,3 +44,30 @@ export function syndrome(r: number[], H: number[][]): number[] {
     return s & 1;
   });
 }
+
+/** All 2^k codewords (rows over every length-k message). §9.5. */
+export function allCodewords(G: number[][]): number[][] {
+  const k = G.length;
+  const out: number[][] = [];
+  for (let m = 0; m < 1 << k; m++) {
+    const x = new Array<number>(k);
+    for (let i = 0; i < k; i++) x[i] = (m >> (k - 1 - i)) & 1;
+    out.push(encode(x, G));
+  }
+  return out;
+}
+
+/** Minimum distance = minimum nonzero codeword weight (= d_min for linear codes, Thm 9.5.1). */
+export function minDistance(G: number[][]): number {
+  let dmin = Infinity;
+  for (const c of allCodewords(G)) {
+    const w = weight(c);
+    if (w > 0 && w < dmin) dmin = w;
+  }
+  return dmin;
+}
+
+/** Error-correction capability t = ⌊(d_min − 1)/2⌋. §9.5.1. */
+export function errorCorrectionT(dmin: number): number {
+  return Math.floor((dmin - 1) / 2);
+}
