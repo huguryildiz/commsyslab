@@ -1,16 +1,16 @@
+import { useMemo, useState } from 'react';
 import { Panel, Formula, TheoryBox, Readout } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawStems, drawVLine } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import { t } from '@/i18n';
-import type { Derived, ScenarioParams } from '../model';
+import { DEFAULT_PARAMS, deriveAll, type ScenarioParams } from '../model';
+import { ScenarioControls } from '../panels';
 
-interface Props {
-  params: ScenarioParams;
-  d: Derived;
-}
-
-export function FadingChannelSection({ d }: Props) {
+export function FadingChannelSection() {
+  const [params, setParams] = useState<ScenarioParams>(DEFAULT_PARAMS);
+  const set = (patch: Partial<ScenarioParams>) => setParams((p) => ({ ...p, ...patch }));
+  const d = useMemo(() => deriveAll(params), [params]);
   const tapDelaysUs = d.taps.map((tp) => tp.delay * 1e6);
   const tapPowers = d.taps.map((tp) => tp.power);
   const freqsMhz = d.freqs.map((f) => f / 1e6);
@@ -20,6 +20,7 @@ export function FadingChannelSection({ d }: Props) {
 
   return (
     <>
+      <ScenarioControls params={params} set={set} />
       <Panel title={t('wl.pdp.title')}>
         <Canvas
           height={220}
@@ -95,15 +96,17 @@ export function FadingChannelSection({ d }: Props) {
         />
         <Readout
           label={t('wl.readout.coherenceTime')}
-          value={Number.isFinite(d.coherenceTime) ? `${(d.coherenceTime * 1e3).toFixed(2)} ms` : '∞'}
+          value={
+            Number.isFinite(d.coherenceTime) ? `${(d.coherenceTime * 1e3).toFixed(2)} ms` : '∞'
+          }
         />
         <Formula tex="f(r) = \dfrac{r}{\sigma^2}\,e^{-r^2/2\sigma^2}\quad(K=0)" />
         <TheoryBox>
           Multipath spreads the signal in delay, so the transfer function |H(f)| varies across
-          frequency — flat when one path dominates, frequency-selective when delay spread exceeds the
-          coherence bandwidth. Motion (Doppler f_D) makes the envelope fluctuate in time; deep fades
-          recur roughly every coherence time T_c. K = 0 gives Rayleigh fading; a line-of-sight path
-          (K &gt; 0) makes the envelope Rician.
+          frequency — flat when one path dominates, frequency-selective when delay spread exceeds
+          the coherence bandwidth. Motion (Doppler f_D) makes the envelope fluctuate in time; deep
+          fades recur roughly every coherence time T_c. K = 0 gives Rayleigh fading; a line-of-sight
+          path (K &gt; 0) makes the envelope Rician.
         </TheoryBox>
       </Panel>
     </>
