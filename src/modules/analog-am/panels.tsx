@@ -15,6 +15,7 @@ import type {
   AnalogPowerView,
   AnalogDemodView,
   AnalogSuperView,
+  ModulatorView,
 } from './model';
 
 const PAD = { l: 40, r: 20, t: 20, b: 40 };
@@ -307,6 +308,49 @@ export function SuperheterodynePanel({
       <div className="analog__readouts">
         <span className="analog__chain-block">f_LO = {fmt(view.loFreq)}</span>
         <span className="analog__chain-block">f_image = {fmt(view.imageFreq)}</span>
+      </div>
+    </div>
+  );
+}
+
+/** Modulator spectra: before-BPF (dirty) vs after-BPF (clean), stacked. */
+export function ModulatorSpectrumPanel({ view }: { view: ModulatorView }) {
+  const drawOne =
+    (freq: number[], mag: number[], color: string, yLabel: string) =>
+    (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+      if (freq.length === 0) return;
+      const maxMag = Math.max(...mag, 1e-9) * 1.2;
+      const ax: Axes = {
+        x: linScale([freq[0], freq[freq.length - 1]], [PAD.l, w - PAD.r]),
+        y: linScale([0, maxMag], [h - PAD.b, PAD.t]),
+      };
+      drawAxes(ctx, ax, [freq[0], freq[freq.length - 1]], {
+        grid: true,
+        domainY: [0, maxMag],
+        xLabel: '$f\\,[\\mathrm{Hz}]$',
+        yLabel,
+      });
+      drawLine(ctx, ax, freq, mag, color, 1.5);
+    };
+  return (
+    <div className="analog__am-panel">
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mod.dirty')}</div>
+        <Canvas
+          height={180}
+          draw={drawOne(view.dirtyFreq, view.dirtyMag, CHART.orange, '$|V_o(f)|$')}
+          deps={[view]}
+          ariaLabel={t('analog.mod.dirty')}
+        />
+      </div>
+      <div className="analog__panel-half">
+        <div className="analog__label">{t('analog.mod.clean')}</div>
+        <Canvas
+          height={180}
+          draw={drawOne(view.cleanFreq, view.cleanMag, CHART.blue, '$|U(f)|$')}
+          deps={[view]}
+          ariaLabel={t('analog.mod.clean')}
+        />
       </div>
     </div>
   );
