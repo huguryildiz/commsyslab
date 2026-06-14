@@ -5,9 +5,10 @@ import { ShannonLimitSection } from './ShannonLimitSection';
 import { BlockCodesSection } from './BlockCodesSection';
 import { ConvCodesSection } from './ConvCodesSection';
 import { CyclicCodesSection } from './CyclicCodesSection';
+import { GfBchSection } from './GfBchSection';
 import './channel-coding.css';
 
-type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic';
+type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch';
 
 const TABS: { id: Tab; key: string }[] = [
   { id: 'channels', key: 'cc.tab.channels' },
@@ -15,6 +16,7 @@ const TABS: { id: Tab; key: string }[] = [
   { id: 'block', key: 'cc.tab.block' },
   { id: 'conv', key: 'cc.tab.conv' },
   { id: 'cyclic', key: 'cc.tab.cyclic' },
+  { id: 'gfbch', key: 'cc.tab.gfbch' },
 ];
 
 export function ChannelCodingModule() {
@@ -42,6 +44,7 @@ export function ChannelCodingModule() {
       {tab === 'block' && <BlockCodesSection />}
       {tab === 'conv' && <ConvCodesSection />}
       {tab === 'cyclic' && <CyclicCodesSection />}
+      {tab === 'gfbch' && <GfBchSection />}
     </div>
   );
 }

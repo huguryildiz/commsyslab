@@ -96,3 +96,29 @@
 .cc-cv-soft span { min-width: 30px; text-align: center; }
 .cc-cv-soft .pos { color: var(--accent); }
 .cc-cv-soft .neg { color: var(--err); }
+
+/* GF(2^m) field explorer + BCH */
+.cc-gf-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+.cc-gf-table th, .cc-gf-table td { padding: 3px 8px; text-align: left; border-bottom: 1px solid var(--border); }
+.cc-gf-table th { color: var(--text-dim); font-weight: 500; }
+.cc-gf-table tr.cc-gf-a { background: rgba(57, 255, 133, 0.10); }
+.cc-gf-table tr.cc-gf-b { background: rgba(75, 160, 255, 0.10); }
+.cc-gf-table tr.cc-gf-res { background: rgba(160, 120, 255, 0.16); }
+.cc-gf-ops { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 8px; font-family: var(--mono); }
+.cc-gf-ops b { color: var(--accent-blue); }
+.cc-bch-badge { font-family: var(--mono); font-size: 12px; padding: 2px 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); color: var(--text-dim); }
+.cc-bch-badge--ok { color: var(--ok); border-color: var(--ok); }
+.cc-bch-syn { display: flex; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+.cc-bch-syn span { min-width: 26px; text-align: center; padding: 2px 4px; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.cc-bch-syn .nz { color: var(--err); border-color: var(--err); }
+
+/* Reed-Solomon */
+.cc-rs-syms { display: flex; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; }
+.cc-rs-sym { display: flex; flex-direction: column; align-items: center; min-width: 30px; padding: 3px 5px; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.cc-rs-sym small { color: var(--text-faint); font-size: 9px; }
+.cc-rs-sym.msg { border-color: var(--accent); }
+.cc-rs-sym.par { border-color: var(--accent-2); }
+.cc-rs-sym.hit { border-color: var(--color-marker); box-shadow: 0 0 8px rgba(255, 110, 180, 0.3); }
+.cc-rs-bits { display: flex; gap: 2px; flex-wrap: wrap; font-family: var(--mono); font-size: 10px; margin-top: 6px; }
+.cc-rs-bits span { padding: 1px 3px; border: 1px solid var(--border); border-radius: 3px; }
+.cc-rs-bits .b { color: var(--color-marker); border-color: var(--color-marker); }
