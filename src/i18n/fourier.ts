@@ -92,4 +92,9 @@ export const fourier: Record<string, string> = {
   'fourier.theory.formula.hilbert': 'x̂(t) = (1/π) ∫ x(τ)/(t-τ) dτ',
   'fourier.theory.analytic': 'Analytic Signal',
   'fourier.theory.formula.analytic': 'z(t) = x(t) + j x̂(t)',
+
+  // Tab 2 — Fourier Series
+  'fourier.readout.powerN': 'Power in N harmonics',
+  'fourier.preset.gibbs': 'Show Gibbs overshoot',
+  'fourier.hint.gibbs': 'More harmonics sharpen the edges but the overshoot near jumps stays ~9% (Gibbs).',
 };
