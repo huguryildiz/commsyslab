@@ -113,7 +113,9 @@ export const LANDING_MODULES: LandingModule[] = [
     descKey: 'landing.mod.baseband.desc',
     chapter: 'CH 8',
     route: '/baseband',
-    status: 'soon',
+    status: 'live',
+    viz: 'linkpulse',
+    compact: true,
   },
   {
     id: 'channel-coding',

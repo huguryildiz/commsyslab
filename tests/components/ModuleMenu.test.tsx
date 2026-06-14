@@ -39,8 +39,7 @@ describe('ModuleMenu', () => {
 
   it('renders soon modules as non-interactive (not links)', () => {
     renderMenu();
-    expect(screen.getByText('Baseband & Eye')).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /Baseband & Eye/i })).toBeNull();
+    expect(screen.getByText('End-to-End Link')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /End-to-End Link/i })).toBeNull();
   });
 });
