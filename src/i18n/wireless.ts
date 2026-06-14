@@ -143,4 +143,19 @@ export const wireless: Record<string, string> = {
   'wl.doppler.readout.tcRule': 'T_c ≈ 0.423/f_m',
   'wl.doppler.readout.lcr': 'Level-crossing rate',
   'wl.doppler.readout.afd': 'Average fade duration',
+
+  // Frequency-Hopped Spread Spectrum section
+  'wl.tab.fhss': 'FH-SS',
+  'wl.fhss.title': 'Frequency hopping',
+  'wl.fhss.channels': 'Hop channels (W/R)',
+  'wl.fhss.hops': 'Hops shown',
+  'wl.fhss.beta': 'Partial-band fraction β',
+  'wl.fhss.ebn0j': 'E_b/N_J (dB)',
+  'wl.fhss.seed': 'Hop-pattern seed',
+  'wl.fhss.hop.title': 'Hop pattern (time–frequency)',
+  'wl.fhss.ber.title': 'BER vs E_b/N_J — partial-band jamming',
+  'wl.fhss.readout.gain': 'Processing gain',
+  'wl.fhss.readout.worstBeta': 'Worst-case β*',
+  'wl.fhss.readout.worstBer': 'Worst-case BER @ op',
+  'wl.fhss.readout.betaBer': 'BER at chosen β @ op',
 };
