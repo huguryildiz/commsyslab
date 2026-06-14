@@ -105,7 +105,7 @@ export function seriesPartialSum(
   return sum;
 }
 
-export type FilterType = 'lpf' | 'hpf' | 'bpf' | 'rc';
+export type FilterType = 'lpf' | 'hpf' | 'bpf' | 'bsf' | 'rc';
 
 /**
  * Ideal and practical filter magnitude response |H(f)|.
@@ -113,6 +113,7 @@ export type FilterType = 'lpf' | 'hpf' | 'bpf' | 'rc';
  * - lpf: ideal lowpass at fc
  * - hpf: ideal highpass at fc
  * - bpf: ideal bandpass from fc to fc2
+ * - bsf: ideal band-stop (complement of bpf) from fc to fc2
  * - rc: first-order RC lowpass, 1/√(1+(f/fc)²)
  */
 export function transferMag(type: FilterType, f: number, fc: number, fc2?: number): number {
@@ -127,6 +128,13 @@ export function transferMag(type: FilterType, f: number, fc: number, fc2?: numbe
       const f1 = Math.min(fc, fc2);
       const f2 = Math.max(fc, fc2);
       return absF >= f1 && absF <= f2 ? 1 : 0;
+    }
+    case 'bsf': {
+      // Band-stop = complement of band-pass (Proakis §2.4).
+      if (!fc2) return 1;
+      const f1 = Math.min(fc, fc2);
+      const f2 = Math.max(fc, fc2);
+      return absF >= f1 && absF <= f2 ? 0 : 1;
     }
     case 'rc': {
       // One-pole RC: |H(f)| = 1 / √(1 + (f/fc)²)
