@@ -101,9 +101,9 @@ function hann(N: number): number[] {
 
 /**
  * FFT magnitude spectrum |U(f)| of the AM signal around the carrier.
- * Approach A: the spectrum is computed from a real, windowed time buffer via
- * `spectrum()` rather than hardcoded. VSB is generated as DSB-SC and then shaped
- * by the real vestigial filter (Proakis §3.2.4).
+ * The spectrum is computed from a windowed time buffer via `spectrum()` rather
+ * than hardcoded analytic lines. VSB is generated as DSB-SC and then shaped by
+ * the real vestigial filter (Proakis §3.2.4).
  */
 export function buildAmSpectrum(p: AnalogAmParams): { specFreq: number[]; specMag: number[] } {
   const fm = p.messageFreq;
