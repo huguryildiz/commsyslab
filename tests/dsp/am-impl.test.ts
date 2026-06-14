@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { squareWave, bandpassFilterFFT } from '@/lib/dsp/am-impl';
+import { powerLawModulator, switchingModulator, balancedModulator, ringModulator } from '@/lib/dsp/am-impl';
 
 describe('squareWave', () => {
   const fc = 100;
@@ -32,5 +33,33 @@ describe('bandpassFilterFFT', () => {
     const power = y.reduce((s, v) => s + v * v, 0) / N;
     expect(power).toBeGreaterThan(0.3);
     expect(power).toBeLessThan(0.7);
+  });
+});
+
+const FS = 160_000, FC = 20_000, FM = 1_000;
+function timeAxis(n: number): number[] { return Array.from({ length: n }, (_, i) => i / FS); }
+function carrierLevel(sig: number[], fs: number, fc: number): number {
+  let re = 0, im = 0;
+  for (let n = 0; n < sig.length; n++) {
+    re += sig[n] * Math.cos((2 * Math.PI * fc * n) / fs);
+    im += sig[n] * Math.sin((2 * Math.PI * fc * n) / fs);
+  }
+  return (2 * Math.hypot(re, im)) / sig.length;
+}
+
+describe('modulator chains', () => {
+  const msg = [{ freq: FM, amp: 1 }];
+  const t = timeAxis(2048);
+  it('powerLawModulator BPF output contains a carrier (conventional AM)', () => {
+    expect(carrierLevel(powerLawModulator(msg, FC, 1, 1, 0.3, t).uBpf, FS, FC)).toBeGreaterThan(0.1);
+  });
+  it('switchingModulator BPF output contains a carrier (conventional AM)', () => {
+    expect(carrierLevel(switchingModulator(msg, FC, 1, t, 15).uBpf, FS, FC)).toBeGreaterThan(0.1);
+  });
+  it('balancedModulator cancels the carrier (DSB-SC output)', () => {
+    expect(carrierLevel(balancedModulator(msg, FC, 1, t).uOut, FS, FC)).toBeLessThan(0.05);
+  });
+  it('ringModulator BPF output is DSB-SC (carrier suppressed)', () => {
+    expect(carrierLevel(ringModulator(msg, FC, t, 15).uBpf, FS, FC)).toBeLessThan(0.05);
   });
 });
