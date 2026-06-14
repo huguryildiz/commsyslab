@@ -245,3 +245,46 @@ export function viterbiDecode(received: number[], code: ConvCode): ViterbiResult
   const decoded = decodedFull.slice(0, m - (L - 1)); // drop L-1 tail bits
   return { steps, mlPath, decoded, finalMetric: metric[0] };
 }
+
+/** C(n,k) via a numerically gentle product. */
+function binom(n: number, k: number): number {
+  if (k < 0 || k > n) return 0;
+  let r = 1;
+  for (let i = 0; i < k; i++) r = (r * (n - i)) / (i + 1);
+  return r;
+}
+
+const RATE = 0.5; // R_c = k/n = 1/2
+
+/**
+ * Soft-decision leading union-bound term: beta_dfree * Q(sqrt(2*R_c*d_free*Eb/N0)). §9.7.3.
+ * Asymptotic coding gain ~ 10*log10(R_c*d_free) dB over uncoded BPSK.
+ */
+export function convBerSoftBound(code: ConvCode, ebN0Db: number): number {
+  const d = freeDistance(code);
+  if (!isFinite(d)) return NaN;
+  const beta = weightSpectrum(code, d).get(d) ?? 1;
+  const g = 10 ** (ebN0Db / 10);
+  return beta * qfunc(Math.sqrt(2 * RATE * d * g));
+}
+
+/**
+ * Hard-decision leading union-bound term: beta_dfree * P2(d_free), with the BSC pairwise
+ * error probability P2(d) = sum_{e>d/2} C(d,e) p^e (1-p)^(d-e) (+ half the e=d/2 term if d
+ * even), p = Q(sqrt(2*R_c*Eb/N0)). §9.7.3.
+ */
+export function convBerHardBound(code: ConvCode, ebN0Db: number): number {
+  const d = freeDistance(code);
+  if (!isFinite(d)) return NaN;
+  const beta = weightSpectrum(code, d).get(d) ?? 1;
+  const g = 10 ** (ebN0Db / 10);
+  const p = qfunc(Math.sqrt(2 * RATE * g));
+  let p2 = 0;
+  for (let e = Math.floor(d / 2) + 1; e <= d; e++) {
+    p2 += binom(d, e) * p ** e * (1 - p) ** (d - e);
+  }
+  if (d % 2 === 0) {
+    p2 += 0.5 * binom(d, d / 2) * p ** (d / 2) * (1 - p) ** (d / 2);
+  }
+  return beta * p2;
+}

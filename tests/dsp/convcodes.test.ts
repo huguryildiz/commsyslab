@@ -10,7 +10,10 @@ import {
   weightSpectrum,
   isCatastrophic,
   viterbiDecode,
+  convBerHardBound,
+  convBerSoftBound,
 } from '@/lib/dsp/convcodes';
+import { uncodedBerBpsk } from '@/lib/dsp/blockcodes';
 
 describe('convolutional encoder FSM', () => {
   it('BOOK_CODE is the (2,1,3) g1=[1,0,1], g2=[1,1,1] code', () => {
@@ -80,5 +83,20 @@ describe('Viterbi decoding', () => {
     const r = viterbiDecode(codeword, code);
     expect(r.steps.length).toBe(codeword.length / 2);
     expect(r.steps[0].metric.length).toBe(code.nStates);
+  });
+});
+
+describe('coding-gain BER bounds', () => {
+  const code = BOOK_CODE;
+  it('soft < hard < uncoded at high Eb/N0', () => {
+    const eb = 6;
+    expect(convBerSoftBound(code, eb)).toBeLessThan(convBerHardBound(code, eb));
+    expect(convBerHardBound(code, eb)).toBeLessThan(uncodedBerBpsk(eb));
+  });
+  it('all bounds are in (0,1) and decreasing', () => {
+    expect(convBerSoftBound(code, 8)).toBeLessThan(convBerSoftBound(code, 2));
+    expect(convBerHardBound(code, 8)).toBeLessThan(convBerHardBound(code, 2));
+    expect(convBerSoftBound(code, 8)).toBeGreaterThan(0);
+    expect(convBerHardBound(code, 2)).toBeLessThan(1);
   });
 });
