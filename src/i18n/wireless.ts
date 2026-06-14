@@ -19,4 +19,20 @@ export const wireless: Record<string, string> = {
   'wl.readout.sigmaTau': 'RMS delay spread σ_τ',
   'wl.readout.coherenceBw': 'Coherence bandwidth B_c',
   'wl.readout.coherenceTime': 'Coherence time T_c',
+
+  // Tabs
+  'wl.tab.fading': 'Fading Channel',
+  'wl.tab.ber': 'BER, Diversity & Shadowing',
+
+  // BER / shadowing section
+  'wl.ber.title': 'Error performance over fading',
+  'wl.ber.modulation': 'Binary modulation',
+  'wl.ber.mod.antipodal': 'Antipodal (BPSK)',
+  'wl.ber.mod.orthogonal': 'Orthogonal (BFSK)',
+  'wl.ber.diversityL': 'Diversity order L (MRC)',
+  'wl.ber.sigma': 'Shadowing σ (dB)',
+  'wl.ber.threshold': 'Outage threshold γ_th (dB)',
+  'wl.ber.curve.title': 'BER vs E_b/N₀ — AWGN, Rayleigh, MRC',
+  'wl.ber.outage.title': 'Outage probability vs average SNR (shadowing)',
+  'wl.ber.readout.rayleighPenalty': 'Rayleigh penalty @ 1e-3',
 };
