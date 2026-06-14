@@ -9,6 +9,8 @@ import {
   errorCorrectionT,
   CODES,
   makeHamming,
+  syndromeTable,
+  decode,
 } from '@/lib/dsp/blockcodes';
 
 describe('GF(2) primitives', () => {
@@ -73,5 +75,42 @@ describe('code definitions', () => {
     expect([n, k]).toEqual([15, 11]);
     expect(gHtTimesZero(G, H)).toBe(true);
     expect(minDistance(G)).toBe(3);
+  });
+});
+
+describe('syndrome decoding', () => {
+  it('corrects every single-bit error on (7,4) Hamming', () => {
+    const code = CODES[0]; // hamming74
+    const table = syndromeTable(code.H);
+    const x = [1, 0, 1, 1];
+    const c = encode(x, code.G);
+    for (let pos = 0; pos < code.n; pos++) {
+      const r = c.slice();
+      r[pos] ^= 1;
+      const dec = decode(r, code, table);
+      expect(dec.errorPos).toBe(pos);
+      expect(dec.message).toEqual(x);
+    }
+  });
+  it('does NOT recover a weight-2 error on (7,4) Hamming (t=1)', () => {
+    const code = CODES[0];
+    const table = syndromeTable(code.H);
+    const x = [1, 0, 1, 1];
+    const c = encode(x, code.G);
+    const r = c.slice();
+    r[0] ^= 1;
+    r[1] ^= 1;
+    const dec = decode(r, code, table);
+    expect(dec.message).not.toEqual(x);
+  });
+  it('error-free word decodes to itself with zero syndrome', () => {
+    const code = CODES[0];
+    const table = syndromeTable(code.H);
+    const x = [0, 1, 1, 0];
+    const c = encode(x, code.G);
+    const dec = decode(c, code, table);
+    expect(dec.syndrome.every((b) => b === 0)).toBe(true);
+    expect(dec.errorPos).toBe(-1);
+    expect(dec.message).toEqual(x);
   });
 });

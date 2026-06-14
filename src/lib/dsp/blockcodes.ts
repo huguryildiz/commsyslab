@@ -147,3 +147,34 @@ const rep31: LinearCode = {
 };
 
 export const CODES: LinearCode[] = [hamming74, hamming1511, rep31];
+
+/** Map each weight-1 error syndrome → its error position; zero syndrome → −1. §9.5.1. */
+export function syndromeTable(H: number[][]): Map<string, number> {
+  const n = H[0].length;
+  const map = new Map<string, number>();
+  map.set(syndrome(new Array<number>(n).fill(0), H).join(''), -1);
+  for (let pos = 0; pos < n; pos++) {
+    const e = new Array<number>(n).fill(0);
+    e[pos] = 1;
+    const key = syndrome(e, H).join('');
+    if (!map.has(key)) map.set(key, pos);
+  }
+  return map;
+}
+
+export interface DecodeResult {
+  syndrome: number[];
+  errorPos: number; // −1 = no error; ≥0 = corrected position; −2 = syndrome not a known coset leader
+  corrected: number[];
+  message: number[];
+}
+
+/** Syndrome decode: locate the coset-leader error, flip it, return ĉ and the message (first k bits). */
+export function decode(r: number[], code: LinearCode, table: Map<string, number>): DecodeResult {
+  const s = syndrome(r, code.H);
+  const key = s.join('');
+  const errorPos = table.has(key) ? (table.get(key) as number) : -2;
+  const corrected = r.slice();
+  if (errorPos >= 0) corrected[errorPos] ^= 1;
+  return { syndrome: s, errorPos, corrected, message: corrected.slice(0, code.k) };
+}
