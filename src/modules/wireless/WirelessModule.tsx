@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { FadingChannelSection } from './sections/FadingChannelSection';
+import { DopplerSection } from './sections/DopplerSection';
 import { RayleighBerSection } from './sections/RayleighBerSection';
 import { SpreadSpectrumSection } from './sections/SpreadSpectrumSection';
 import { OfdmSection } from './sections/OfdmSection';
@@ -10,7 +11,7 @@ import { RakeSection } from './sections/RakeSection';
 import { MimoSection } from './sections/MimoSection';
 import './wireless.css';
 
-type Tab = 'fading' | 'ber' | 'spread' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo';
+type Tab = 'fading' | 'doppler' | 'ber' | 'spread' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo';
 
 export function WirelessModule() {
   const [tab, setTab] = useState<Tab>('fading');
@@ -26,6 +27,7 @@ export function WirelessModule() {
         value={tab}
         options={[
           { value: 'fading', label: t('wl.tab.fading') },
+          { value: 'doppler', label: t('wl.tab.doppler') },
           { value: 'ber', label: t('wl.tab.ber') },
           { value: 'spread', label: t('wl.tab.spread') },
           { value: 'ofdm', label: t('wl.tab.ofdm') },
@@ -37,6 +39,7 @@ export function WirelessModule() {
       />
       <div className="wl__grid">
         {tab === 'fading' && <FadingChannelSection />}
+        {tab === 'doppler' && <DopplerSection />}
         {tab === 'ber' && <RayleighBerSection />}
         {tab === 'spread' && <SpreadSpectrumSection />}
         {tab === 'ofdm' && <OfdmSection />}
