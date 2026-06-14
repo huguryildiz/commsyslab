@@ -19,6 +19,10 @@
   font-family: var(--font);
 }
 
+.wl .segmented {
+  margin-bottom: var(--space-2);
+}
+
 .wl__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
