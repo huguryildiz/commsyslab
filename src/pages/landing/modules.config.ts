@@ -4,7 +4,7 @@
  * field and `docs/book-reference.md`.
  */
 export type ModuleStatus = 'live' | 'soon';
-export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse' | 'fourier' | 'amfm' | 'fading';
+export type VizKind = 'constellation' | 'sampling' | 'entropy' | 'linkpulse' | 'fourier' | 'amfm' | 'fading' | 'noise';
 
 export interface LandingModule {
   id: string;
@@ -51,7 +51,7 @@ export const LANDING_MODULES: LandingModule[] = [
     chapter: 'CH 4',
     route: '/random-process',
     status: 'live',
-    viz: 'sampling',
+    viz: 'noise',
     compact: true,
   },
   {
