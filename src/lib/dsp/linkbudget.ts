@@ -4,6 +4,8 @@
  * and §10.1.1 (shadowing).
  */
 
+import { qfuncInv } from '@/lib/dsp/math';
+
 const C_LIGHT = 299792458; // speed of light, m/s
 
 /** Free-space (Friis) path loss in dB: L = 20·log10(4π d f / c). Proakis §7.7. */
@@ -44,4 +46,37 @@ export function hataUrbanPathLossDb(
     aHm +
     (44.9 - 6.55 * Math.log10(hBaseM)) * Math.log10(distKm)
   );
+}
+
+const BOLTZMANN = 1.380649e-23; // Boltzmann constant, J/K
+
+/** Thermal noise power in dBm over bandwidth B (Hz) at temperature T (K): N = kTB. */
+export function thermalNoiseDbm(bandwidthHz: number, tempK: number): number {
+  return 10 * Math.log10(BOLTZMANN * tempK * bandwidthHz * 1000); // W → mW
+}
+
+/** Receiver noise floor (dBm): thermal noise plus the noise figure. */
+export function noiseFloorDbm(bandwidthHz: number, tempK: number, noiseFigureDb: number): number {
+  return thermalNoiseDbm(bandwidthHz, tempK) + noiseFigureDb;
+}
+
+/** Received power (dBm) = Tx power + Tx/Rx antenna gains − path loss − other losses. */
+export function receivedPowerDbm(
+  txDbm: number,
+  txGainDbi: number,
+  rxGainDbi: number,
+  pathLossDb: number,
+  otherLossDb: number,
+): number {
+  return txDbm + txGainDbi + rxGainDbi - pathLossDb - otherLossDb;
+}
+
+/**
+ * Log-normal shadowing fade margin (dB) for a target outage probability:
+ *   P_out = Q(M / σ)  ⇒  M = σ · Q⁻¹(P_out).
+ * σ = 0 (no shadowing) gives 0 margin. Proakis §10.1.1 / §7.7.
+ */
+export function fadeMarginDb(shadowSigmaDb: number, targetOutage: number): number {
+  if (shadowSigmaDb <= 0) return 0;
+  return shadowSigmaDb * qfuncInv(targetOutage);
 }

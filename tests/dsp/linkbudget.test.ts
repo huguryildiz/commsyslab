@@ -3,6 +3,10 @@ import {
   freeSpacePathLossDb,
   logDistancePathLossDb,
   hataUrbanPathLossDb,
+  thermalNoiseDbm,
+  noiseFloorDbm,
+  receivedPowerDbm,
+  fadeMarginDb,
 } from '@/lib/dsp/linkbudget';
 
 describe('freeSpacePathLossDb', () => {
@@ -37,5 +41,35 @@ describe('hataUrbanPathLossDb', () => {
     expect(near).toBeGreaterThan(120);
     expect(near).toBeLessThan(132);
     expect(far).toBeGreaterThan(near);
+  });
+});
+
+describe('thermalNoiseDbm', () => {
+  it('is ≈ −174 dBm/Hz at 290 K and scales 10·log10(B)', () => {
+    expect(thermalNoiseDbm(1, 290)).toBeCloseTo(-173.98, 1);
+    expect(thermalNoiseDbm(1e6, 290)).toBeCloseTo(-113.98, 1);
+  });
+});
+
+describe('noiseFloorDbm', () => {
+  it('adds the noise figure on top of thermal noise', () => {
+    expect(noiseFloorDbm(1e6, 290, 7)).toBeCloseTo(thermalNoiseDbm(1e6, 290) + 7, 9);
+  });
+});
+
+describe('receivedPowerDbm', () => {
+  it('is Tx + gains − path loss − other losses', () => {
+    expect(receivedPowerDbm(43, 15, 0, 130, 2)).toBeCloseTo(43 + 15 + 0 - 130 - 2, 9);
+  });
+});
+
+describe('fadeMarginDb', () => {
+  it('is 0 for σ = 0 and for a 50% outage target', () => {
+    expect(fadeMarginDb(0, 0.1)).toBe(0);
+    expect(fadeMarginDb(8, 0.5)).toBeCloseTo(0, 6);
+  });
+  it('is σ·Q⁻¹(P_out) (~10.25 dB at σ=8, P_out=0.1) and grows as outage tightens', () => {
+    expect(fadeMarginDb(8, 0.1)).toBeCloseTo(10.25, 1);
+    expect(fadeMarginDb(8, 0.01)).toBeGreaterThan(fadeMarginDb(8, 0.1));
   });
 });
