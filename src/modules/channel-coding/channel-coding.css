@@ -24,3 +24,34 @@
 .cc-controls { display: flex; flex-direction: column; gap: 12px; }
 .cc-content { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .cc-readouts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+
+/* Block Codes tab */
+.cc-bc-bits { display: flex; gap: 4px; flex-wrap: wrap; }
+.cc-bit {
+  width: 26px; height: 26px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-family: var(--mono); font-size: 13px;
+  cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.cc-bit--ro { cursor: default; }
+.cc-bit--on { border-color: var(--border-strong); }
+.cc-bit--x.cc-bit--on { box-shadow: 0 0 8px rgba(57, 255, 133, 0.25); border-color: var(--accent); }
+.cc-bit--err { border-color: var(--err); color: var(--err); }
+.cc-bit--parity.cc-bit--on { color: var(--accent-2); border-color: var(--accent-2); }
+.cc-bit--syn.cc-bit--on { color: var(--accent-blue); border-color: var(--accent-blue); }
+.cc-bc-row { display: flex; align-items: center; gap: 10px; margin: 4px 0; }
+.cc-bc-row-label { font-family: var(--mono); font-size: 12px; color: var(--text-dim); min-width: 64px; }
+.cc-bc-mtx-wrap { display: flex; gap: 24px; flex-wrap: wrap; }
+.cc-bc-mtx-label { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.cc-bc-mtx { display: grid; gap: 2px; }
+.cc-bc-cell {
+  width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 11px; border-radius: 3px;
+}
+.cc-bc-cell--ident { background: rgba(57, 255, 133, 0.12); color: var(--text); }
+.cc-bc-cell--p { background: var(--surface-2); color: var(--text-dim); }
+.cc-bc-line { font-family: var(--mono); font-size: 12px; color: var(--text-dim); margin: 6px 0; }
+.cc-bc-hint { font-size: 11px; color: var(--text-faint); margin: 0 0 6px; }
+.cc-bc-status { font-family: var(--mono); font-size: 13px; margin: 8px 0 0; }
+.cc-bc-status--ok { color: var(--ok); }
+.cc-bc-status--err { color: var(--err); }

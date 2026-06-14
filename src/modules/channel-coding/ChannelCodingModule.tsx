@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { t } from '@/i18n';
 import { ChannelsCapacitySection } from './ChannelsCapacitySection';
 import { ShannonLimitSection } from './ShannonLimitSection';
+import { BlockCodesSection } from './BlockCodesSection';
 import './channel-coding.css';
 
-type Tab = 'channels' | 'shannon';
+type Tab = 'channels' | 'shannon' | 'block';
 
 const TABS: { id: Tab; key: string }[] = [
   { id: 'channels', key: 'cc.tab.channels' },
   { id: 'shannon', key: 'cc.tab.shannon' },
+  { id: 'block', key: 'cc.tab.block' },
 ];
 
 export function ChannelCodingModule() {
@@ -33,6 +35,7 @@ export function ChannelCodingModule() {
       </nav>
       {tab === 'channels' && <ChannelsCapacitySection />}
       {tab === 'shannon' && <ShannonLimitSection />}
+      {tab === 'block' && <BlockCodesSection />}
     </div>
   );
 }

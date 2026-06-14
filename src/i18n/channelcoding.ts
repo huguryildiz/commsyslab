@@ -5,6 +5,7 @@ export const channelcoding: Record<string, string> = {
     'Channel models, mutual information, capacity, and the Shannon limit — Proakis Ch 9',
   'cc.tab.channels': 'Channels & Capacity',
   'cc.tab.shannon': 'Shannon Limit',
+  'cc.tab.block': 'Block Codes',
   'cc.theory': 'Theory',
 
   // Tab 1 — Channels & Capacity
@@ -33,4 +34,23 @@ export const channelcoding: Record<string, string> = {
   'cc.sh.gap': 'Gap to bound',
   'cc.sh.cvw': 'Capacity vs bandwidth (Fig. 9.10)',
   'cc.sh.plane': 'Spectral efficiency vs Eb/N₀ (Fig. 9.11)',
+
+  // Tab 3 — Block Codes
+  'cc.bc.code': 'Code',
+  'cc.bc.codeSel': 'Linear block code',
+  'cc.bc.message': 'Message x (k bits)',
+  'cc.bc.errors': 'Channel errors (toggle bits of r)',
+  'cc.bc.errorsHint': 'Click a received bit to flip it (inject errors).',
+  'cc.bc.curveCtl': 'Coding-gain curve',
+  'cc.bc.matrices': 'Generator & parity-check matrices',
+  'cc.bc.encode': 'Encoding  c = xG',
+  'cc.bc.decode': 'Receive → syndrome → decode',
+  'cc.bc.synPos': 'Syndrome ⇒ error at position',
+  'cc.bc.synZero': 'Zero syndrome ⇒ no error detected',
+  'cc.bc.synNone': 'Syndrome not a single-error coset leader',
+  'cc.bc.ok': '✓ message recovered',
+  'cc.bc.fail': '✗ decoding failed / miscorrected',
+  'cc.bc.errBits': 'error bit(s)',
+  'cc.bc.curve': 'Coding gain: BER vs Eb/N₀',
+  'cc.bc.cube': 'Hamming cube (n = 3)',
 };
