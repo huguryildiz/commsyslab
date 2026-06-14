@@ -11,6 +11,7 @@ export const channelcoding: Record<string, string> = {
   'cc.tab.gfbch': 'GF(2ᵐ) & BCH',
   'cc.tab.rs': 'Reed-Solomon',
   'cc.tab.compare': 'Codes vs Shannon',
+  'cc.tab.concat': 'Concatenated',
   'cc.theory': 'Theory',
 
   // Tab 1 — Channels & Capacity
@@ -162,4 +163,22 @@ export const channelcoding: Record<string, string> = {
   'cc.cmp.shannon': 'Shannon limit −1.59 dB',
   'cc.cmp.note':
     'Analytic union bounds. Coding trades rate (bandwidth) for power efficiency, approaching capacity (§9.4.2).',
+  // Concatenated codes tab
+  'cc.cc.chain': 'Concatenated system (RS ⊕ convolutional)',
+  'cc.cc.compose': 'Rate & distance composition',
+  'cc.cc.depth': 'Interleave depth',
+  'cc.cc.burst': 'Burst length (symbols)',
+  'cc.cc.innerTitle': 'Inner code → bursty Viterbi errors',
+  'cc.cc.innerBurstPos': 'Inner burst start (coded bits)',
+  'cc.cc.innerBurstLen': 'Inner burst length (coded bits)',
+  'cc.cc.sent': 'sent u',
+  'cc.cc.decoded': 'Viterbi û',
+  'cc.cc.innerNote':
+    'A localized channel burst makes Viterbi errors cluster — the outer code sees bursts.',
+  'cc.cc.interTitle': 'Interleaver spreads the burst (depth × N RS symbols)',
+  'cc.cc.interleaveOn': 'Interleave',
+  'cc.cc.recovered': '✓ recovered — every RS codeword ≤ t',
+  'cc.cc.lost': '✗ lost — a codeword exceeds t',
+  'cc.cc.curve': 'Coding gain — concatenated vs inner-only vs uncoded',
+  'cc.cc.curveNote': 'Illustrative (ideal interleaving).',
 };

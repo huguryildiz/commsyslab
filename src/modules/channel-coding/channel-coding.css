@@ -131,3 +131,16 @@
 .cc-cmp-table td.best { color: var(--ok); }
 .cc-cmp-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 .cc-cmp-legend { display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--text-dim); }
+
+/* Concatenated codes */
+.cc-cc-grid { display: inline-grid; gap: 3px; font-family: var(--mono); font-size: 10px; }
+.cc-cc-cell { width: 16px; height: 16px; border: 1px solid var(--border); border-radius: 2px; }
+.cc-cc-cell.hit { background: var(--color-marker); border-color: var(--color-marker); }
+.cc-cc-row { display: flex; align-items: center; gap: 8px; margin: 2px 0; }
+.cc-cc-rowbadge { font-family: var(--mono); font-size: 11px; min-width: 96px; }
+.cc-cc-rowbadge.ok { color: var(--ok); }
+.cc-cc-rowbadge.bad { color: var(--err); }
+.cc-cc-toggle { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; margin: 6px 0; }
+.cc-cc-verdict { font-family: var(--mono); font-size: 13px; margin: 8px 0 0; }
+.cc-cc-verdict.ok { color: var(--ok); }
+.cc-cc-verdict.bad { color: var(--err); }
