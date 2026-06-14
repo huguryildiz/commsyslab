@@ -12,10 +12,10 @@ function renderHome() {
 }
 
 describe('Home (landing)', () => {
-  it('renders the hero headline and the primary CTA → /sampling', () => {
+  it('renders the hero headline and the primary CTA → /start', () => {
     renderHome();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(/survive the channel/i);
-    expect(screen.getByRole('link', { name: /Start with Sampling/i })).toHaveAttribute('href', '/sampling');
+    expect(screen.getByRole('link', { name: /Browse the modules/i })).toHaveAttribute('href', '/start');
   });
 
   it('links the three live modules to their routes', () => {

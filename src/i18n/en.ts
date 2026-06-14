@@ -1,5 +1,8 @@
 export const en: Record<string, string> = {
   'app.title': 'CommSysLab',
+  'nav.modules': 'Modules',
+  'start.title': 'Choose a module',
+  'start.subtitle': 'Nine chapters, one communication link — pick where to start.',
   'app.subtitle': 'Interactive Communication Systems Lab',
   'nav.home': 'Home',
   'nav.sampling': 'Sampling & Quantization',
@@ -121,7 +124,6 @@ export const en: Record<string, string> = {
   'it.tab.prefix': 'Prefix & Kraft',
   'it.tab.huffman': 'Huffman',
   'it.tab.lz': 'Lempel-Ziv',
-  'it.tab.capacity': 'Channel Capacity',
   'it.entropy.title': 'Entropy & self-information',
   'it.entropy.symbols': 'Symbols (probabilities)',
   'it.entropy.addSymbol': '+ symbol',
@@ -173,17 +175,6 @@ export const en: Record<string, string> = {
   'it.lz.encoded': 'Encoded',
   'it.lz.lengths': 'Input → encoded',
   'it.lz.lossless': 'Decoded == input (lossless)?',
-  'it.cap.title': 'Channel capacity',
-  'it.cap.bsc': 'Binary symmetric channel',
-  'it.cap.eps': 'Crossover ε',
-  'it.cap.hb': 'H_b(ε)',
-  'it.cap.cbsc': 'Capacity C = 1 − H_b(ε)',
-  'it.cap.curveBsc': 'C vs ε (Fig. 9.7)',
-  'it.cap.shannon': 'Band-limited AWGN (Shannon)',
-  'it.cap.bw': 'Bandwidth B',
-  'it.cap.snr': 'SNR',
-  'it.cap.cshannon': 'Capacity C = B·log₂(1+SNR)',
-  'it.cap.curveShannon': 'C vs SNR',
   'it.theory.title': 'Key formulas',
 
   // ── Landing page ("The Lab Instrument") ──
@@ -192,7 +183,7 @@ export const en: Record<string, string> = {
   'landing.headline.l2': 'survive the channel.',
   'landing.lead':
     'CommSysLab is a hands-on playground for the whole communication system — from analog AM/FM to the digital link: sample, quantize, source-code, modulate, and detect, every block live.',
-  'landing.cta.primary': 'Start with Sampling',
+  'landing.cta.primary': 'Browse the modules',
   'landing.cta.secondary': 'Explore the link',
   'landing.stats.modules': 'Modules',
   'landing.stats.panels': 'Interactive panels',
@@ -208,7 +199,6 @@ export const en: Record<string, string> = {
   'landing.flow.detect': 'detect',
   'landing.flow.sink': 'sink',
   'landing.section.kicker': '01 / LAB',
-  'landing.section.title': 'Five blocks, one link',
   'landing.module': 'MODULE',
   'landing.tile.open': 'Open module',
   'landing.tile.soon': 'SOON',
@@ -228,9 +218,8 @@ export const en: Record<string, string> = {
   'landing.mod.e2e.desc':
     'The full chain wired together — source coding → modulation → channel → detection, with a live link budget.',
   'landing.footer.left': 'Interactive Communication Systems Lab',
-  'landing.footer.stack': 'React · TS · Vite',
-  'landing.footer.theme': 'dark / light',
-  'landing.footer.dev': 'Developed by Hüseyin Uğur Yıldız',
+  'landing.footer.dev': 'Developed by',
+  'landing.footer.devName': 'Hüseyin Uğur Yıldız',
 
   // --- Baseband module ---
   'baseband.tab.pulse': 'Pulse Shaping & Nyquist',

@@ -15,7 +15,7 @@ export function Hero() {
         <p className="hero__lead">{t('landing.lead')}</p>
 
         <div className="hero__cta">
-          <Link to="/sampling" className="btn btn--primary">
+          <Link to="/start" className="btn btn--primary">
             ▶ {t('landing.cta.primary')}
           </Link>
           <a href="#lab" className="btn btn--ghost">

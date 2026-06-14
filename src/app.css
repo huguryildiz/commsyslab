@@ -18,30 +18,65 @@
   flex-wrap: wrap;
 }
 .app__brand {
-  /* Brand techno-compound word: clean sans (Plex Sans) instead of serif */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-family: var(--font);
   font-weight: 700;
   letter-spacing: -0.01em;
-  margin-right: var(--space-3);
+  margin-right: var(--space-2);
+  text-decoration: none;
+}
+.app__brand span {
   background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.app__nav a {
+.brand-icon {
+  filter: drop-shadow(0 0 5px rgba(57, 255, 133, 0.28));
+}
+
+/* ≡ Modules button — opens the module menu overlay anywhere */
+.app__menu-btn {
   font-family: var(--mono);
-  color: var(--text-dim);
   font-size: 0.85rem;
-  padding: var(--space-1) var(--space-2);
+  color: var(--text-dim);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
   transition: all var(--transition);
 }
-.app__nav a:hover {
+.app__menu-btn:hover,
+.app__menu-btn[aria-expanded='true'] {
   color: var(--accent);
+  border-color: var(--border-strong);
+  box-shadow: 0 0 12px rgba(57, 255, 133, 0.18);
 }
-.app__nav a.active {
-  color: var(--accent);
-  text-shadow: 0 0 10px rgba(57, 255, 133, 0.4);
+
+/* module menu overlay */
+.app__menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(2, 3, 12, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.app__menu-pop {
+  position: absolute;
+  top: 64px;
+  left: var(--space-3);
+  width: min(440px, calc(100vw - 2 * var(--space-3)));
+  background: var(--bg-panel);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+  padding: var(--space-2);
 }
 .app__spacer {
   flex: 1;

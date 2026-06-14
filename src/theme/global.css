@@ -2,7 +2,7 @@
 
 /* =====================================================================
  * Global styles — CommSysLab visual language (glassmorphism + neon glow)
- * Fonts are loaded via Google Fonts in index.html (Fraunces / IBM Plex Sans / IBM Plex Mono).
+ * Fonts are loaded via Google Fonts in index.html (Newsreader / IBM Plex Mono).
  * ===================================================================== */
 
 * {
@@ -47,7 +47,7 @@ h2,
 h3 {
   margin: 0 0 var(--space-3);
   font-family: var(--font-head);
-  font-optical-sizing: auto; /* Fraunces opsz axis — high contrast at large headlines */
+  font-optical-sizing: auto; /* Newsreader opsz axis — display sizing at large headlines */
   font-weight: 700;
   letter-spacing: 0; /* serif headline: no negative/wide tracking needed */
 }

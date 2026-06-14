@@ -29,7 +29,7 @@ function Viz({ kind }: { kind: VizKind }) {
 
 export function ModuleTile({ m }: { m: LandingModule }) {
   const soon = m.status === 'soon';
-  const className = ['tile', `tile--${m.area}`, m.flagship && 'tile--flagship', m.compact && 'tile--compact', soon && 'tile--soon']
+  const className = ['tile', m.flagship && 'tile--flagship', m.compact && 'tile--compact', soon && 'tile--soon']
     .filter(Boolean)
     .join(' ');
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { theoreticalSer, simulateSer, unionBoundSer } from '@/lib/dsp/ser';
+import { theoreticalSer, simulateSer, unionBoundSer, requiredEbN0DbForBer } from '@/lib/dsp/ser';
 import { makeConstellation } from '@/lib/dsp/modulation';
 import { qfunc } from '@/lib/dsp/math';
 
@@ -97,5 +97,20 @@ describe('unionBoundSer', () => {
   it('is clamped to at most 1 and 0 for a single point', () => {
     expect(unionBoundSer([[0]], 1)).toBe(0);
     expect(unionBoundSer([[0.01], [-0.01]], 1e-6)).toBeLessThanOrEqual(1);
+  });
+});
+
+describe('requiredEbN0DbForBer (Eb/N0 to reach a target BER)', () => {
+  it('lands on the target BER for BPSK (~9.6 dB at 1e-5)', () => {
+    const db = requiredEbN0DbForBer('bpsk', 2, 1e-5);
+    const ber = theoreticalSer('bpsk', 2, db) / 1; // k = log2(2) = 1
+    expect(Math.abs(ber - 1e-5) / 1e-5).toBeLessThan(0.05);
+    expect(db).toBeGreaterThan(9);
+    expect(db).toBeLessThan(10);
+  });
+  it('requires more Eb/N0 for 64-QAM than for BPSK', () => {
+    expect(requiredEbN0DbForBer('mqam', 64, 1e-5)).toBeGreaterThan(
+      requiredEbN0DbForBer('bpsk', 2, 1e-5),
+    );
   });
 });

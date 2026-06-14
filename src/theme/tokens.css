@@ -51,8 +51,8 @@
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ── Typography — premium SaaS trio (lab-journal tone) ── */
-  --font: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; /* body/UI */
-  --font-head: 'Fraunces', Georgia, 'Times New Roman', serif; /* heading — high-contrast serif */
+  --font: 'Newsreader', Georgia, 'Times New Roman', serif; /* body/UI — editorial serif */
+  --font-head: 'Newsreader', Georgia, 'Times New Roman', serif; /* heading — editorial serif */
   --mono: 'IBM Plex Mono', 'SF Mono', Menlo, Consolas, monospace; /* numeric/formula/code/reading */
 
   /* ── Instrument screen — oscilloscope/viz canvas background (dark in both themes) ── */

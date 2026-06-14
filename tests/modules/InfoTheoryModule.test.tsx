@@ -14,10 +14,4 @@ describe('InfoTheoryModule', () => {
     fireEvent.click(screen.getByRole('button', { name: /Lempel-Ziv/i }));
     expect(screen.getByText(/Contents/i)).toBeTruthy();
   });
-
-  it('switches to Channel Capacity and shows a capacity curve', () => {
-    render(<InfoTheoryModule />);
-    fireEvent.click(screen.getByRole('button', { name: /Channel Capacity/i }));
-    expect(screen.getByLabelText(/BSC capacity versus crossover probability/i)).toBeTruthy();
-  });
 });

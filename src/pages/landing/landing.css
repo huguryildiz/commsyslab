@@ -311,16 +311,9 @@
 /* ───────────────────────── bento ───────────────────────── */
 .bento {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr;
-  grid-auto-rows: 188px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 210px;
   gap: var(--space-3);
-  grid-template-areas:
-    'mod mod four'
-    'mod mod anal'
-    'rp rp rp'
-    'samp info base'
-    'wl wl wl'
-    'e2e e2e e2e';
 }
 .tile {
   position: relative;
@@ -368,33 +361,6 @@
 }
 .tile:hover::after {
   opacity: 1;
-}
-.tile--mod {
-  grid-area: mod;
-}
-.tile--samp {
-  grid-area: samp;
-}
-.tile--info {
-  grid-area: info;
-}
-.tile--base {
-  grid-area: base;
-}
-.tile--e2e {
-  grid-area: e2e;
-}
-.tile--four {
-  grid-area: four;
-}
-.tile--anal {
-  grid-area: anal;
-}
-.tile--rp {
-  grid-area: rp;
-}
-.tile--wl {
-  grid-area: wl;
 }
 .tile:nth-child(1) {
   animation-delay: 0.05s;
@@ -482,35 +448,35 @@
   gap: 0.4rem;
 }
 
-/* viz layout (by area) */
+/* viz layout (by viz kind) */
 .tile__viz {
   position: absolute;
   pointer-events: none;
 }
-.tile--mod .tile__viz {
+.tile__viz--constellation {
   right: 0;
   bottom: 0;
   width: 60%;
   height: 74%;
   opacity: 0.95;
 }
-.tile--samp .tile__viz,
-.tile--info .tile__viz {
+.tile__viz--sampling,
+.tile__viz--entropy {
   left: 0;
   right: 0;
   bottom: 0;
   height: 52%;
   opacity: 0.92;
 }
-.tile--four .tile__viz,
-.tile--anal .tile__viz {
+.tile__viz--fourier,
+.tile__viz--amfm {
   left: 0;
   right: 0;
   bottom: 0;
   height: 56%;
   opacity: 0.92;
 }
-.tile--e2e .tile__viz {
+.tile__viz--linkpulse {
   right: 1.1rem;
   bottom: 1rem;
   width: 46%;
@@ -681,14 +647,16 @@
     height: 300px;
   }
   .bento {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
   .tile {
     min-height: 180px;
   }
-  .tile--flagship {
-    min-height: 300px;
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -707,4 +675,24 @@
   .hud__rec {
     animation: none !important;
   }
+}
+
+/* ───────────────────────── /start launcher ───────────────────────── */
+.startpage {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--space-4) 0;
+}
+.startpage__head {
+  margin-bottom: var(--space-4);
+}
+.startpage__title {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  margin: 0 0 var(--space-1);
+}
+.startpage__sub {
+  font-family: var(--font);
+  color: var(--text-dim);
+  margin: 0;
 }

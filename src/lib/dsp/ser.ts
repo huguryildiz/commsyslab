@@ -105,3 +105,27 @@ export function unionBoundSer(points: number[][], n0: number): number {
   }
   return Math.min(sum / M, 1);
 }
+
+// Ref: §7.6 — Eb/N0 needed to reach a target bit-error rate (overlay points for the Shannon plane).
+/**
+ * Eb/N0 (dB) at which the Gray-mapped bit-error rate (Pb ≈ Ps / log2 M) of `scheme` reaches
+ * `targetBer`, found by bisection over [lo, hi] dB. Assumes BER is monotone decreasing in Eb/N0.
+ */
+export function requiredEbN0DbForBer(
+  scheme: Scheme,
+  M: number,
+  targetBer: number,
+  lo = -2,
+  hi = 30,
+): number {
+  const k = Math.log2(M);
+  const ber = (db: number) => theoreticalSer(scheme, M, db) / k;
+  let a = lo;
+  let b = hi;
+  for (let i = 0; i < 60; i++) {
+    const mid = (a + b) / 2;
+    if (ber(mid) > targetBer) a = mid;
+    else b = mid;
+  }
+  return (a + b) / 2;
+}
