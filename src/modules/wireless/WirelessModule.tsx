@@ -3,9 +3,10 @@ import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { FadingChannelSection } from './sections/FadingChannelSection';
 import { RayleighBerSection } from './sections/RayleighBerSection';
+import { SpreadSpectrumSection } from './sections/SpreadSpectrumSection';
 import './wireless.css';
 
-type Tab = 'fading' | 'ber';
+type Tab = 'fading' | 'ber' | 'spread';
 
 export function WirelessModule() {
   const [tab, setTab] = useState<Tab>('fading');
@@ -22,11 +23,14 @@ export function WirelessModule() {
         options={[
           { value: 'fading', label: t('wl.tab.fading') },
           { value: 'ber', label: t('wl.tab.ber') },
+          { value: 'spread', label: t('wl.tab.spread') },
         ]}
         onChange={(v) => setTab(v as Tab)}
       />
       <div className="wl__grid">
-        {tab === 'fading' ? <FadingChannelSection /> : <RayleighBerSection />}
+        {tab === 'fading' && <FadingChannelSection />}
+        {tab === 'ber' && <RayleighBerSection />}
+        {tab === 'spread' && <SpreadSpectrumSection />}
       </div>
     </div>
   );
