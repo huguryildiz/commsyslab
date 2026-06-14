@@ -48,3 +48,34 @@ export function pnAutocorrelation(seq: number[]): number[] {
   }
   return ac;
 }
+
+/**
+ * Spread a sequence of ±1 data bits by a ±1 PN code: each bit multiplies the
+ * full PN period, producing `bits.length * pn.length` chips. Proakis §10.3.2.
+ */
+export function spreadBits(bits: number[], pn: number[]): number[] {
+  const chips: number[] = [];
+  for (const b of bits) for (const c of pn) chips.push(b * c);
+  return chips;
+}
+
+/**
+ * Despread a ±1 chip stream with the same PN code: correlate each PN-length
+ * block against the code and decide the bit by the sign of the correlation.
+ * Proakis §10.3.2.
+ */
+export function despreadChips(chips: number[], pn: number[]): number[] {
+  const N = pn.length;
+  const bits: number[] = [];
+  for (let b = 0; b < chips.length / N; b++) {
+    let corr = 0;
+    for (let i = 0; i < N; i++) corr += chips[b * N + i] * pn[i];
+    bits.push(corr >= 0 ? 1 : -1);
+  }
+  return bits;
+}
+
+/** Processing gain in dB: G_p = 10·log10(N), N = chips per bit. Proakis §10.3.2. */
+export function processingGainDb(N: number): number {
+  return 10 * Math.log10(N);
+}

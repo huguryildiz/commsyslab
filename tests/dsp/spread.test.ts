@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mSequence, pnAutocorrelation } from '@/lib/dsp/spread';
+import { mSequence, pnAutocorrelation, spreadBits, despreadChips, processingGainDb } from '@/lib/dsp/spread';
 
 describe('mSequence', () => {
   it('has maximal length N = 2^n - 1 with entries of ±1', () => {
@@ -26,5 +26,29 @@ describe('pnAutocorrelation', () => {
     expect(ac).toHaveLength(N);
     expect(ac[0]).toBe(N);
     for (let k = 1; k < N; k++) expect(ac[k]).toBe(-1);
+  });
+});
+
+describe('spreadBits / despreadChips', () => {
+  it('round-trips bits through spreading and despreading with no channel error', () => {
+    const pn = mSequence(4); // N = 15
+    const bits = [1, -1, -1, 1];
+    const chips = spreadBits(bits, pn);
+    expect(chips).toHaveLength(bits.length * pn.length);
+    const recovered = despreadChips(chips, pn);
+    expect(recovered).toEqual(bits);
+  });
+  it('each data bit multiplies the whole PN period (BPSK ±1)', () => {
+    const pn = mSequence(3); // N = 7
+    const chips = spreadBits([1], pn);
+    expect(chips).toEqual(pn); // +1 bit reproduces the PN sequence
+    const chipsNeg = spreadBits([-1], pn);
+    expect(chipsNeg).toEqual(pn.map((c) => -c));
+  });
+});
+
+describe('processingGainDb', () => {
+  it('is 10*log10(N)', () => {
+    expect(processingGainDb(31)).toBeCloseTo(10 * Math.log10(31), 12);
   });
 });
