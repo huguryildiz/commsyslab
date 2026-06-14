@@ -10,6 +10,7 @@ export const analogam: Record<string, string> = {
   'analog.panel.select': 'Panel',
 
   // Tab bar (4-tab restructure; 'mux' lands in Plan 3)
+  'analog.tab.ariaLabel': 'Amplitude Modulation tabs',
   'analog.tab.schemes': 'AM Schemes',
   'analog.tab.modimpl': 'Modulators & Demodulators',
   'analog.tab.mux': 'Signal Multiplexing',

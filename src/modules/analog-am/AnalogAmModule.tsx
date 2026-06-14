@@ -37,7 +37,7 @@ export function AnalogAmModule() {
     <div className="analog">
       <div className="analog__tabbar">
         <Segmented<Tab>
-          ariaLabel={t('analog.tab.schemes')}
+          ariaLabel={t('analog.tab.ariaLabel')}
           value={tab}
           options={[
             { value: 'schemes', label: t('analog.tab.schemes') },

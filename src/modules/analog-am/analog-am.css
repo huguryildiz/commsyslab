@@ -41,6 +41,13 @@
   align-items: start;
 }
 
+/* Stack the time-domain + spectrum canvases on narrow / mobile-portrait viewports. */
+@media (max-width: 900px) {
+  .analog__am-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
 .analog__panel-half {
   display: flex;
   flex-direction: column;
