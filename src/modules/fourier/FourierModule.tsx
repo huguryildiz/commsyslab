@@ -1,37 +1,46 @@
 /**
- * Signals & Spectra module — 4-tab shell (Proakis & Salehi Chapter 2).
- * Tabs: Signals & Systems · Fourier Series · Fourier Transform & Spectra · Filters & Bandpass.
+ * Signals & Spectra module — 5-tab shell (Proakis & Salehi Chapter 2).
+ * Tabs: Signals & Systems · Convolution · Fourier Series · Fourier Transform & Spectra · Filters & Bandpass.
+ * URL pattern: /signals (default) · /signals/convolution · /signals/series · /signals/transform · /signals/filters
  */
-import { useEffect, useState } from 'react';
-import { Segmented, Panel, TransportControls } from '@/components';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Segmented } from '@/components';
 import { t } from '@/i18n';
-import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import { SignalsSystemsSection } from './sections/SignalsSystemsSection';
+import { ConvolutionSection } from './sections/ConvolutionSection';
 import { FourierSeriesSection } from './sections/FourierSeriesSection';
 import { FourierTransformSection } from './sections/FourierTransformSection';
 import { FilterBandpassSection } from './sections/FilterBandpassSection';
 import './fourier.css';
 
-type Tab = 'signals' | 'series' | 'transform' | 'filters';
+type Tab = 'signals' | 'conv' | 'series' | 'transform' | 'filters';
+
+const TAB_TO_SLUG: Record<Tab, string> = {
+  signals: '',
+  conv: 'convolution',
+  series: 'series',
+  transform: 'transform',
+  filters: 'filters',
+};
+
+const SLUG_TO_TAB: Record<string, Tab> = {
+  '': 'signals',
+  convolution: 'conv',
+  series: 'series',
+  transform: 'transform',
+  filters: 'filters',
+};
 
 export function FourierModule() {
-  const [tab, setTab] = useState<Tab>('signals');
-  const [clock, setClock] = useState(0);
-  const loop = useSimulationLoop({
-    ticksPerSecond: 30,
-    onTick: (_dt, simTime) => setClock(simTime),
-    onReset: () => setClock(0),
-  });
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = SLUG_TO_TAB[slug] ?? 'signals';
+  const clock = 0;
 
-  // Auto-play on mount unless the user prefers reduced motion.
-  useEffect(() => {
-    const reduce =
-      typeof window !== 'undefined' &&
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduce) loop.start();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleTabChange = (v: string) => {
+    const newSlug = TAB_TO_SLUG[v as Tab];
+    navigate(newSlug ? `/signals/${newSlug}` : '/signals', { replace: true });
+  };
 
   return (
     <div className="fourier">
@@ -41,21 +50,20 @@ export function FourierModule() {
           value={tab}
           options={[
             { value: 'signals', label: t('fourier.tab.signals') },
+            { value: 'conv', label: t('fourier.tab.conv') },
             { value: 'series', label: t('fourier.tab.series') },
             { value: 'transform', label: t('fourier.tab.transform') },
             { value: 'filters', label: t('fourier.tab.filters') },
           ]}
-          onChange={(v) => setTab(v as Tab)}
+          onChange={handleTabChange}
         />
-        <Panel title={t('fourier.animation')}>
-          <TransportControls loop={loop} />
-        </Panel>
       </div>
 
-      {tab === 'signals' && <SignalsSystemsSection clock={clock} loop={loop} />}
-      {tab === 'series' && <FourierSeriesSection clock={clock} loop={loop} />}
-      {tab === 'transform' && <FourierTransformSection clock={clock} loop={loop} />}
-      {tab === 'filters' && <FilterBandpassSection clock={clock} loop={loop} />}
+      {tab === 'signals' && <SignalsSystemsSection clock={clock} />}
+      {tab === 'conv' && <ConvolutionSection />}
+      {tab === 'series' && <FourierSeriesSection clock={clock} />}
+      {tab === 'transform' && <FourierTransformSection clock={clock} />}
+      {tab === 'filters' && <FilterBandpassSection clock={clock} />}
     </div>
   );
 }

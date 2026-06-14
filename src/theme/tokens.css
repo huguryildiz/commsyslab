@@ -81,8 +81,8 @@
   --bg-panel: #ffffff;
   --surface: #ffffff;
   --surface-2: #f4f6fb;
-  --canvas-bg: #eaf2fd; /* soft light-blue instrument screen */
-  --scope-bg: #eaf2fd; /* hero scope + brand icon screen (light-blue in light mode) */
+  --canvas-bg: #f4f6fb; /* instrument screen — matches --surface-2 in light mode */
+  --scope-bg: #f4f6fb; /* hero scope + brand icon screen */
   --select-option-bg: #ffffff;
 
   /* Deep ink text (not pure black → softer on a light surface) */

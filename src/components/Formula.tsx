@@ -20,3 +20,19 @@ export function Formula({ tex, block = false }: FormulaProps) {
     />
   );
 }
+
+/** Render a hint string that may contain inline $...$ math spans. */
+export function HintText({ text }: { text: string }) {
+  const parts = text.split(/(\$[^$]+\$)/);
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith('$') && part.endsWith('$') && part.length > 2 ? (
+          <Formula key={i} tex={part.slice(1, -1)} />
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}

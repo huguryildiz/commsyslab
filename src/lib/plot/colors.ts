@@ -38,7 +38,7 @@ const LIGHT: Chart = {
   red: '#cc2b2b',
   text: '#16203f',
   dim: '#4d5470',
-  bgDeep: '#f2f7fe', // light label background
+  bgDeep: '#f4f6fb', // light canvas/label background — matches --canvas-bg token
 };
 
 function isLight(): boolean {

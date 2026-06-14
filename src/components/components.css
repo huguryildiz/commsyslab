@@ -1,10 +1,32 @@
 .panel {
+  position: relative;
+  overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-card);
   padding: var(--space-3);
   margin-bottom: var(--space-3);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-2), var(--color-marker));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.panel:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lift);
+}
+.panel:hover::before {
+  transform: scaleX(1);
 }
 .panel__title {
   font-family: var(--font-head);
@@ -13,6 +35,15 @@
   color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+/* Math set in a title (KaTeX) keeps its own case — don't uppercase symbols. */
+.panel__title .katex {
+  text-transform: none;
+  font-size: 1.05em;
+  color: var(--text);
 }
 .ctl-slider,
 .ctl-select,
@@ -21,6 +52,16 @@
   display: block;
   margin-bottom: var(--space-3);
   font-size: 0.9rem;
+}
+.ctl-select {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.ctl-select select {
+  width: 100%;
+  min-width: 0;
 }
 .ctl-slider__row {
   display: flex;
@@ -171,4 +212,21 @@
   .modmenu--page {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── Scroll-to-zoom affordance overlay on zoomable canvases ── */
+.zoom-hint {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-faint);
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
 }

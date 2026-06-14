@@ -6,7 +6,7 @@
 import type { SpectralLine } from './spectrum';
 import type { Periodic } from './signals';
 import { fft, ifft, type Complex } from './fft';
-import { linspace, sinc } from './math';
+import { linspace } from './math';
 
 /**
  * Analytic Fourier-series coefficients cₙ for periodic waveforms.
@@ -47,7 +47,7 @@ export function seriesCoeffs(
 
     case 'triangle': {
       // Proakis Table 2.1: odd harmonics only, magnitude ∝ 1/n²
-      // x(t) = (8/π²) Σ_{n odd} (1/n²) sin(2πnf₀t)
+      // x(t) = (8/π²) Σ_{n odd} (1/n²) cos(2πnf₀t)  [even/cosine form]
       for (let n = 1; n <= N; n++) {
         if (n % 2 === 1) {
           lines.push({ freq: n * f0, mag: (8 / (Math.PI * Math.PI)) * (1 / (n * n)) });
@@ -59,16 +59,14 @@ export function seriesCoeffs(
     }
 
     case 'pulse': {
-      // Proakis §2.1: pulse train with duty cycle d
-      // DC component = d (the average)
-      // cₙ = sinc(n*d) * (2*sin(π*n*d)/(π*n)) for n ≠ 0
-      // Simplification: cₙ ∝ sinc(n*d)
+      // Proakis §2.1: even (centered) pulse train, DC = d, harmonics = 2sin(πnd)/(πn)
       lines.push({ freq: 0, mag: duty });
       for (let n = 1; n <= N; n++) {
-        // cₙ = (2/π) * sinc(n*d) * sin(π*n*d) / n
-        // Standard form: sinc envelope
-        const c = ((2 / Math.PI) * sinc(n * duty) * Math.sin(Math.PI * n * duty)) / n;
-        lines.push({ freq: n * f0, mag: Math.abs(c) });
+        // Amplitude Aₙ = 2|cₙ| = 2|sin(πnd)|/(πn) — Proakis Table 2.1 (even-function form)
+        lines.push({
+          freq: n * f0,
+          mag: Math.abs((2 * Math.sin(Math.PI * n * duty)) / (Math.PI * n)),
+        });
       }
       break;
     }
@@ -80,7 +78,7 @@ export function seriesCoeffs(
 /**
  * N-harmonic partial sum at time t (finite Fourier series).
  * Exhibits Gibbs phenomenon (~9% overshoot) near discontinuities.
- * Proakis §2.1.
+ * Proakis §2.1, Table 2.1.
  */
 export function seriesPartialSum(
   kind: Periodic,
@@ -89,20 +87,41 @@ export function seriesPartialSum(
   t: number,
   duty: number = 0.5,
 ): number {
-  const coeffs = seriesCoeffs(kind, f0, N, duty);
-  let sum = 0;
-
-  for (const line of coeffs) {
-    if (line.freq === 0) {
-      // DC term
-      sum += line.mag;
-    } else {
-      // Harmonic: cₙ * sin(2πnf₀t) — square/sawtooth/triangle expand in sine form
-      sum += line.mag * Math.sin(2 * Math.PI * line.freq * t);
+  const w = 2 * Math.PI * f0;
+  switch (kind) {
+    case 'square': {
+      // (4/π) Σ_{n odd} sin(2πnf₀t)/n — Proakis Table 2.1
+      let s = 0;
+      for (let n = 1; n <= N; n++) {
+        if (n % 2 === 1) s += Math.sin(n * w * t) / n;
+      }
+      return (4 / Math.PI) * s;
+    }
+    case 'triangle': {
+      // (8/π²) Σ_{n odd} cos(2πnf₀t)/n² — Proakis Table 2.1 (even/cosine form)
+      let s = 0;
+      for (let n = 1; n <= N; n++) {
+        if (n % 2 === 1) s += Math.cos(n * w * t) / (n * n);
+      }
+      return (8 / (Math.PI * Math.PI)) * s;
+    }
+    case 'sawtooth': {
+      // (2/π) Σ (-1)^{n+1}/n sin(2πnf₀t) — Proakis Table 2.1 (alternating signs)
+      let s = 0;
+      for (let n = 1; n <= N; n++) {
+        s += (Math.pow(-1, n + 1) / n) * Math.sin(n * w * t);
+      }
+      return (2 / Math.PI) * s;
+    }
+    case 'pulse': {
+      // d + Σ 2sin(πnd)/(πn) cos(2πnf₀t) — Proakis §2.1 (even-function cosine form)
+      let s = duty;
+      for (let n = 1; n <= N; n++) {
+        s += ((2 * Math.sin(Math.PI * n * duty)) / (Math.PI * n)) * Math.cos(n * w * t);
+      }
+      return s;
     }
   }
-
-  return sum;
 }
 
 export type FilterType = 'lpf' | 'hpf' | 'bpf' | 'bsf' | 'rc';

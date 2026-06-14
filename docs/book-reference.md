@@ -73,18 +73,18 @@ printed numbers (PDF page offset ~+14).
 
 ### Chapter 3 — Amplitude Modulation (pp. 117–160) ✅
 
-**Module:** `src/modules/analog-am/` · **DSP:** `src/lib/dsp/analog.ts`
+**Module:** `src/modules/analog-am/` (4 tabs) · **DSP:** `src/lib/dsp/analog.ts`, `src/lib/dsp/am-impl.ts`
 
 | Subsection | Page | Status | Repo mapping |
 |------------|------|--------|--------------|
-| 3.1 Introduction to Modulation | 118 | ✅ | `AnalogAmModule.tsx` intro |
-| 3.2.1 DSB-SC AM | 119 | ✅ | `analog.ts` — DSB-SC |
-| 3.2.2 Conventional AM | 126 | ✅ | `analog.ts` — conventional AM |
-| 3.2.3 SSB AM | 132 | ✅ | `analog.ts` — SSB |
-| 3.2.4 VSB AM | 134 | ⬜ | — |
-| 3.3 Modulators and Demodulators | 137 | ✅ | `analog.ts` — demodulation |
-| 3.4 Signal Multiplexing (FDM, QAM) | 144 | ⬜ | — |
-| 3.5 AM Radio Broadcasting | 146 | ⬜ | — |
+| 3.1 Introduction to Modulation | 118 | ✅ | AM Schemes tab intro/TheoryBox |
+| 3.2.1 DSB-SC AM | 119 | ✅ | `analog.ts` — DSB-SC; AM Schemes tab |
+| 3.2.2 Conventional AM | 126 | ✅ | `analog.ts` — conventional AM + power/efficiency |
+| 3.2.3 SSB AM | 132 | ✅ | `analog.ts` — SSB (USB/LSB) |
+| 3.2.4 VSB AM | 134 | ✅ | `analog.ts` `vsbFilter` (complementary vestige) + AM Schemes tab |
+| 3.3 Modulators and Demodulators | 137 | ✅ | `am-impl.ts` (power-law/switching/balanced/ring + envelope) + Mod & Demod tab (block diagram + animated circuit + dirty/clean FFT) |
+| 3.4 Signal Multiplexing (FDM, QAM) | 144 | ✅ | `am-impl.ts` `fdmCompose`/`fdmSeparate`/`qamModulate`/`qamDemod` + Signal Multiplexing tab (FDM overlap, QAM phase-error crosstalk) |
+| 3.5 AM Radio Broadcasting | 146 | ✅ | AM Radio tab (superheterodyne frequency plan + image) |
 
 ---
 

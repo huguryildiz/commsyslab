@@ -41,7 +41,7 @@ export const LANDING_MODULES: LandingModule[] = [
     titleKey: 'landing.mod.fourier.title',
     descKey: 'landing.mod.fourier.desc',
     chapter: 'CH 2',
-    route: '/fourier',
+    route: '/signals',
     status: 'live',
     viz: 'fourier',
     compact: true,

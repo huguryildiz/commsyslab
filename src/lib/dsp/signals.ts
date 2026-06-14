@@ -50,11 +50,17 @@ export function periodicWave(kind: Periodic, f0: number, t: number, duty = 0.5):
     case 'square':
       return ph < 0.5 ? 1 : -1;
     case 'sawtooth':
-      return 2 * ph - 1;
+      // Starts at 0, rises to 1 at T₀/2-, jumps to -1, rises back to 0 at T₀.
+      // Matches (2/π) Σ (-1)^{n+1}/n sin(2πnf₀t) — standard Proakis Table 2.1 form.
+      return ph < 0.5 ? 2 * ph : 2 * ph - 2;
     case 'triangle':
-      return ph < 0.5 ? -1 + 4 * ph : 3 - 4 * ph;
+      // Cosine (even) form: +1 at t=0, −1 at T₀/2, +1 at T₀.
+      // Matches (8/π²) Σ_{n odd} cos(2πnf₀t)/n² — Proakis Table 2.1.
+      return ph < 0.5 ? 1 - 4 * ph : 4 * ph - 3;
     case 'pulse':
-      return ph < duty ? 1 : 0;
+      // Centered (even) form: pulse symmetric about t=0.
+      // Matches d + (2/π) Σ sin(πnd)/n cos(2πnf₀t) — Proakis §2.1 even-function form.
+      return ph < duty / 2 || ph >= 1 - duty / 2 ? 1 : 0;
   }
 }
 
@@ -84,6 +90,26 @@ export function sgn(t: number): number {
 /** One-sided decaying exponential e^{−t/τ}·u(t). */
 export function expSignal(t: number, tau: number): number {
   return t >= 0 ? Math.exp(-t / tau) : 0;
+}
+
+/** Unit impulse δ(t): narrow pulse approximation (height 1, |t| < 0.05). */
+export function unitImpulse(t: number): number {
+  return Math.abs(t) < 0.05 ? 1 : 0;
+}
+
+/** Two-sided decaying exponential e^{-|t|/τ}. */
+export function twoSidedExp(t: number, tau: number): number {
+  return Math.exp(-Math.abs(t) / tau);
+}
+
+/** Gaussian pulse e^{-t²/(2τ²)}, τ = standard deviation. */
+export function gaussianPulse(t: number, tau: number): number {
+  return Math.exp(-(t * t) / (2 * tau * tau));
+}
+
+/** Causal damped sinusoid sin(2πt)·e^{-t/τ}·u(t). */
+export function dampedSine(t: number, tau: number): number {
+  return t >= 0 ? Math.sin(2 * Math.PI * t) * Math.exp(-t / tau) : 0;
 }
 
 export interface SignalClass {

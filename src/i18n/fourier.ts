@@ -12,7 +12,8 @@ export const fourier: Record<string, string> = {
   'fourier.animation': 'Animation',
 
   // Tabs
-  'fourier.tab.signals': 'Signals & Systems',
+  'fourier.tab.signals': 'Basic Signals',
+  'fourier.tab.conv': 'Convolution',
   'fourier.tab.series': 'Fourier Series',
   'fourier.tab.transform': 'Fourier Transform & Spectra',
   'fourier.tab.filters': 'Filters & Bandpass',
@@ -75,10 +76,12 @@ export const fourier: Record<string, string> = {
 
   // Readouts
   'fourier.readout.dc': 'DC component',
-  'fourier.readout.c1': 'c₁ magnitude',
+  'fourier.readout.c1': '1st harmonic',
   'fourier.readout.power': 'Power',
   'fourier.readout.leakage': 'Spectral leakage',
   'fourier.readout.env': 'Envelope mean',
+  'fourier.readout.harmonics': 'Harmonic structure',
+  'fourier.readout.convergence': 'Convergence rate',
 
   // Theory box
   'fourier.theory.title': 'Theory — Signals & Spectra',
@@ -100,18 +103,41 @@ export const fourier: Record<string, string> = {
 
   // Tab 1 — Signals & Systems
   'fourier.panel.signal': 'Signal Explorer',
+  'fourier.panel.axis': 'Axis Settings',
   'fourier.panel.conv': 'Convolution (LTI)',
   'fourier.sig.kind': 'Signal',
-  'fourier.sig.shift': 'Time shift t₀',
-  'fourier.sig.scale': 'Time scale a',
   'fourier.sig.amp': 'Amplitude',
+  'fourier.sig.t0': 'Time shift',
+  'fourier.sig.F': 'Frequency',
   'fourier.sig.reverse': 'Time reversal',
-  'fourier.conv.x': 'Input x(t)',
-  'fourier.conv.h': 'Impulse response h(t)',
+  'fourier.sig.tmin': 't min',
+  'fourier.sig.tmax': 't max',
+  'fourier.sig.N': 'Sampling density',
+  'fourier.conv.x': 'Input',
+  'fourier.conv.h': 'Impulse response',
   'fourier.readout.type': 'Signal type',
   'fourier.readout.sym': 'Symmetry',
-  'fourier.hint.signal': 'Green = original, orange = after shift/scale/reverse. Watch how operations move and stretch it.',
-  'fourier.hint.conv': 'y(t) (blue) is the running overlap of x (green) and the flipped, sliding h (orange).',
+  'fourier.sig.reset': 'Reset Parameters',
+  'fourier.sig.play': '🔊 Listen',
+  'fourier.sig.stop': 'Stop',
+  'fourier.hint.signal': '$x(t) = A\\cdot g(F\\cdot(t-t_0))$. Adjust $A$, $t_0$, $F$ and axis range to explore.',
+  'fourier.hint.conv': '$y(t)$ (blue) is the running overlap of $x$ (green) and the flipped, sliding $h$ (orange).',
+
+  // Convolution tab — interactive flip-and-slide
+  'fourier.conv.slide': 'Slide position',
+  'fourier.conv.play': '▶️ Play',
+  'fourier.conv.pause': '⏸️ Pause',
+  'fourier.conv.reset': '🔄 Reset',
+  'fourier.conv.readout': 'Output',
+  'fourier.conv.panel.x': 'Input',
+  'fourier.conv.panel.h': 'Impulse Response',
+  'fourier.conv.panel.overlap': 'Overlap',
+  'fourier.conv.panel.y': 'Output',
+  'fourier.conv.hint.overlap':
+    'Drag here (or use the slider) to slide the flipped response $h(t-\\tau)$. The shaded pink area is the overlap — and that area is exactly $y$ at this $t$.',
+  'fourier.conv.hint.y': 'The pink dot is $y(t)$: the overlap area plotted against the slide position $t$.',
+  'fourier.conv.theory':
+    'Proakis §2.1.5 (p. 41): an LTI system output is the convolution of the input x(t) with the impulse response h(t). To get y(t), flip h about τ = 0, slide it to position t, multiply by x(τ), and integrate (sum) the overlap. Sweep t to trace out the whole y(t) curve.',
 
   // Tab 3 — Fourier Transform & Spectra
   'fourier.panel.properties': 'FT Properties',
@@ -127,16 +153,16 @@ export const fourier: Record<string, string> = {
   'fourier.readout.eTime': 'Energy (time)',
   'fourier.readout.eFreq': 'Energy (freq)',
   'fourier.hint.leakage': 'A rectangular window on an off-bin tone smears energy into neighboring bins (leakage).',
-  'fourier.hint.prop.shift': 'Shifting in time leaves |X(f)| unchanged — only the phase ramps.',
-  'fourier.hint.prop.modulate': 'Multiplying by a carrier copies the spectrum up to ±f₀.',
-  'fourier.hint.prop.scale': 'Compressing in time stretches the spectrum: narrower pulse ⇒ wider bandwidth.',
+  'fourier.hint.prop.shift': 'Shifting in time leaves $|X(f)|$ unchanged — only the phase ramps.',
+  'fourier.hint.prop.modulate': 'Multiplying by a carrier copies the spectrum up to $\\pm f_0$.',
+  'fourier.hint.prop.scale': 'Compressing in time stretches the spectrum: narrower pulse $\\Rightarrow$ wider bandwidth.',
   'fourier.hint.prop.amp': 'Scaling amplitude scales the spectrum by the same factor.',
 
   // Tab 4 — Filters & Bandpass
   'fourier.filter.type.bsf': 'Band-stop (BSF)',
   'fourier.panel.baseband': 'Baseband vs Bandpass',
   'fourier.bb.mode': 'Bandpass (off = baseband)',
-  'fourier.hint.filter': 'The output spectrum is the input times |H(f)|; outside the passband it is suppressed.',
-  'fourier.hint.baseband': 'Baseband sits at f=0 over [−W, W]; bandpass is the same shape shifted to ±f_c.',
-  'fourier.hint.iq': 'I (green) and Q (blue) are slow baseband signals; the envelope is √(I²+Q²).',
+  'fourier.hint.filter': 'The output spectrum is the input times $|H(f)|$; outside the passband it is suppressed.',
+  'fourier.hint.baseband': 'Baseband sits at $f=0$ over $[-W,\\,W]$; bandpass is the same shape shifted to $\\pm f_c$.',
+  'fourier.hint.iq': '$I$ (green) and $Q$ (blue) are slow baseband signals; the envelope is $\\sqrt{I^2+Q^2}$.',
 };

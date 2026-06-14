@@ -1,20 +1,25 @@
+import type { ReactNode } from 'react';
+
 export interface SliderProps {
-  label: string;
+  label: ReactNode;
   value: number;
   min: number;
   max: number;
   step?: number;
   unit?: string;
+  /** Fixed number of decimals for the displayed value (default: raw value). */
+  precision?: number;
   onChange: (v: number) => void;
 }
 
-export function Slider({ label, value, min, max, step = 1, unit, onChange }: SliderProps) {
+export function Slider({ label, value, min, max, step = 1, unit, precision, onChange }: SliderProps) {
+  const display = precision != null ? value.toFixed(precision) : value;
   return (
     <label className="ctl-slider">
       <span className="ctl-slider__row">
         <span>{label}</span>
         <span className="ctl-slider__val">
-          {value}
+          {display}
           {unit ? ` ${unit}` : ''}
         </span>
       </span>

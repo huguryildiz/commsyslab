@@ -163,3 +163,27 @@ canvas {
   background: var(--canvas-bg);
   border-radius: var(--radius-sm);
 }
+
+/* ── Themed scrollbars ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+  box-shadow: 0 0 8px rgba(57, 255, 133, 0.35);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}

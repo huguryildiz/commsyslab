@@ -225,10 +225,24 @@ export function formatMathLabel(label: string): string {
     .replace(/\\text\{([^}]*)\}/g, '$1')
     .replace(/\\left|\\right/g, '')
     .replace(/\\lvert|\\rvert|\\vert/g, '|')
+    .replace(/\(\^\\circ\)/g, '°')
+    .replace(/\^\\circ/g, '°')
+    .replace(/\\circ/g, '°')
     .replace(/\\angle/g, '∠')
     .replace(/\\theta/g, 'θ')
     .replace(/\\gamma/g, 'γ')
     .replace(/\\pi/g, 'π')
+    .replace(/\\tau/g, 'τ')
+    .replace(/\\mu/g, 'µ')
+    .replace(/\\Omega/g, 'Ω')
+    .replace(/\\omega/g, 'ω')
+    .replace(/\\sigma/g, 'σ')
+    .replace(/\\phi/g, 'φ')
+    .replace(/\\lambda/g, 'λ')
+    .replace(/\\alpha/g, 'α')
+    .replace(/\\beta/g, 'β')
+    .replace(/\\delta/g, 'δ')
+    .replace(/\\rho/g, 'ρ')
     .replace(/\\,/g, ' ')
     .replace(/\\;/g, ' ')
     .replace(/\\quad/g, ' ')
@@ -269,19 +283,19 @@ function drawTickLabels(
 ): void {
   ctx.fillStyle = DEFAULT_TICK();
   ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-  ctx.textBaseline = 'bottom';
+  ctx.textBaseline = 'top';
   ctx.textAlign = 'center';
   for (const x of xTicks) {
     const px = ax.x(x);
     if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
-    ctx.fillText(formatTick(x), px, bounds.bottom - 4);
+    ctx.fillText(formatTick(x), px, bounds.bottom + 5);
   }
-  ctx.textAlign = 'left';
+  ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   for (const y of yTicks) {
     const py = ax.y(y);
     if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
-    ctx.fillText(formatTick(y), bounds.left + 4, py);
+    ctx.fillText(formatTick(y), bounds.left - 5, py);
   }
 }
 
@@ -354,7 +368,7 @@ export function drawAxes(
       if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
       ctx.beginPath();
       ctx.moveTo(px, bounds.bottom);
-      ctx.lineTo(px, bounds.bottom - tickSize);
+      ctx.lineTo(px, bounds.bottom + tickSize);
       ctx.stroke();
     }
     for (const y of yTicks) {
@@ -362,7 +376,7 @@ export function drawAxes(
       if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
       ctx.beginPath();
       ctx.moveTo(bounds.left, py);
-      ctx.lineTo(bounds.left + tickSize, py);
+      ctx.lineTo(bounds.left - tickSize, py);
       ctx.stroke();
     }
   }
@@ -373,7 +387,7 @@ export function drawAxes(
   }
 
   if (options.xLabel) {
-    drawAxisLabel(ctx, options.xLabel, (bounds.left + bounds.right) / 2, bounds.bottom + 24);
+    drawAxisLabel(ctx, options.xLabel, (bounds.left + bounds.right) / 2, bounds.bottom + 30);
   }
   if (options.yLabel) {
     drawAxisLabel(ctx, options.yLabel, bounds.left - 34, (bounds.top + bounds.bottom) / 2, true);

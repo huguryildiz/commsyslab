@@ -3,11 +3,11 @@ import { VIZ } from './palette';
 
 const TAU = Math.PI * 2;
 /** Message cycles shown across the panel. */
-const MSG_CYCLES = 1.18;
+const MSG_CYCLES = 1.5;
 /** FM mean carrier cycles across the full-width panel. */
-const FM_CARRIER_CYCLES = 13;
+const FM_CARRIER_CYCLES = 18;
 /** FM modulation index β (depth of the frequency swing). */
-const FM_MOD_INDEX = 1.7;
+const FM_MOD_INDEX = 4.5;
 /** FM constant-envelope amplitude. */
 const FM_ENV = 0.82;
 

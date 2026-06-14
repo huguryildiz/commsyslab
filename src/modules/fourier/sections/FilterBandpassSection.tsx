@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Panel, Slider, Select, Toggle, TheoryBox, Formula } from '@/components';
+import { Panel, Slider, Select, Toggle, TheoryBox, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
+import { useZoom } from '@/lib/plot/useZoom';
 import { linScale, drawAxes, drawLine, drawBandwidthSpan, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import { halfPowerBandwidth } from '@/lib/dsp/bandwidth';
@@ -30,6 +31,9 @@ export function FilterBandpassSection({ clock }: SectionProps) {
   const span = halfPowerBandwidth(bb.freqs, trace);
 
   const showFc2 = filterType === 'bpf' || filterType === 'bsf';
+
+  const fMax = bb.fs / 2;
+  const [bbLo, bbHi, onWheelBB, , onPanBB] = useZoom(-fMax, fMax, { minSpan: 10, maxSpan: fMax * 2 });
 
   return (
     <div className="module-layout">
@@ -69,32 +73,33 @@ export function FilterBandpassSection({ clock }: SectionProps) {
       <div className="fourier__content">
         <Panel title={t('fourier.panel.filter')}>
           <FilterPlots data={filterData} />
-          <p className="fourier__hint">{t('fourier.hint.filter')}</p>
+          <p className="fourier__hint"><HintText text={t('fourier.hint.filter')} /></p>
         </Panel>
 
         <Panel title={t('fourier.panel.baseband')}>
           <Canvas
             height={200}
             ariaLabel="Baseband vs bandpass spectrum with bandwidth marker"
-            deps={[bb, mode]}
+            deps={[bb, mode, bbLo, bbHi]}
+            onWheel={onWheelBB}
+            onPan={onPanBB}
             draw={(ctx, w, h) => {
               ctx.clearRect(0, 0, w, h);
-              const fMax = bb.fs / 2;
               const ax: Axes = {
-                x: linScale([-fMax, fMax], [PAD.l, w - PAD.r]),
+                x: linScale([bbLo, bbHi], [PAD.l, w - PAD.r]),
                 y: linScale([0, 1.1], [h - PAD.b, PAD.t]),
               };
               drawBandwidthSpan(ctx, ax, span.fLo, span.fHi, `W ≈ ${span.W.toFixed(0)} Hz`);
-              drawAxes(ctx, ax, [-fMax, fMax], { xLabel: '$f\\,(Hz)$', yLabel: '$|X(f)|$' });
+              drawAxes(ctx, ax, [bbLo, bbHi], { xLabel: '$f\\,(Hz)$', yLabel: '$|X(f)|$' });
               drawLine(ctx, ax, bb.freqs, trace, CHART.blue, 2);
             }}
           />
-          <p className="fourier__hint">{t('fourier.hint.baseband')}</p>
+          <p className="fourier__hint"><HintText text={t('fourier.hint.baseband')} /></p>
         </Panel>
 
         <Panel title={t('fourier.panel.analytic')}>
           <AnalyticPlots data={analytic} />
-          <p className="fourier__hint">{t('fourier.hint.iq')}</p>
+          <p className="fourier__hint"><HintText text={t('fourier.hint.iq')} /></p>
         </Panel>
 
         <TheoryBox title={t('fourier.tab.filters')}>

@@ -16,9 +16,9 @@ const MSG_CYCLES = 1.0;
 /** AM carrier cycles across a panel. */
 const AM_CARRIER_CYCLES = 8;
 /** FM mean carrier cycles across a panel. */
-const FM_CARRIER_CYCLES = 7;
+const FM_CARRIER_CYCLES = 11;
 /** FM modulation index (depth of the frequency swing). */
-const FM_MOD_INDEX = 1.7;
+const FM_MOD_INDEX = 4.5;
 
 /** AM: baseline additive-noise std-dev, as a fraction of carrier amplitude. */
 const AM_NOISE_BASE = 0.1;

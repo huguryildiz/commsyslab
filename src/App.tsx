@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { HashRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { t } from '@/i18n';
 import { BrandIcon } from '@/components/BrandIcon';
 import { ModuleMenu } from '@/components/ModuleMenu';
@@ -91,7 +91,9 @@ function Shell() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/start" element={<StartPage />} />
-          <Route path="/fourier" element={<FourierModule />} />
+          <Route path="/signals" element={<FourierModule />} />
+          <Route path="/signals/:tab" element={<FourierModule />} />
+          <Route path="/fourier" element={<Navigate to="/signals" replace />} />
           <Route path="/analog-am" element={<AnalogAmModule />} />
           <Route path="/analog-fm" element={<AnalogFmModule />} />
           <Route path="/analog-noise" element={<AnalogNoiseModule />} />
@@ -113,8 +115,8 @@ function Shell() {
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Shell />
-    </HashRouter>
+    </BrowserRouter>
   );
 }

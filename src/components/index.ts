@@ -3,7 +3,7 @@ export { Toggle } from './Toggle';
 export { Select } from './Select';
 export { Segmented } from './Segmented';
 export { NumberInput } from './NumberInput';
-export { Formula } from './Formula';
+export { Formula, HintText } from './Formula';
 export { Readout } from './Readout';
 export { Panel } from './Panel';
 export { TheoryBox } from './TheoryBox';

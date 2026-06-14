@@ -69,15 +69,18 @@ describe('periodicWave', () => {
     expect(periodicWave('square', f0, 1.1)).toBeCloseTo(periodicWave('square', f0, 0.1), 12);
   });
 
-  it('sawtooth ramps from -1 to +1 across one period', () => {
-    expect(periodicWave('sawtooth', f0, 0)).toBeCloseTo(-1, 6);
-    expect(periodicWave('sawtooth', f0, 0.5)).toBeCloseTo(0, 6);
-    expect(periodicWave('sawtooth', f0, 0.999)).toBeCloseTo(1, 2);
+  it('sawtooth is 0 at t=0, rises to 1 at T₀/2, then jumps to -1 — matches (2/π) Σ (-1)^{n+1}/n sin', () => {
+    expect(periodicWave('sawtooth', f0, 0)).toBeCloseTo(0, 6);
+    expect(periodicWave('sawtooth', f0, 0.25)).toBeCloseTo(0.5, 6);
+    expect(periodicWave('sawtooth', f0, 0.5)).toBeCloseTo(-1, 6); // ph=0.5 is the post-jump side
+    expect(periodicWave('sawtooth', f0, 0.75)).toBeCloseTo(-0.5, 6);
   });
 
-  it('triangle peaks at +1 mid-period and is -1 at the edges', () => {
-    expect(periodicWave('triangle', f0, 0)).toBeCloseTo(-1, 6);
-    expect(periodicWave('triangle', f0, 0.5)).toBeCloseTo(1, 6);
+  it('triangle is +1 at t=0, -1 at T₀/2, 0 at T₀/4 — matches (8/π²) Σ_{odd} cos/n²', () => {
+    expect(periodicWave('triangle', f0, 0)).toBeCloseTo(1, 6);
+    expect(periodicWave('triangle', f0, 0.25)).toBeCloseTo(0, 6);
+    expect(periodicWave('triangle', f0, 0.5)).toBeCloseTo(-1, 6);
+    expect(periodicWave('triangle', f0, 0.75)).toBeCloseTo(0, 6);
   });
 
   it('pulse respects its duty cycle', () => {

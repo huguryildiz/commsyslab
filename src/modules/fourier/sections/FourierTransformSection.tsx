@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Panel, Slider, Select, Readout, TheoryBox, Formula, Toggle } from '@/components';
+import { Panel, Slider, Select, TheoryBox, Formula, Toggle, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
+import { useZoom } from '@/lib/plot/useZoom';
 import { linScale, drawAxes, drawLine, drawBandwidthSpan, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
 import type { WindowType } from '@/lib/dsp/window';
@@ -58,6 +59,12 @@ export function FourierTransformSection({ clock }: SectionProps) {
 
   const [showAll, setShowAll] = useState(false);
 
+  // Zoom for FT property plots
+  const tt = prop.timeDomain.t;
+  const ff = prop.freqDomain.f;
+  const [tLo, tHi, onWheelT, , onPanT] = useZoom(Math.min(...tt), Math.max(...tt), { minSpan: 0.01, maxSpan: 10 });
+  const [fLo, fHi, onWheelF, , onPanF] = useZoom(Math.min(...ff), Math.max(...ff), { minSpan: 0.5, maxSpan: (Math.max(...ff) - Math.min(...ff)) * 4 });
+
   return (
     <div className="module-layout">
       <aside className="fourier__controls">
@@ -114,52 +121,63 @@ export function FourierTransformSection({ clock }: SectionProps) {
 
       <div className="fourier__content">
         <div className="fourier__readouts">
-          <Readout label={t('fourier.readout.bw')} value={`${bw.W.toFixed(1)} Hz`} />
-          <Readout label={t('fourier.readout.eTime')} value={eTime.toFixed(3)} />
-          <Readout label={t('fourier.readout.eFreq')} value={eFreq.toFixed(3)} />
+          <div className="fourier__metric">
+            <span className="fourier__metric__label">{t('fourier.readout.bw')}</span>
+            <span className="fourier__metric__value">{bw.W.toFixed(1)} <small>Hz</small></span>
+          </div>
+          <div className="fourier__metric">
+            <span className="fourier__metric__label">{t('fourier.readout.eTime')}</span>
+            <span className="fourier__metric__value">{eTime.toFixed(3)}</span>
+          </div>
+          <div className="fourier__metric">
+            <span className="fourier__metric__label">{t('fourier.readout.eFreq')}</span>
+            <span className="fourier__metric__value">{eFreq.toFixed(3)}</span>
+          </div>
         </div>
 
         <Panel title={t('fourier.panel.analyzer')}>
           <SpectrumAnalyzerPlots data={analyzer} />
-          <p className="fourier__hint">{t('fourier.hint.leakage')}</p>
+          <p className="fourier__hint"><HintText text={t('fourier.hint.leakage')} /></p>
         </Panel>
 
         <Panel title={t('fourier.panel.properties')}>
           <Canvas
             height={170}
             ariaLabel="FT property: time domain original vs transformed"
-            deps={[prop]}
+            deps={[prop, tLo, tHi]}
+            onWheel={onWheelT}
+            onPan={onPanT}
             draw={(ctx, w, h) => {
               ctx.clearRect(0, 0, w, h);
-              const tt = prop.timeDomain.t;
               const ax: Axes = {
-                x: linScale([Math.min(...tt), Math.max(...tt)], [PAD.l, w - PAD.r]),
+                x: linScale([tLo, tHi], [PAD.l, w - PAD.r]),
                 y: linScale([-1.2, 1.6], [h - PAD.b, PAD.t]),
               };
-              drawAxes(ctx, ax, [Math.min(...tt), Math.max(...tt)], { xLabel: '$t$', yLabel: '$x(t)$' });
-              drawLine(ctx, ax, tt, prop.timeDomain.original, CHART.green, 1, false);
-              drawLine(ctx, ax, tt, prop.timeDomain.transformed, CHART.orange, 2);
+              drawAxes(ctx, ax, [tLo, tHi], { xLabel: '$t$', yLabel: '$x(t)$' });
+              drawLine(ctx, ax, prop.timeDomain.t, prop.timeDomain.original, CHART.green, 1, false);
+              drawLine(ctx, ax, prop.timeDomain.t, prop.timeDomain.transformed, CHART.orange, 2);
             }}
           />
           <Canvas
             height={170}
             ariaLabel="FT property: magnitude spectrum with bandwidth"
-            deps={[prop]}
+            deps={[prop, fLo, fHi]}
+            onWheel={onWheelF}
+            onPan={onPanF}
             draw={(ctx, w, h) => {
               ctx.clearRect(0, 0, w, h);
-              const ff = prop.freqDomain.f;
               const mMax = Math.max(...prop.freqDomain.mag, 0.1) * 1.1;
               const ax: Axes = {
-                x: linScale([Math.min(...ff), Math.max(...ff)], [PAD.l, w - PAD.r]),
+                x: linScale([fLo, fHi], [PAD.l, w - PAD.r]),
                 y: linScale([0, mMax], [h - PAD.b, PAD.t]),
               };
-              const propSpan = nullToNullBandwidth(ff, prop.freqDomain.mag);
+              const propSpan = nullToNullBandwidth(prop.freqDomain.f, prop.freqDomain.mag);
               drawBandwidthSpan(ctx, ax, propSpan.fLo, propSpan.fHi, `W ≈ ${propSpan.W.toFixed(1)}`);
-              drawAxes(ctx, ax, [Math.min(...ff), Math.max(...ff)], { xLabel: '$f$', yLabel: '$|X(f)|$' });
-              drawLine(ctx, ax, ff, prop.freqDomain.mag, CHART.blue, 1.5);
+              drawAxes(ctx, ax, [fLo, fHi], { xLabel: '$f$', yLabel: '$|X(f)|$' });
+              drawLine(ctx, ax, prop.freqDomain.f, prop.freqDomain.mag, CHART.blue, 1.5);
             }}
           />
-          <p className="fourier__hint">{t(`fourier.hint.prop.${property}`)}</p>
+          <p className="fourier__hint"><HintText text={t(`fourier.hint.prop.${property}`)} /></p>
         </Panel>
 
         <TheoryBox title={t('fourier.tab.transform')}>

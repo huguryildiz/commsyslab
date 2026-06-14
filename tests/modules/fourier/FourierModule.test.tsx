@@ -3,11 +3,11 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { FourierModule } from '@/modules/fourier/FourierModule';
 
 describe('FourierModule tabs', () => {
-  it('renders 4 tabs and defaults to Signals & Systems', () => {
+  it('renders 5 tabs and defaults to Basic Signals', () => {
     render(<FourierModule />);
     const tabs = screen.getAllByRole('tab');
-    expect(tabs).toHaveLength(4);
-    expect(screen.getByRole('tab', { name: /Signals & Systems/i })).toHaveAttribute(
+    expect(tabs).toHaveLength(5);
+    expect(screen.getByRole('tab', { name: /Basic Signals/i })).toHaveAttribute(
       'aria-selected',
       'true',
     );
