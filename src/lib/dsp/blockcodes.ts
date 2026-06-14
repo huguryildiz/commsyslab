@@ -71,3 +71,79 @@ export function minDistance(G: number[][]): number {
 export function errorCorrectionT(dmin: number): number {
   return Math.floor((dmin - 1) / 2);
 }
+
+/**
+ * Build a systematic (2^m−1, 2^m−m−1) Hamming code: H=[Pᵀ|I_m], G=[I_k|P]. §9.5 Eq. 9.5.15.
+ * Pᵀ columns are the weight≥2 nonzero m-vectors (in value order); the last m columns are I_m.
+ */
+export function makeHamming(m: number): { G: number[][]; H: number[][]; n: number; k: number } {
+  const n = (1 << m) - 1;
+  const k = n - m;
+  const heavy: number[][] = []; // weight ≥ 2 columns → Pᵀ
+  for (let v = 1; v <= n; v++) {
+    const col = new Array<number>(m);
+    for (let i = 0; i < m; i++) col[i] = (v >> (m - 1 - i)) & 1;
+    if (weight(col) >= 2) heavy.push(col);
+  }
+  const H: number[][] = [];
+  for (let i = 0; i < m; i++) {
+    const row: number[] = [];
+    for (const col of heavy) row.push(col[i]); // Pᵀ part
+    for (let j = 0; j < m; j++) row.push(i === j ? 1 : 0); // I_m part
+    H.push(row);
+  }
+  const G: number[][] = [];
+  for (let i = 0; i < k; i++) {
+    const row = new Array<number>(n).fill(0);
+    row[i] = 1; // I_k
+    for (let j = 0; j < m; j++) row[k + j] = heavy[i][j]; // P = (Pᵀ)ᵀ
+    G.push(row);
+  }
+  return { G, H, n, k };
+}
+
+// (7,4) Hamming, systematic, matching Proakis §9.5 Example 9.5.4.
+const hamming74: LinearCode = {
+  id: 'hamming74',
+  label: '(7,4) Hamming',
+  n: 7,
+  k: 4,
+  dmin: 3,
+  G: [
+    [1, 0, 0, 0, 1, 1, 0],
+    [0, 1, 0, 0, 0, 1, 1],
+    [0, 0, 1, 0, 1, 0, 1],
+    [0, 0, 0, 1, 1, 1, 1],
+  ],
+  H: [
+    [1, 0, 1, 1, 1, 0, 0],
+    [1, 1, 0, 1, 0, 1, 0],
+    [0, 1, 1, 1, 0, 0, 1],
+  ],
+};
+
+const h1511 = makeHamming(4);
+const hamming1511: LinearCode = {
+  id: 'hamming1511',
+  label: '(15,11) Hamming',
+  n: 15,
+  k: 11,
+  dmin: 3,
+  G: h1511.G,
+  H: h1511.H,
+};
+
+const rep31: LinearCode = {
+  id: 'rep31',
+  label: '(3,1) repetition',
+  n: 3,
+  k: 1,
+  dmin: 3,
+  G: [[1, 1, 1]],
+  H: [
+    [1, 1, 0],
+    [1, 0, 1],
+  ],
+};
+
+export const CODES: LinearCode[] = [hamming74, hamming1511, rep31];
