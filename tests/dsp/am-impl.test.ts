@@ -63,3 +63,23 @@ describe('modulator chains', () => {
     expect(carrierLevel(ringModulator(msg, FC, t, 15).uBpf, FS, FC)).toBeLessThan(0.05);
   });
 });
+
+import { envelopeDetect } from '@/lib/dsp/am-impl';
+
+describe('envelopeDetect', () => {
+  it('tracks the envelope of a conventional-AM signal when RC is well chosen', () => {
+    const fs = 200_000, fc = 20_000, fm = 1_000, a = 0.5, N = 4096;
+    const u: number[] = [], env: number[] = [];
+    for (let n = 0; n < N; n++) {
+      const tt = n / fs;
+      const e = 1 + a * Math.cos(2 * Math.PI * fm * tt);
+      env.push(e);
+      u.push(e * Math.cos(2 * Math.PI * fc * tt));
+    }
+    const rc = 1 / Math.sqrt(fc * fm);
+    const out = envelopeDetect(u, fs, rc);
+    let err = 0, ref = 0;
+    for (let n = N / 2; n < N; n++) { err += (out[n] - env[n]) ** 2; ref += env[n] ** 2; }
+    expect(Math.sqrt(err / ref)).toBeLessThan(0.2);
+  });
+});
