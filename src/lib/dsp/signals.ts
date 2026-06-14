@@ -97,7 +97,7 @@ export interface SignalClass {
  * Proakis §2.1.2. Energy-type if total energy is finite (here: bounded and
  * decaying toward the window edges); symmetry tested numerically.
  */
-export function classifySignal(t: number[], x: number[]): SignalClass {
+export function classifySignal(_t: number[], x: number[]): SignalClass {
   const n = x.length;
   const edge = Math.max(Math.abs(x[0]), Math.abs(x[n - 1]));
   const peak = Math.max(...x.map(Math.abs), 1e-12);
