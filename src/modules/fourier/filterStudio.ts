@@ -44,12 +44,12 @@ export interface FilterStudioView {
 }
 
 const N = 1024;                // FFT length
-export const STUDIO_FS = 2000; // sample rate (Hz) → Nyquist 1000 Hz
+export const STUDIO_FS = 1000; // sample rate (Hz) → Nyquist 500 Hz
 
 export const DEFAULT_STUDIO: FilterStudioParams = {
   source: 'square', f0: 50, duty: 0.5,
-  tones: [{ freq: 100, amp: 1 }, { freq: 300, amp: 0.7 }, { freq: 700, amp: 0.5 }],
-  filterType: 'lpf', response: 'ideal', fc: 200, fc2: 500, order: 4, tStart: 0,
+  tones: [{ freq: 50, amp: 1 }, { freq: 150, amp: 0.7 }, { freq: 350, amp: 0.5 }],
+  filterType: 'lpf', response: 'ideal', fc: 100, fc2: 300, order: 4, tStart: 0,
 };
 
 /** Deterministic [-1,1] noise via a mulberry32-style PRNG (stable display). */

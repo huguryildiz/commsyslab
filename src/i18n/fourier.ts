@@ -29,9 +29,11 @@ export const fourier: Record<string, string> = {
   'fourier.lti.hint': 'Each input harmonic is scaled by $|H(f)|$; harmonics outside the passband (orange) are removed, so $|Y(f)|$ is $|X(f)|$ minus the stopband lines.',
 
   // Panel titles
-  'fourier.panel.synthesis': 'Fourier Series Synthesis',
+  'fourier.panel.synthesis': 'Synthesis Controls',
+  'fourier.panel.synthesisPlot': 'Partial-Sum Reconstruction',
   'fourier.panel.analyzer': 'DFT / FFT Spectrum Analyzer',
-  'fourier.panel.filter': 'Filter Explorer',
+  'fourier.panel.filter': 'Filter Parameters',
+  'fourier.panel.filterPlot': 'Magnitude, Phase & Response',
   'fourier.panel.pairs': 'FT Pairs & Properties',
   'fourier.panel.analytic': 'I/Q Modulation',
 
@@ -68,7 +70,8 @@ export const fourier: Record<string, string> = {
   'fourier.filter.fc2': 'Upper cutoff frequency $(f_2)$',
 
   // Realizable Filters comparison panel (Butterworth / Chebyshev)
-  'fourier.panel.realfilt': 'Realizable Filters',
+  'fourier.panel.realfilt': 'Filter Specification',
+  'fourier.panel.realfiltPlot': 'Realizable Response',
   'fourier.realfilt.order': 'Order $(N)$',
   'fourier.realfilt.ripple': 'Passband ripple $(R_p)$',
   'fourier.realfilt.stop': 'Stopband atten. $(R_s)$',
@@ -136,7 +139,8 @@ export const fourier: Record<string, string> = {
   'fourier.hint.gibbs': 'More harmonics sharpen the edges but the overshoot near jumps stays ~9% (Gibbs).',
 
   // Tab 1 — Signals & Systems
-  'fourier.panel.signal': 'Signal Explorer',
+  'fourier.panel.signal': 'Signal Source',
+  'fourier.panel.signalPlot': 'Time-Domain Waveform',
   'fourier.panel.axis': 'Axis Settings',
   'fourier.panel.conv': 'Convolution (LTI)',
   'fourier.sig.kind': 'Signal',
@@ -204,11 +208,19 @@ export const fourier: Record<string, string> = {
   'fourier.bandpass.hilbert.xhat': 'Hilbert transform x̂(t)',
   'fourier.bandpass.iq.title': 'I/Q Components & Envelope',
   'fourier.iq.fig.x': 'Bandpass signal $x(t)$ and envelope $V(t)$',
-  'fourier.iq.fig.i': 'I component: recovered (solid) vs true $x_c$ (dashed)',
-  'fourier.iq.fig.q': 'Q component: recovered (solid) vs true $x_s$ (dashed)',
+  'fourier.iq.fig.i': '$I$ component: recovered vs true $x_c$',
+  'fourier.iq.fig.q': '$Q$ component: recovered vs true $x_s$',
   'fourier.iq.fig.plane': 'I/Q plane: $(I,Q)$ trajectory (Lissajous)',
-  'fourier.iq.play': 'Play',
-  'fourier.iq.pause': 'Pause',
+  'fourier.iq.play': '▶ Play',
+  'fourier.iq.pause': '⏸ Pause',
+  'fourier.iq.legend.signal': 'bandpass $x(t)$',
+  'fourier.iq.legend.env': 'envelope $\\pm V(t)$',
+  'fourier.iq.legend.iRec': 'recovered $I$',
+  'fourier.iq.legend.xc': 'true $x_c$',
+  'fourier.iq.legend.qRec': 'recovered $Q$',
+  'fourier.iq.legend.xs': 'true $x_s$',
+  'fourier.iq.legend.path': 'trajectory',
+  'fourier.iq.legend.now': 'current sample',
 
   // Tab 4 — Filters & Bandpass
   'fourier.filter.type.bsf': 'Band-stop',
@@ -223,7 +235,8 @@ export const fourier: Record<string, string> = {
   'fourier.hint.iq': 'Independent messages $x_c(t)$ and $x_s(t)$ form the bandpass signal $x(t)=x_c\\cos(2\\pi f_c t)-x_s\\sin(2\\pi f_c t)$; coherent demodulation recovers both separately.',
 
   // Tab 3 — Spectrum Explorer (Fourier transform of any Basic Signal)
-  'fourier.panel.spectrum': 'Spectrum Explorer',
+  'fourier.panel.spectrum': 'Signal & Analysis',
+  'fourier.panel.spectrumPlot': 'Time & Spectrum',
   'fourier.spec.signal': 'Signal',
   'fourier.spec.mod': 'Modulation $\\cos(2\\pi f_m t)$',
   'fourier.spec.fm': 'Mod. frequency',
@@ -241,7 +254,8 @@ export const fourier: Record<string, string> = {
   'fourier.hint.spectrum': 'Pick a signal and watch its Fourier transform $X(f)$. Time shift $t_0$ ramps the phase; scaling $\\alpha$ spreads $|X(f)|$; modulation copies it to $\\pm f_m$.',
 
   // Filter Studio
-  'fourier.studio.panel': 'Filter Studio',
+  'fourier.studio.panel': 'Filter Design',
+  'fourier.studio.panelPlot': 'Frequency Response & Output',
   'fourier.studio.source': 'Source',
   'fourier.studio.source.square': 'Square wave',
   'fourier.studio.source.sawtooth': 'Sawtooth',

@@ -6,7 +6,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Panel, Slider, Select, Segmented, TheoryBox, Formula, HintText } from '@/components';
+import { Panel, Slider, Select, Segmented, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { useZoom } from '@/lib/plot/useZoom';
 import { linScale, drawAxes, drawLine, shadeRegion, drawVLine, type Axes } from '@/lib/plot/draw';
@@ -79,123 +79,139 @@ export function FilterStudioPanel() {
   useEffect(() => { handleRef.current?.setBypass(bypass); }, [bypass]);
 
   return (
-    <Panel title={t('fourier.studio.panel')}>
-      <div className="fourier__realfilt-controls">
-        <Select
-          label={t('fourier.studio.source')} value={source} onChange={setSource}
-          options={[
-            { value: 'square', label: t('fourier.studio.source.square') },
-            { value: 'sawtooth', label: t('fourier.studio.source.sawtooth') },
-            { value: 'triangle', label: t('fourier.studio.source.triangle') },
-            { value: 'pulse', label: t('fourier.studio.source.pulse') },
-            { value: 'multitone', label: t('fourier.studio.source.multitone') },
-            { value: 'white', label: t('fourier.studio.source.white') },
-            { value: 'pink', label: t('fourier.studio.source.pink') },
-          ]}
-        />
-        {isWave && (
-          <Slider label={t('fourier.studio.f0')} value={f0} min={20} max={200} step={10} unit="Hz" onChange={setF0} />
-        )}
-        <Select
-          label={t('fourier.studio.filterType')} value={filterType} onChange={setFilterType}
-          options={[
-            { value: 'lpf', label: t('fourier.filter.type.lpf') },
-            { value: 'hpf', label: t('fourier.filter.type.hpf') },
-            { value: 'bpf', label: t('fourier.filter.type.bpf') },
-            { value: 'bsf', label: t('fourier.filter.type.bsf') },
-          ]}
-        />
-        <Segmented
-          ariaLabel={t('fourier.studio.response')} value={response}
-          options={[
-            { value: 'ideal', label: t('fourier.studio.response.ideal') },
-            { value: 'butterworth', label: t('fourier.studio.response.butter') },
-          ]}
-          onChange={setResponse}
-        />
-        {response === 'butterworth' && (
-          <Slider label={t('fourier.studio.order')} value={order} min={1} max={10} step={1} onChange={setOrder} />
-        )}
-        <Slider label={t('fourier.studio.fc')} value={fc} min={5} max={view.fMax - 5} step={5} unit="Hz" onChange={setFc} />
-        {showFc2 && (
-          <Slider label={t('fourier.studio.fc2')} value={fc2} min={fc + 5} max={view.fMax - 5} step={5} unit="Hz" onChange={setFc2} />
-        )}
-        {audioSupported() && (
-          <div className="transport">
-            <button type="button" onClick={playing ? stopAudio : startAudio}>
-              {playing ? t('fourier.studio.stop') : t('fourier.studio.listen')}
-            </button>
-            {playing && (
-              <button type="button" onClick={() => setBypass((b) => !b)}>
-                {t('fourier.studio.bypass')}
-              </button>
+    <div className="module-layout">
+      {/* LEFT SIDEBAR — controls */}
+      <aside className="fourier__controls">
+        <Panel title={t('fourier.studio.panel')}>
+          <Select
+            label={t('fourier.studio.source')} value={source} onChange={setSource}
+            options={[
+              { value: 'square', label: t('fourier.studio.source.square') },
+              { value: 'sawtooth', label: t('fourier.studio.source.sawtooth') },
+              { value: 'triangle', label: t('fourier.studio.source.triangle') },
+              { value: 'pulse', label: t('fourier.studio.source.pulse') },
+              { value: 'multitone', label: t('fourier.studio.source.multitone') },
+              { value: 'white', label: t('fourier.studio.source.white') },
+              { value: 'pink', label: t('fourier.studio.source.pink') },
+            ]}
+          />
+          {isWave && (
+            <Slider label={<HintText text={t('fourier.studio.f0')} />} value={f0} min={20} max={200} step={10} unit="Hz" onChange={setF0} />
+          )}
+          <Select
+            label={t('fourier.studio.filterType')} value={filterType} onChange={setFilterType}
+            options={[
+              { value: 'lpf', label: t('fourier.filter.type.lpf') },
+              { value: 'hpf', label: t('fourier.filter.type.hpf') },
+              { value: 'bpf', label: t('fourier.filter.type.bpf') },
+              { value: 'bsf', label: t('fourier.filter.type.bsf') },
+            ]}
+          />
+          <div className="studio__filter-box">
+            <Segmented
+              ariaLabel={t('fourier.studio.response')} value={response}
+              options={[
+                { value: 'ideal', label: t('fourier.studio.response.ideal') },
+                { value: 'butterworth', label: t('fourier.studio.response.butter') },
+              ]}
+              onChange={setResponse}
+            />
+            {response === 'butterworth' && (
+              <Slider label={t('fourier.studio.order')} value={order} min={1} max={10} step={1} onChange={setOrder} />
+            )}
+            <Slider label={<HintText text={t('fourier.studio.fc')} />} value={fc} min={5} max={view.fMax - 5} step={5} unit="Hz" onChange={setFc} />
+            {showFc2 && (
+              <Slider label={<HintText text={t('fourier.studio.fc2')} />} value={fc2} min={fc + 5} max={view.fMax - 5} step={5} unit="Hz" onChange={setFc2} />
+            )}
+            {audioSupported() && (
+              <div className="studio__audio">
+                <button
+                  type="button"
+                  className={`studio__audio__listen${playing ? ' studio__audio__listen--playing' : ''}`}
+                  onClick={playing ? stopAudio : startAudio}
+                >
+                  {playing ? t('fourier.studio.stop') : t('fourier.studio.listen')}
+                </button>
+                {playing && (
+                  <button
+                    type="button"
+                    className="studio__audio__bypass"
+                    onClick={() => setBypass((b) => !b)}
+                  >
+                    {bypass ? t('fourier.studio.bypass') + ' ON' : t('fourier.studio.bypass')}
+                  </button>
+                )}
+              </div>
             )}
           </div>
-        )}
+        </Panel>
+      </aside>
+
+      {/* RIGHT CONTENT — plots + theory */}
+      <div className="fourier__content">
+        <Panel title={t('fourier.studio.panelPlot')}>
+          {/* Spectrum: |X| line, shaded passband + |H|, |Y| output */}
+          <p className="fourier__hint">{t('fourier.studio.spectrumTitle')}</p>
+          <Canvas
+            height={220}
+            ariaLabel="Filter Studio spectrum"
+            deps={[view, fLo, fHi]}
+            onScrub={onScrubCutoff}
+            scrubPadding={{ l: PAD.l, r: PAD.r }}
+            onWheel={onWheelF}
+            draw={(ctx, w, h) => {
+              ctx.clearRect(0, 0, w, h);
+              const mMax = Math.max(...view.magX, 1e-6) * 1.15;
+              const ax: Axes = {
+                x: linScale([fLo, fHi], [PAD.l, w - PAD.r]),
+                y: linScale([0, mMax], [h - PAD.b, PAD.t]),
+              };
+              // shaded passband (where |H| ≳ 0.5)
+              for (let i = 1; i < view.freqs.length; i++) {
+                if (view.magH[i] >= 0.5) {
+                  shadeRegion(ctx, ax, view.freqs[i - 1], view.freqs[i], 0, mMax, 'rgba(255,140,66,0.10)');
+                }
+              }
+              drawAxes(ctx, ax, [fLo, fHi], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$|X(f)|$' });
+              drawLine(ctx, ax, view.freqs, view.magX, CHART.green, 1.5);
+              drawLine(ctx, ax, view.freqs, view.magY, CHART.blue, 2);
+              // |H| scaled to the axis top for visibility (dashed)
+              drawLine(ctx, ax, view.freqs, view.magH.map((v) => v * mMax), CHART.orange, 1.5, true);
+              // cutoff handles
+              drawVLine(ctx, ax, fc, 0, mMax, CHART.pink, false, 2);
+              if (showFc2) drawVLine(ctx, ax, fc2, 0, mMax, CHART.pink, false, 2);
+            }}
+          />
+          <p className="fourier__hint"><HintText text={t('fourier.studio.hint.spectrum')} /></p>
+
+          {/* Time domain: input vs filtered output */}
+          <p className="fourier__plot-title">{t('fourier.studio.timeTitle')}</p>
+          <Canvas
+            height={200}
+            ariaLabel="Filter Studio time domain"
+            deps={[view, tLo, tHi]}
+            onWheel={onWheelT}
+            onPan={onPanT}
+            draw={(ctx, w, h) => {
+              ctx.clearRect(0, 0, w, h);
+              const yMax = Math.max(1e-6, ...view.xInput.map(Math.abs), ...view.yOutput.map(Math.abs)) * 1.1;
+              const ax: Axes = {
+                x: linScale([tLo, tHi], [PAD.l, w - PAD.r]),
+                y: linScale([-yMax, yMax], [h - PAD.b, PAD.t]),
+              };
+              drawAxes(ctx, ax, [tLo, tHi], { xLabel: '$t\\,(\\mathrm{s})$', yLabel: '$x(t),\\,y(t)$' });
+              drawLine(ctx, ax, view.time, view.xInput, CHART.orange, 1.5);
+              drawLine(ctx, ax, view.time, view.yOutput, CHART.blue, 2);
+            }}
+          />
+          <p className="fourier__hint" style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+            <span style={{ color: CHART.orange }}>— <HintText text={t('fourier.studio.legend.time.input')} /></span>
+            <span style={{ color: CHART.blue }}>— <HintText text={t('fourier.studio.legend.time.output')} /></span>
+          </p>
+          <p className="fourier__hint"><HintText text={t('fourier.studio.hint.time')} /></p>
+        </Panel>
+
       </div>
-
-      {/* Spectrum: |X| line, shaded passband + |H|, |Y| output */}
-      <p className="fourier__hint">{t('fourier.studio.spectrumTitle')}</p>
-      <Canvas
-        height={220}
-        ariaLabel="Filter Studio spectrum"
-        deps={[view, fLo, fHi]}
-        onScrub={onScrubCutoff}
-        scrubPadding={{ l: PAD.l, r: PAD.r }}
-        onWheel={onWheelF}
-        draw={(ctx, w, h) => {
-          ctx.clearRect(0, 0, w, h);
-          const mMax = Math.max(...view.magX, 1e-6) * 1.15;
-          const ax: Axes = {
-            x: linScale([fLo, fHi], [PAD.l, w - PAD.r]),
-            y: linScale([0, mMax], [h - PAD.b, PAD.t]),
-          };
-          // shaded passband (where |H| ≳ 0.5)
-          for (let i = 1; i < view.freqs.length; i++) {
-            if (view.magH[i] >= 0.5) {
-              shadeRegion(ctx, ax, view.freqs[i - 1], view.freqs[i], 0, mMax, 'rgba(255,140,66,0.10)');
-            }
-          }
-          drawAxes(ctx, ax, [fLo, fHi], { xLabel: '$f\\,[\\mathrm{Hz}]$', yLabel: '$|X(f)|$' });
-          drawLine(ctx, ax, view.freqs, view.magX, CHART.green, 1.5);
-          drawLine(ctx, ax, view.freqs, view.magY, CHART.blue, 2);
-          // |H| scaled to the axis top for visibility (dashed)
-          drawLine(ctx, ax, view.freqs, view.magH.map((v) => v * mMax), CHART.orange, 1.5, true);
-          // cutoff handles
-          drawVLine(ctx, ax, fc, 0, mMax, CHART.pink, false, 2);
-          if (showFc2) drawVLine(ctx, ax, fc2, 0, mMax, CHART.pink, false, 2);
-        }}
-      />
-      <p className="fourier__hint"><HintText text={t('fourier.studio.hint.spectrum')} /></p>
-
-      {/* Time domain: input vs filtered output */}
-      <p className="fourier__hint">{t('fourier.studio.timeTitle')}</p>
-      <Canvas
-        height={200}
-        ariaLabel="Filter Studio time domain"
-        deps={[view, tLo, tHi]}
-        onWheel={onWheelT}
-        onPan={onPanT}
-        draw={(ctx, w, h) => {
-          ctx.clearRect(0, 0, w, h);
-          const yMax = Math.max(1e-6, ...view.xInput.map(Math.abs), ...view.yOutput.map(Math.abs)) * 1.1;
-          const ax: Axes = {
-            x: linScale([tLo, tHi], [PAD.l, w - PAD.r]),
-            y: linScale([-yMax, yMax], [h - PAD.b, PAD.t]),
-          };
-          drawAxes(ctx, ax, [tLo, tHi], { xLabel: '$t\\,[\\mathrm{s}]$', yLabel: '$x(t),\\,y(t)$' });
-          drawLine(ctx, ax, view.time, view.xInput, CHART.dim, 1.5);
-          drawLine(ctx, ax, view.time, view.yOutput, CHART.green, 2);
-        }}
-      />
-      <p className="fourier__hint"><HintText text={t('fourier.studio.hint.time')} /></p>
-
-      <TheoryBox title={t('fourier.studio.panel')}>
-        <Formula tex="Y(f)=H(f)\,X(f)" block />
-        <p>Proakis §2.4 (p. 85): an LTI filter multiplies the input spectrum by |H(f)|; frequencies outside the passband are suppressed, so the time waveform loses the corresponding harmonics.</p>
-        <Formula tex="|H(f)|_{\text{Butter}}=\dfrac{1}{\sqrt{1+\Omega^{2N}}}" block />
-        <p>Butterworth magnitude with the band mapping Ω (lowpass Ω = f/f_c). Higher order N → steeper roll-off, closer to the ideal brick-wall.</p>
-      </TheoryBox>
-    </Panel>
+    </div>
   );
 }

@@ -34,7 +34,10 @@ function withClip(ctx: CanvasRenderingContext2D, w: number, h: number, fn: () =>
   ctx.restore();
 }
 
-const DEFAULTS = { kind: 'rect' as BasicKind, amp: 1, t0: 0, F: 1, tau: 0.5, reverse: false, modOn: false, fm: 5 };
+const DEFAULTS = {
+  kind: 'rect' as BasicKind, amp: 1, t0: 0, F: 1, tau: 0.5, reverse: false, modOn: false, fm: 5,
+  dbMode: false, twoSided: true, showOverlay: true,
+};
 
 export function FourierTransformSection(_props: SectionProps) {
   const [kind, setKind] = useState<BasicKind>(DEFAULTS.kind);
@@ -45,9 +48,9 @@ export function FourierTransformSection(_props: SectionProps) {
   const [reverse, setReverse] = useState(DEFAULTS.reverse);
   const [modOn, setModOn] = useState(DEFAULTS.modOn);
   const [fm, setFm] = useState(DEFAULTS.fm);
-  const [dbMode, setDbMode] = useState(false);
-  const [twoSided, setTwoSided] = useState(true);
-  const [showOverlay, setShowOverlay] = useState(true);
+  const [dbMode, setDbMode] = useState(DEFAULTS.dbMode);
+  const [twoSided, setTwoSided] = useState(DEFAULTS.twoSided);
+  const [showOverlay, setShowOverlay] = useState(DEFAULTS.showOverlay);
 
   const ops: SpectrumOps = { amp, t0, F, tau, reverse, modOn, fm };
   const v = buildSpectrumExplorer(kind, ops); // rectangular window: truest |X(f)| + exact Parseval
@@ -55,9 +58,25 @@ export function FourierTransformSection(_props: SectionProps) {
   const maxMag = Math.max(...v.mag, 1e-12);
 
   // Shared zoom: one for time, one for both frequency canvases.
-  const [tLo, tHi, onWheelT, , onPanT] = useZoom(-10, 10, { minSpan: 0.2, maxSpan: 20, clampMin: -10, clampMax: 10 });
-  const [fLo, fHi, onWheelF, , onPanF] = useZoom(-25, 25, { minSpan: 0.5, maxSpan: 210 });
+  const [tLo, tHi, onWheelT, resetTZoom, onPanT] = useZoom(-10, 10, { minSpan: 0.2, maxSpan: 20, clampMin: -10, clampMax: 10 });
+  const [fLo, fHi, onWheelF, resetFZoom, onPanF] = useZoom(-25, 25, { minSpan: 0.5, maxSpan: 210 });
   const dispLo = twoSided ? fLo : Math.max(0, fLo);
+
+  function handleReset() {
+    setKind(DEFAULTS.kind);
+    setAmp(DEFAULTS.amp);
+    setT0(DEFAULTS.t0);
+    setF(DEFAULTS.F);
+    setTau(DEFAULTS.tau);
+    setReverse(DEFAULTS.reverse);
+    setModOn(DEFAULTS.modOn);
+    setFm(DEFAULTS.fm);
+    setDbMode(DEFAULTS.dbMode);
+    setTwoSided(DEFAULTS.twoSided);
+    setShowOverlay(DEFAULTS.showOverlay);
+    resetTZoom();
+    resetFZoom();
+  }
 
   return (
     <div className="module-layout">
@@ -95,6 +114,9 @@ export function FourierTransformSection(_props: SectionProps) {
           <Toggle label={t('fourier.spec.db')} checked={dbMode} onChange={setDbMode} />
           <Toggle label={t('fourier.spec.twoSided')} checked={twoSided} onChange={setTwoSided} />
           <Toggle label={t('fourier.spec.overlay')} checked={showOverlay} onChange={setShowOverlay} />
+          <div className="transport">
+            <button type="button" onClick={handleReset}>{t('fourier.spec.reset')}</button>
+          </div>
         </Panel>
       </aside>
 
@@ -118,8 +140,9 @@ export function FourierTransformSection(_props: SectionProps) {
           </div>
         </div>
 
-        <Panel title={t('fourier.panel.spectrum')}>
+        <Panel title={t('fourier.panel.spectrumPlot')}>
           {/* Time domain: operated signal */}
+          <p className="fourier__plot-title">{t('fourier.spec.time')}</p>
           <Canvas
             height={170}
             ariaLabel="Time domain signal"

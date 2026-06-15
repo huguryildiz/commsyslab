@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Panel, Slider, Select, Segmented, TheoryBox, Formula, HintText } from '@/components';
+import { Panel, Slider, Select, Segmented, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { useZoom } from '@/lib/plot/useZoom';
 import { linScale, drawAxes, drawLine, drawScatter, drawVLine, drawBandwidthSpan, type Axes } from '@/lib/plot/draw';
-import { CHART } from '@/lib/plot/colors';
+import { CHART, alpha } from '@/lib/plot/colors';
 import { mainLobeBandwidth } from '@/lib/dsp/bandwidth';
 import { t } from '@/i18n';
 import {
@@ -42,6 +42,38 @@ const DEFAULTS = {
 
 type SubTab = 'hilbert' | 'lowpass' | 'iq';
 
+/** A swatch + label legend row for canvas plots (theme-aware colors via CHART). */
+type LegendItem = { color: string; label: string; variant?: 'line' | 'dashed' | 'band' | 'dot' };
+function LegendRow({ items }: { items: LegendItem[] }) {
+  return (
+    <p
+      className="fourier__hint"
+      style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'center' }}
+    >
+      {items.map((it, i) => (
+        <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span
+            aria-hidden
+            style={{
+              display: 'inline-block',
+              width: it.variant === 'dot' ? '10px' : '16px',
+              height: it.variant === 'band' ? '8px' : it.variant === 'dot' ? '10px' : '3px',
+              borderRadius: it.variant === 'dot' ? '50%' : '2px',
+              background:
+                it.variant === 'band'
+                  ? alpha(it.color, 0.4)
+                  : it.variant === 'dashed'
+                    ? `repeating-linear-gradient(90deg, ${it.color} 0 5px, transparent 5px 9px)`
+                    : it.color,
+            }}
+          />
+          <HintText text={it.label} />
+        </span>
+      ))}
+    </p>
+  );
+}
+
 // ---- Sub-tab 1: Hilbert Transform ----
 function HilbertPanel(_props: SectionProps) {
   const [kind, setKind] = useState<BasicKind>(DEFAULTS.hilbertKind);
@@ -79,7 +111,7 @@ function HilbertPanel(_props: SectionProps) {
   return (
     <div className="module-layout">
       <aside className="fourier__controls">
-        <Panel title={t('fourier.bandpass.sub.hilbert')}>
+        <Panel title={t('fourier.panel.signal')}>
           <Select
             label={t('fourier.sig.kind')}
             value={kind}
@@ -552,30 +584,38 @@ function IQPanel(_props: SectionProps) {
   }
 
   const cursorT = data.time[idx];
+  const cursorColor = alpha(CHART.text, 0.35); // neutral playhead — no clash with trace colors
 
-  // A stacked time plot: one or two traces + the synced animation cursor.
-  const drawTime =
-    (
-      primary: { arr: number[]; color: string },
-      secondary: { arr: number[]; color: string; dashed?: boolean } | null,
-      yLabel: string,
-      clampMin?: number,
-    ) =>
+  const makeAxes = (w: number, h: number, yMin: number, yMax: number): Axes => ({
+    x: linScale([tLo, tHi], [PAD_W.l, w - PAD_W.r]),
+    y: linScale([yMin, yMax], [h - PAD_W.b, PAD_W.t]),
+  });
+
+  // x(t): bandpass signal threaded by its ±V(t) envelope.
+  const drawSignal = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+    ctx.clearRect(0, 0, w, h);
+    const peak = Math.max(Math.max(...data.envelope), 0.5) * 1.2;
+    const ax = makeAxes(w, h, -peak, peak);
+    drawAxes(ctx, ax, [tLo, tHi], { xLabel: '$t\\,(\\mathrm{s})$', yLabel: '$x(t)$' });
+    drawLine(ctx, ax, data.time, data.envelope, CHART.cyan, 1.5);
+    drawLine(ctx, ax, data.time, data.envelope.map((v) => -v), CHART.cyan, 1.5);
+    drawLine(ctx, ax, data.time, data.signal, CHART.orange, 1.1);
+    drawVLine(ctx, ax, cursorT, -peak, peak, cursorColor, true, 1);
+  };
+
+  // I or Q channel: true component as a bold orange line, recovered as a crisp line on top.
+  const drawChannel =
+    (recovered: number[], trueArr: number[], color: string, yLabel: string) =>
     (ctx: CanvasRenderingContext2D, w: number, h: number) => {
       ctx.clearRect(0, 0, w, h);
-      const all = secondary ? [...primary.arr, ...secondary.arr] : primary.arr;
-      const peak = Math.max(Math.max(...all.map(Math.abs)), 0.5);
-      const yMin = clampMin !== undefined ? clampMin : -peak * 1.2;
-      const yMax = peak * 1.2;
-      const ax: Axes = {
-        x: linScale([tLo, tHi], [PAD_W.l, w - PAD_W.r]),
-        y: linScale([yMin, yMax], [h - PAD_W.b, PAD_W.t]),
-      };
+      const peak =
+        Math.max(Math.max(...recovered.map(Math.abs)), Math.max(...trueArr.map(Math.abs)), 0.5) *
+        1.2;
+      const ax = makeAxes(w, h, -peak, peak);
       drawAxes(ctx, ax, [tLo, tHi], { xLabel: '$t\\,(\\mathrm{s})$', yLabel });
-      if (secondary)
-        drawLine(ctx, ax, data.time, secondary.arr, secondary.color, 1.5, secondary.dashed);
-      drawLine(ctx, ax, data.time, primary.arr, primary.color, 1.5);
-      drawVLine(ctx, ax, cursorT, yMin, yMax, CHART.pink, false, 1);
+      drawLine(ctx, ax, data.time, trueArr, CHART.orange, 2, true); // true: dashed orange line
+      drawLine(ctx, ax, data.time, recovered, color, 1.6); // recovered: crisp line on top
+      drawVLine(ctx, ax, cursorT, -peak, peak, cursorColor, true, 1);
     };
 
   // I/Q plane: square axes, Lissajous path + the moving dot at the cursor sample.
@@ -595,7 +635,7 @@ function IQPanel(_props: SectionProps) {
       y: linScale([-m, m], [cy + side / 2, cy - side / 2]),
     };
     drawAxes(ctx, ax, [-m, m], { xLabel: '$I$', yLabel: '$Q$' });
-    drawLine(ctx, ax, data.iRec, data.qRec, CHART.blue, 1);
+    drawLine(ctx, ax, data.iRec, data.qRec, alpha(CHART.blue, 0.8), 1.2);
     drawScatter(ctx, ax, [data.iRec[idx]], [data.qRec[idx]], CHART.pink, 5);
   };
 
@@ -638,11 +678,13 @@ function IQPanel(_props: SectionProps) {
               deps={[data, tLo, tHi, idx]}
               onWheel={onWheel}
               onPan={onPan}
-              draw={drawTime(
-                { arr: data.signal, color: CHART.orange },
-                { arr: data.envelope, color: CHART.pink },
-                '$x(t)$',
-              )}
+              draw={drawSignal}
+            />
+            <LegendRow
+              items={[
+                { color: CHART.orange, label: t('fourier.iq.legend.signal'), variant: 'line' },
+                { color: CHART.cyan, label: t('fourier.iq.legend.env'), variant: 'line' },
+              ]}
             />
           </figure>
 
@@ -656,11 +698,13 @@ function IQPanel(_props: SectionProps) {
               deps={[data, tLo, tHi, idx]}
               onWheel={onWheel}
               onPan={onPan}
-              draw={drawTime(
-                { arr: data.iRec, color: CHART.green },
-                { arr: data.xcTrue, color: CHART.green, dashed: true },
-                '$I(t)$',
-              )}
+              draw={drawChannel(data.iRec, data.xcTrue, CHART.green, '$I(t)$')}
+            />
+            <LegendRow
+              items={[
+                { color: CHART.green, label: t('fourier.iq.legend.iRec'), variant: 'line' },
+                { color: CHART.orange, label: t('fourier.iq.legend.xc'), variant: 'dashed' },
+              ]}
             />
           </figure>
 
@@ -674,11 +718,13 @@ function IQPanel(_props: SectionProps) {
               deps={[data, tLo, tHi, idx]}
               onWheel={onWheel}
               onPan={onPan}
-              draw={drawTime(
-                { arr: data.qRec, color: CHART.blue },
-                { arr: data.xsTrue, color: CHART.blue, dashed: true },
-                '$Q(t)$',
-              )}
+              draw={drawChannel(data.qRec, data.xsTrue, CHART.blue, '$Q(t)$')}
+            />
+            <LegendRow
+              items={[
+                { color: CHART.blue, label: t('fourier.iq.legend.qRec'), variant: 'line' },
+                { color: CHART.orange, label: t('fourier.iq.legend.xs'), variant: 'dashed' },
+              ]}
             />
           </figure>
 
@@ -692,6 +738,12 @@ function IQPanel(_props: SectionProps) {
               deps={[data, idx]}
               draw={drawPlane}
             />
+            <LegendRow
+              items={[
+                { color: CHART.blue, label: t('fourier.iq.legend.path'), variant: 'line' },
+                { color: CHART.pink, label: t('fourier.iq.legend.now'), variant: 'dot' },
+              ]}
+            />
           </figure>
 
           <p className="fourier__hint">
@@ -699,22 +751,171 @@ function IQPanel(_props: SectionProps) {
           </p>
         </Panel>
 
-        <TheoryBox title={t('fourier.bandpass.sub.iq')}>
-          <Formula tex="x(t)=x_c(t)\cos(2\pi f_c t)-x_s(t)\sin(2\pi f_c t)" block />
-          <p>
-            The in-phase component <em>x_c(t) = I(t)</em> and quadrature component{' '}
-            <em>x_s(t) = Q(t)</em> are the real and imaginary parts of the lowpass equivalent{' '}
-            <em>x_ℓ(t) = x_c(t) + j·x_s(t)</em>. Each carries an independent message.
-          </p>
-          <Formula tex="I=\mathrm{LPF}\{2x(t)\cos 2\pi f_c t\},\quad Q=\mathrm{LPF}\{-2x(t)\sin 2\pi f_c t\}" block />
-          <p>
-            Multiplying by the cosine and (negated) sine references shifts the wanted component
-            to baseband and the unwanted to <em>±2f_c</em>; a lowpass then returns each message
-            at unity gain — coherent demodulation.
-          </p>
-          <Formula tex="V(t)=\bigl|x_\ell(t)\bigr|=\sqrt{x_c^2(t)+x_s^2(t)}" block />
-          <p>The envelope V(t) is the magnitude of the complex lowpass equivalent (pink trace).</p>
-        </TheoryBox>
+        {/* I/Q Representation reference cards — Proakis & Salehi §2.7 (p. 98) */}
+        <div className="sig-cards">
+
+          {/* Card 1: I/Q Decomposition */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--green">
+              I/Q Decomposition
+            </h3>
+            <div className="sig-card__body">
+              <p>
+                Any bandpass signal centred at <Formula tex="f_c" /> can be written as two <em>quadrature</em> components:
+              </p>
+              <div className="sig-card__formula">
+                <Formula tex="x(t)=x_c(t)\cos(2\pi f_c t)-x_s(t)\sin(2\pi f_c t)" block />
+              </div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>
+                  <span className="sig-card__label">In-phase <Formula tex="I(t)=x_c(t)" />:</span>{' '}
+                  the component in-phase with the cosine carrier
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  <span className="sig-card__label">Quadrature <Formula tex="Q(t)=x_s(t)" />:</span>{' '}
+                  the component in-phase with the sine carrier (90° shifted)
+                </li>
+              </ul>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                Both <Formula tex="x_c(t)" /> and <Formula tex="x_s(t)" /> are <em>lowpass</em> signals
+                with bandwidth <Formula tex="W \ll f_c" />.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 2: Complex Envelope */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--orange">
+              Complex Envelope
+            </h3>
+            <div className="sig-card__body">
+              <p>
+                Combining I and Q into a single complex signal gives the <em>complex lowpass equivalent</em>
+                (complex envelope):
+              </p>
+              <div className="sig-card__formula">
+                <Formula tex="x_\ell(t)=x_c(t)+j\,x_s(t)=V(t)\,e^{j\phi(t)}" block />
+              </div>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                The bandpass signal is recovered from it as:
+              </p>
+              <div className="sig-card__formula">
+                <Formula tex="x(t)=\mathrm{Re}\!\left\{x_\ell(t)\,e^{j2\pi f_c t}\right\}" block />
+              </div>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                <Formula tex="x_\ell(t)" /> carries <em>all</em> information of the bandpass signal
+                at baseband — it never oscillates at <Formula tex="f_c" />.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 3: Coherent Demodulation */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--blue">
+              Coherent Demodulation
+            </h3>
+            <div className="sig-card__body">
+              <p>
+                To <em>recover</em> <Formula tex="I(t)" /> and <Formula tex="Q(t)" /> from the received
+                bandpass signal, multiply by the local carrier then low-pass filter:
+              </p>
+              <div className="sig-card__formula">
+                <Formula tex="I(t)=\mathrm{LPF}\!\left\{2x(t)\cos(2\pi f_c t)\right\}" block />
+              </div>
+              <div className="sig-card__formula">
+                <Formula tex="Q(t)=\mathrm{LPF}\!\left\{-2x(t)\sin(2\pi f_c t)\right\}" block />
+              </div>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                This requires the receiver to know <Formula tex="f_c" /> and the carrier phase exactly —
+                hence <em>coherent</em> demodulation. The soft halo in the plots above shows the true
+                <Formula tex="x_c" /> / <Formula tex="x_s" />; the crisp line is recovered via this process.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 4: Envelope & Instantaneous Phase */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--green">
+              Envelope &amp; Phase
+            </h3>
+            <div className="sig-card__body">
+              <p>
+                Writing the complex envelope in polar form extracts two physically meaningful quantities:
+              </p>
+              <ul>
+                <li>
+                  <span className="sig-card__label">Envelope:</span>{' '}
+                  <Formula tex="V(t)=|x_\ell(t)|=\sqrt{x_c^2(t)+x_s^2(t)}" />
+                  — the instantaneous amplitude (pink trace)
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  <span className="sig-card__label">Instantaneous phase:</span>{' '}
+                  <Formula tex="\phi(t)=\arg x_\ell(t)=\arctan\!\dfrac{x_s(t)}{x_c(t)}" />
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  <span className="sig-card__label">Instantaneous frequency:</span>{' '}
+                  <Formula tex="f_i(t)=f_c+\dfrac{1}{2\pi}\dfrac{d\phi}{dt}" />
+                </li>
+              </ul>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                For AM: <Formula tex="V(t)=1+m\cos(2\pi f_m t)" />; for FM: <Formula tex="\phi(t)=2\pi k_f\!\int\!m(t)\,dt" />.
+              </p>
+            </div>
+          </div>
+
+          {/* Card 5: I/Q Plane */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--orange">
+              I/Q Plane (Constellation)
+            </h3>
+            <div className="sig-card__body">
+              <p>
+                Plotting <Formula tex="Q(t)" /> vs <Formula tex="I(t)" /> traces a curve in the
+                <em> complex plane</em>. The moving dot shows the current sample.
+              </p>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>
+                  The <em>distance from the origin</em> equals the instantaneous envelope <Formula tex="V(t)" />
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  The <em>angle from the positive I-axis</em> equals the instantaneous phase <Formula tex="\phi(t)" />
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  For digital modulations (QAM, PSK) the trajectory visits a discrete set of points —
+                  the <em>constellation</em>. Changing I/Q messages above draws different Lissajous shapes.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Card 6: Why I/Q? */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--blue">
+              Why I/Q?
+            </h3>
+            <div className="sig-card__body">
+              <ul>
+                <li>
+                  <span className="sig-card__label">Two-dimensional channel:</span>{' '}
+                  I and Q are orthogonal, so each carries an independent stream of data — doubling
+                  spectral efficiency compared to a single-channel system.
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  <span className="sig-card__label">Baseband processing:</span>{' '}
+                  all DSP (filtering, equalisation, decoding) is done at baseband on
+                  <Formula tex="x_c" /> and <Formula tex="x_s" />; only the final up/down-conversion
+                  touches the carrier frequency.
+                </li>
+                <li style={{ marginTop: 'var(--space-1)' }}>
+                  <span className="sig-card__label">Universal modulation framework:</span>{' '}
+                  AM, FM, PM, BPSK, QPSK, QAM, OFDM are all special cases of the I/Q model —
+                  they differ only in how <Formula tex="x_c(t)" /> and <Formula tex="x_s(t)" /> are chosen.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   );

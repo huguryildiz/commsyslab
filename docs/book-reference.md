@@ -21,7 +21,7 @@ printed numbers (PDF page offset ~+14).
 | Ch | Title | Page | Status | Platform relevance |
 |----|-------|-------|--------|-------------------|
 | 1 | Introduction | 1 | ⬜ | General system model, channel models |
-| 2 | Signals and Linear Systems | 21 | ✅ | Fourier, spectrum, filter design |
+| 2 | Signals and Linear Systems | 21 | ✅ | Fourier, spectrum, convolution, filter design, Hilbert, bandpass/I-Q |
 | 3 | Amplitude Modulation | 117 | ✅ | AM (DSB-SC, SSB, VSB), demodulation |
 | 4 | Angle Modulation | 161 | ✅ | FM/PM signals, spectrum |
 | 5 | Probability and Random Processes | 190 | ✅ | Noise, AWGN, PSD, Gaussian processes |
@@ -57,17 +57,20 @@ printed numbers (PDF page offset ~+14).
 
 ### Chapter 2 — Signals and Linear Systems (pp. 21–116) ✅
 
-**Module:** `src/modules/fourier/` · **DSP:** `src/lib/dsp/fourier.ts`, `fft.ts`, `signals.ts`, `spectrum.ts`, `window.ts`
+**Module:** `src/modules/fourier/` (6 tabs: Basic Signals · Convolution · Fourier Series ·
+Fourier Transform & Spectra · Filters · Bandpass Signals) · **DSP:** `src/lib/dsp/fourier.ts`,
+`fft.ts`, `signals.ts`, `spectrum.ts`, `window.ts`, `bandwidth.ts`, `ftpairs.ts`,
+`analogfilters.ts` · module helpers `filterStudio.ts`, `model.ts`
 
 | Subsection | Page | Status | Repo mapping |
 |------------|------|--------|--------------|
-| 2.1 Basic Concepts (signals, systems) | 21 | ✅ | `signals.ts`, `FourierModule.tsx` |
-| 2.2 Fourier Series | 43 | ✅ | `fourier.ts` — Fourier series |
-| 2.3 Fourier Transform | 58 | ✅ | `fourier.ts`, `fft.ts` — FFT |
-| 2.4 Filter Design | 85 | 🔶 | `window.ts` (window functions) |
+| 2.1 Basic Concepts (signals, systems) | 21 | ✅ | `signals.ts`, `model.ts` — Basic Signals tab + Convolution (LTI) tab |
+| 2.2 Fourier Series | 43 | ✅ | `fourier.ts` — Fourier series; Fourier Series tab (partial-sum synthesis) |
+| 2.3 Fourier Transform | 58 | ✅ | `fourier.ts`, `fft.ts`, `ftpairs.ts` — FFT spectra + FT pairs/properties |
+| 2.4 Filter Design | 85 | ✅ | `window.ts`, `analogfilters.ts`, `filterStudio.ts` — Filters tab (LTI · Realizable Butterworth/Chebyshev · Filter Studio with audio bypass) |
 | 2.5 Power and Energy | 89 | ✅ | `spectrum.ts` — PSD computation |
-| 2.6 Hilbert Transform | 95 | ⬜ | — |
-| 2.7 Lowpass and Bandpass Signals | 98 | 🔶 | Partially in analog module |
+| 2.6 Hilbert Transform | 95 | ✅ | `fourier.ts` `hilbert()`; Bandpass Signals tab → Hilbert Transform sub-tab |
+| 2.7 Lowpass and Bandpass Signals | 98 | ✅ | `bandwidth.ts`, `ftpairs.ts`; Bandpass Signals tab → Lowpass & Bandpass + I/Q Representation sub-tabs |
 
 ---
 
@@ -360,7 +363,7 @@ printed numbers (PDF page offset ~+14).
 | 🔶 Partial | 1 / 15 | Chapter 9 (CPFSK exists, rest missing) |
 | ⬜ None | 1 / 15 | Chapter 1 (introduction, no simulation needed) |
 
-> Subsection breakdown: of ~95 subsections, **~65 ✅**, **~13 🔶**, **~17 ⬜**.
+> Subsection breakdown: of ~95 subsections, **~68 ✅**, **~11 🔶**, **~16 ⬜**.
 
 ---
 

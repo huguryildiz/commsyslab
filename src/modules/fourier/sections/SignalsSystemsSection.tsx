@@ -35,7 +35,7 @@ const DEFAULTS = {
   reverse: false,
   tMin: -10,
   tMax: 10,
-  N: 2000,
+  N: 4096,
 };
 
 export function SignalsSystemsSection(_props: SectionProps) {
@@ -50,8 +50,8 @@ export function SignalsSystemsSection(_props: SectionProps) {
   });
   const [playing, setPlaying] = useState(false);
 
-  // Auto-scale N with the visible range for smooth rendering
-  const N = Math.min(2000, Math.max(500, Math.round(100 * (tMax - tMin))));
+  // High sample density so signals stay smooth at any zoom level (500 samples/unit, cap 8192)
+  const N = Math.min(8192, Math.max(1024, Math.round(500 * (tMax - tMin))));
   const audioHandle = useRef<{ stop: () => void } | null>(null);
 
   const sig = buildSignalExplorer(kind, { amp, t0, F, tau, reverse, tMin, tMax, N });
@@ -137,12 +137,18 @@ export function SignalsSystemsSection(_props: SectionProps) {
               : <Slider label={<L text="Decay" tex="\tau" />} unit="(s)" value={tau} min={0.05} max={5} step={0.05} onChange={setTau} />
           )}
           <Toggle label={t('fourier.sig.reverse')} checked={reverse} onChange={setReverse} />
-          <div className="transport">
-            {audioSupported() && (
-              <button type="button" onClick={handlePlay}>
-                {playing ? t('fourier.sig.stop') : t('fourier.sig.play')}
+          {audioSupported() && (
+            <div className="studio__audio">
+              <button
+                type="button"
+                className={`studio__audio__listen${playing ? ' studio__audio__listen--playing' : ''}`}
+                onClick={handlePlay}
+              >
+                {playing ? t('fourier.studio.stop') : t('fourier.studio.listen')}
               </button>
-            )}
+            </div>
+          )}
+          <div className="transport">
             <button type="button" onClick={handleReset}>{t('fourier.sig.reset')}</button>
           </div>
         </Panel>
@@ -163,7 +169,7 @@ export function SignalsSystemsSection(_props: SectionProps) {
           </div>
         </div>
 
-        <Panel title={t('fourier.panel.signal')}>
+        <Panel title={t('fourier.panel.signalPlot')}>
           <Canvas
             height={200}
             ariaLabel="Signal: original vs transformed"

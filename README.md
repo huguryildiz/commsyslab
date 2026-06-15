@@ -53,7 +53,7 @@ All twelve modules are live and follow book-chapter order.
 
 | # | Module | What it covers |
 |---|--------|----------------|
-| 01 | **Signals & Spectra** | Series synthesis, FFT, windowing, LTI filter response, transform pairs, analytic signals |
+| 01 | **Signals & Spectra** | Basic signals, convolution, Fourier series synthesis, FFT & spectra, transform pairs, filter design (LTI · realizable · studio with audio), Hilbert transform, bandpass & I/Q representation |
 | 02 | **Amplitude Modulation (AM)** | DSB-SC, conventional AM, SSB & VSB, power/efficiency, envelope/coherent detection, superheterodyne receiver |
 | 03 | **Angle Modulation (FM/PM)** | FM & PM waveforms, instantaneous frequency, Bessel sidebands, Carson bandwidth, discriminator detection |
 | 04 | **Random Processes** | Ensembles, autocorrelation, ergodicity, PSD, LTI filtering of random processes |
@@ -89,7 +89,7 @@ source → sampling → source coding → modulation → channel → detection �
 | Math typesetting | KaTeX |
 | Audio | Web Audio API |
 | Rendering | Custom Canvas + SVG plotting primitives |
-| DSP core | Pure TypeScript in `src/lib/dsp` (48 modules, no framework deps) |
+| DSP core | Pure TypeScript in `src/lib/dsp` (54 modules, no framework deps) |
 | Styling | CSS design tokens · glassmorphism · neon signal palette |
 | Testing | Vitest · Testing Library · jsdom (80+ test suites) |
 | Tooling | ESLint · Prettier · `tsc --noEmit` |
@@ -116,7 +116,7 @@ A single visual language throughout: dark glassmorphism with restrained neon glo
 ```text
 src/
 ├── modules/              One directory per communication-theory lab
-│   ├── fourier/          Fourier series, FFT, filters, analytic signals
+│   ├── fourier/          Signals, convolution, Fourier series/transform, filters, Hilbert, bandpass & I/Q
 │   ├── analog/           AM/FM/PM modulation and analog receivers
 │   ├── random-process/   Ensembles, autocorrelation, PSD, LTI filtering
 │   ├── sampling-quantization/  Nyquist, aliasing, PCM, SQNR

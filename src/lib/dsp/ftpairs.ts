@@ -13,7 +13,7 @@ import type { Complex } from './fft';
 import { sinc } from './math';
 
 /** Energy signals whose Fourier transform has a clean closed form in Table 2.1. */
-export type AnalyticFtKind = 'rect' | 'tri' | 'exp' | 'exp2' | 'sinc' | 'damped_sine';
+export type AnalyticFtKind = 'rect' | 'tri' | 'exp' | 'exp2' | 'sinc' | 'damped_sine' | 'gaussian';
 
 /** Complex division helper: (a) / (b). */
 function cdiv(a: Complex, b: Complex): Complex {
@@ -36,6 +36,7 @@ function cmul(a: Complex, b: Complex): Complex {
  *   exp2         e^{-|t|/τ}            → 2(1/τ)/((1/τ)² + (2πf)²)
  *   sinc         sinc(t)               → Π(f)   (unit-width rect)
  *   damped_sine  sin(2πt)e^{-t/τ}u(t)  → 2π/((1/τ + j2πf)² + (2π)²)
+ *   gaussian     e^{-t²/(2τ²)}         → τ√(2π)·e^{-2π²τ²f²}
  */
 export function analyticFt(kind: AnalyticFtKind, f: number, tau = 0.5): Complex {
   const w = 2 * Math.PI * f; // angular frequency 2πf
@@ -60,5 +61,8 @@ export function analyticFt(kind: AnalyticFtKind, f: number, tau = 0.5): Complex 
       const denom = { re: cmul(apjw, apjw).re + b * b, im: cmul(apjw, apjw).im };
       return cdiv({ re: b, im: 0 }, denom);
     }
+    case 'gaussian':
+      // e^{-t²/(2τ²)} → τ√(2π)·e^{-2π²τ²f²} (real, even).
+      return { re: tau * Math.sqrt(2 * Math.PI) * Math.exp(-2 * Math.PI * Math.PI * tau * tau * f * f), im: 0 };
   }
 }

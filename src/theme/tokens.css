@@ -25,6 +25,7 @@
   --accent: #39ff85; /* neon green (primary) */
   --accent-2: #ff8c42; /* orange (secondary) */
   --accent-blue: #7b8cff; /* blue-violet */
+  --accent-cyan: #2dd4bf; /* teal-cyan (auxiliary trace, e.g. envelope) */
 
   /* ── Signal / chart colors ── */
   --color-x: #39ff85; /* input/green */
@@ -99,6 +100,7 @@
   --accent: #0a6428; /* forest green (primary) */
   --accent-2: #c2410c; /* burnt orange (secondary) */
   --accent-blue: #3a4fd0; /* indigo-blue */
+  --accent-cyan: #0d9488; /* teal-cyan (auxiliary trace, e.g. envelope) */
 
   --color-x: #0a6428;
   --color-h: #c2410c;

@@ -17,6 +17,31 @@
   gap: 8px;
 }
 
+/* Filters tab: nested sub-tab bar (LTI / Butterworth / Studio) under the module tabs. */
+.fourier__subtabbar {
+  margin-bottom: 16px;
+}
+
+/* Side-by-side baseband / bandpass spectra; stacks on narrow viewports. */
+.fourier__spectrum-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.fourier__spectrum {
+  margin: 0;
+  min-width: 0;
+}
+
+.fourier__spectrum-cap {
+  font-family: var(--font);
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
 .fourier__plots {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -248,4 +273,102 @@
   .sig-cards {
     grid-template-columns: 1fr;
   }
+}
+
+/* Realizable Filters comparison panel — control grid + trace toggles */
+.fourier__realfilt-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-2) var(--space-3);
+  align-items: end;
+  margin-bottom: var(--space-3);
+}
+.fourier__realfilt-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .fourier__realfilt-controls {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Filter Studio — filter response + cutoff + audio in one glass card */
+.studio__filter-box {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+.studio__audio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.studio__audio__listen {
+  width: 100%;
+  padding: 10px var(--space-3);
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  background: rgba(57, 255, 133, 0.06);
+  border-radius: var(--radius-sm);
+  text-shadow: 0 0 10px rgba(57, 255, 133, 0.45);
+  box-shadow: 0 0 14px rgba(57, 255, 133, 0.12), inset 0 0 14px rgba(57, 255, 133, 0.04);
+  transition: all var(--transition);
+}
+.studio__audio__listen:hover:not(:disabled) {
+  background: rgba(57, 255, 133, 0.13);
+  box-shadow: 0 0 22px rgba(57, 255, 133, 0.28), inset 0 0 18px rgba(57, 255, 133, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.studio__audio__listen--playing {
+  border-color: var(--err);
+  color: var(--err);
+  background: rgba(239, 68, 68, 0.06);
+  text-shadow: 0 0 10px rgba(239, 68, 68, 0.45);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.12), inset 0 0 14px rgba(239, 68, 68, 0.04);
+}
+.studio__audio__listen--playing:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.13);
+  box-shadow: 0 0 22px rgba(239, 68, 68, 0.28);
+  border-color: var(--err);
+  color: var(--err);
+}
+
+.studio__audio__bypass {
+  width: 100%;
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  letter-spacing: 0.04em;
+  color: var(--text-dim);
+  border-color: var(--border);
+  background: transparent;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.studio__audio__bypass:hover:not(:disabled) {
+  color: var(--accent-2);
+  border-color: var(--accent-2);
+  box-shadow: 0 0 10px rgba(255, 140, 66, 0.15);
 }

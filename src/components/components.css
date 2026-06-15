@@ -40,10 +40,11 @@
   gap: 0.4em;
 }
 /* Math set in a title (KaTeX) keeps its own case — don't uppercase symbols. */
-.panel__title .katex {
+.panel__title .katex,
+.panel__title .katex * {
   text-transform: none;
   font-size: 1.05em;
-  color: var(--text);
+  color: var(--text) !important;
 }
 .ctl-slider,
 .ctl-select,

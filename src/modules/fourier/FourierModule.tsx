@@ -1,7 +1,7 @@
 /**
- * Signals & Spectra module — 5-tab shell (Proakis & Salehi Chapter 2).
- * Tabs: Signals & Systems · Convolution · Fourier Series · Fourier Transform & Spectra · Filters & Bandpass.
- * URL pattern: /signals (default) · /signals/convolution · /signals/series · /signals/transform · /signals/filters
+ * Signals & Spectra module — 6-tab shell (Proakis & Salehi Chapter 2).
+ * Tabs: Signals & Systems · Convolution · Fourier Series · Fourier Transform & Spectra · Filters · Bandpass Signals.
+ * URL pattern: /signals (default) · /signals/convolution · /signals/series · /signals/transform · /signals/filters · /signals/bandpass
  */
 import { useParams, useNavigate } from 'react-router-dom';
 import { Segmented } from '@/components';
@@ -10,10 +10,11 @@ import { SignalsSystemsSection } from './sections/SignalsSystemsSection';
 import { ConvolutionSection } from './sections/ConvolutionSection';
 import { FourierSeriesSection } from './sections/FourierSeriesSection';
 import { FourierTransformSection } from './sections/FourierTransformSection';
-import { FilterBandpassSection } from './sections/FilterBandpassSection';
+import { FiltersSection } from './sections/FiltersSection';
+import { BandpassSignalsSection } from './sections/BandpassSignalsSection';
 import './fourier.css';
 
-type Tab = 'signals' | 'conv' | 'series' | 'transform' | 'filters';
+type Tab = 'signals' | 'conv' | 'series' | 'transform' | 'filters' | 'bandpass';
 
 const TAB_TO_SLUG: Record<Tab, string> = {
   signals: '',
@@ -21,6 +22,7 @@ const TAB_TO_SLUG: Record<Tab, string> = {
   series: 'series',
   transform: 'transform',
   filters: 'filters',
+  bandpass: 'bandpass',
 };
 
 const SLUG_TO_TAB: Record<string, Tab> = {
@@ -29,6 +31,7 @@ const SLUG_TO_TAB: Record<string, Tab> = {
   series: 'series',
   transform: 'transform',
   filters: 'filters',
+  bandpass: 'bandpass',
 };
 
 export function FourierModule() {
@@ -54,6 +57,7 @@ export function FourierModule() {
             { value: 'series', label: t('fourier.tab.series') },
             { value: 'transform', label: t('fourier.tab.transform') },
             { value: 'filters', label: t('fourier.tab.filters') },
+            { value: 'bandpass', label: t('fourier.tab.bandpass') },
           ]}
           onChange={handleTabChange}
         />
@@ -63,7 +67,8 @@ export function FourierModule() {
       {tab === 'conv' && <ConvolutionSection />}
       {tab === 'series' && <FourierSeriesSection clock={clock} />}
       {tab === 'transform' && <FourierTransformSection clock={clock} />}
-      {tab === 'filters' && <FilterBandpassSection clock={clock} />}
+      {tab === 'filters' && <FiltersSection />}
+      {tab === 'bandpass' && <BandpassSignalsSection clock={clock} />}
     </div>
   );
 }

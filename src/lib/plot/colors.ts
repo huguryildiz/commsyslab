@@ -13,6 +13,7 @@ type Chart = {
   orange: string; // --color-h : sample / simulation / cursor
   blue: string; // --color-y : analog / theory / constellation point
   pink: string; // --color-marker : emphasis
+  cyan: string; // --accent-cyan : auxiliary trace (e.g. envelope)
   red: string; // --err : error
   text: string; // --text : label
   dim: string; // --text-dim : axis / helper line
@@ -24,6 +25,7 @@ const DARK: Chart = {
   orange: '#ff8c42',
   blue: '#7b8cff',
   pink: '#ff4f9a',
+  cyan: '#2dd4bf',
   red: '#ff5b6b',
   text: '#e2e6f0',
   dim: '#7a82a6',
@@ -35,6 +37,7 @@ const LIGHT: Chart = {
   orange: '#c2410c',
   blue: '#2c43c4',
   pink: '#c8186a',
+  cyan: '#0d9488',
   red: '#cc2b2b',
   text: '#16203f',
   dim: '#4d5470',

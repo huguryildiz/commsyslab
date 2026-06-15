@@ -5,11 +5,21 @@ import { buildSeriesSynth, WAVEFORM_INFO, SERIES_WAVE_OPTIONS, type SeriesWaveKi
 import { SeriesSynthPlots } from '../panels';
 import type { SectionProps } from './types';
 
+const DEFAULTS = { waveKind: 'square' as SeriesWaveKind, f0: 1, N: 20, duty: 0.5 };
+
 export function FourierSeriesSection({ clock }: SectionProps) {
-  const [waveKind, setWaveKind] = useState<SeriesWaveKind>('square');
-  const [f0, setF0] = useState(1);
-  const [N, setN] = useState(20);
-  const [duty, setDuty] = useState(0.5);
+  const [waveKind, setWaveKind] = useState<SeriesWaveKind>(DEFAULTS.waveKind);
+  const [f0, setF0] = useState(DEFAULTS.f0);
+  const [N, setN] = useState(DEFAULTS.N);
+  const [duty, setDuty] = useState(DEFAULTS.duty);
+
+  function handleReset() {
+    setWaveKind(DEFAULTS.waveKind);
+    setF0(DEFAULTS.f0);
+    setN(DEFAULTS.N);
+    setDuty(DEFAULTS.duty);
+  }
+
   const data = buildSeriesSynth(waveKind, f0, N, duty, clock);
   const info = WAVEFORM_INFO[waveKind];
 
@@ -44,16 +54,9 @@ export function FourierSeriesSection({ clock }: SectionProps) {
           {waveKind === 'pulse' && (
             <Slider label={t('fourier.syn.duty')} value={duty} min={0.1} max={0.9} step={0.05} onChange={setDuty} />
           )}
-          <button
-            type="button"
-            className="fourier__preset"
-            onClick={() => {
-              setWaveKind('square');
-              setN(45);
-            }}
-          >
-            {t('fourier.preset.gibbs')}
-          </button>
+          <div className="transport">
+            <button type="button" onClick={handleReset}>{t('fourier.series.reset')}</button>
+          </div>
         </Panel>
       </aside>
 
@@ -82,7 +85,7 @@ export function FourierSeriesSection({ clock }: SectionProps) {
           </div>
         </div>
 
-        <Panel title={t('fourier.panel.synthesis')}>
+        <Panel title={t('fourier.panel.synthesisPlot')}>
           <SeriesSynthPlots data={data} />
 
         </Panel>

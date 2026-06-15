@@ -35,7 +35,7 @@ export function AmModulatorPanel({ view }: { view: AnalogAmView }) {
     drawAxes(ctx, ax, [view.time[0], view.time[view.time.length - 1]], {
       grid: true,
       domainY: [minVal, maxVal],
-      xLabel: '$t\\,[\\mathrm{s}]$',
+      xLabel: '$t\\,(\\mathrm{s})$',
       yLabel: '$u(t)$',
     });
 
@@ -74,7 +74,7 @@ export function AmModulatorPanel({ view }: { view: AnalogAmView }) {
     drawAxes(ctx, ax, [minFreq, maxFreq], {
       grid: true,
       domainY: [0, maxMag],
-      xLabel: '$f\\,[\\mathrm{Hz}]$',
+      xLabel: '$f\\,(\\mathrm{Hz})$',
       yLabel: '$|U(f)|$',
     });
 
@@ -329,7 +329,7 @@ export function ModulatorSpectrumPanel({ view }: { view: ModulatorView }) {
       drawAxes(ctx, ax, [freq[0], freq[freq.length - 1]], {
         grid: true,
         domainY: [0, maxMag],
-        xLabel: '$f\\,[\\mathrm{Hz}]$',
+        xLabel: '$f\\,(\\mathrm{Hz})$',
         yLabel,
       });
       drawLine(ctx, ax, freq, mag, color, 1.5);
@@ -370,7 +370,7 @@ export function FdmPanel({ view }: { view: FdmView }) {
     drawAxes(ctx, ax, [view.specFreq[0], view.specFreq[view.specFreq.length - 1]], {
       grid: true,
       domainY: [0, maxMag],
-      xLabel: '$f\\,[\\mathrm{Hz}]$',
+      xLabel: '$f\\,(\\mathrm{Hz})$',
       yLabel: '$|U(f)|$',
     });
     drawLine(ctx, ax, view.specFreq, view.specMag, view.overlap ? CHART.red : CHART.blue, 1.5);
@@ -385,7 +385,7 @@ export function FdmPanel({ view }: { view: FdmView }) {
     drawAxes(ctx, ax, [view.time[0], view.time[view.time.length - 1]], {
       grid: true,
       domainY: [lo, hi],
-      xLabel: '$t\\,[\\mathrm{s}]$',
+      xLabel: '$t\\,(\\mathrm{s})$',
       yLabel: '$\\hat{m}(t)$',
     });
     drawLine(ctx, ax, view.time, view.recovered, CHART.green, 1.8);
@@ -419,7 +419,7 @@ export function QamPanel({ view }: { view: QamView }) {
       drawAxes(ctx, ax, [view.time[0], view.time[view.time.length - 1]], {
         grid: true,
         domainY: [lo, hi],
-        xLabel: '$t\\,[\\mathrm{s}]$',
+        xLabel: '$t\\,(\\mathrm{s})$',
         yLabel,
       });
       drawLine(ctx, ax, view.time, orig, CHART.green, 2);
