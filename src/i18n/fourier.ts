@@ -16,7 +16,8 @@ export const fourier: Record<string, string> = {
   'fourier.tab.conv': 'Convolution',
   'fourier.tab.series': 'Fourier Series',
   'fourier.tab.transform': 'Fourier Transform & Spectra',
-  'fourier.tab.filters': 'Filters & Bandpass',
+  'fourier.tab.filters': 'Filters',
+  'fourier.tab.bandpass': 'Bandpass Signals',
 
   // Panel titles
   'fourier.panel.synthesis': 'Fourier Series Synthesis',
@@ -56,6 +57,29 @@ export const fourier: Record<string, string> = {
   'fourier.filter.type.rc': 'RC (first-order)',
   'fourier.filter.fc': 'Cutoff fᶜ',
   'fourier.filter.fc2': 'Upper cutoff f₂',
+
+  // Realizable Filters comparison panel (Butterworth / Chebyshev)
+  'fourier.panel.realfilt': 'Realizable Filters',
+  'fourier.realfilt.order': 'Order N',
+  'fourier.realfilt.ripple': 'Passband ripple Rₚ',
+  'fourier.realfilt.stop': 'Stopband atten. Rₛ',
+  'fourier.realfilt.scale': 'Magnitude scale',
+  'fourier.realfilt.scale.db': 'dB',
+  'fourier.realfilt.scale.lin': 'Linear',
+  'fourier.realfilt.ideal': 'Ideal',
+  'fourier.realfilt.butter': 'Butterworth',
+  'fourier.realfilt.cheby1': 'Chebyshev I',
+  'fourier.realfilt.cheby2': 'Chebyshev II',
+  'fourier.realfilt.hint':
+    'Increase the order $N$ to see each approximation approach the ideal brick-wall: the roll-off steepens by about $-20N$ dB/decade.',
+  'fourier.realfilt.theory.butter':
+    'Butterworth is maximally flat in the passband (no ripple) and monotonic everywhere. It is $-3$ dB at $f=f_c$ for every order $N$; larger $N$ gives a steeper transition.',
+  'fourier.realfilt.theory.cheby1':
+    'Chebyshev type I trades equiripple ($R_p$ dB) in the passband for a steeper roll-off than Butterworth of the same order. $T_N$ is the Chebyshev polynomial; the response touches $10^{-R_p/20}$ at $f=f_c$.',
+  'fourier.realfilt.theory.cheby2':
+    'Chebyshev type II (inverse Chebyshev) keeps a maximally flat passband and places equiripple in the stopband, bounded by the attenuation $R_s$ dB reached at $f=f_c$.',
+  'fourier.realfilt.theory.note':
+    'These are standard analog-filter approximation functions (an extension beyond Proakis & Salehi, which references the Butterworth filter only in passing for D/A reconstruction).',
 
   // Controls — Panel 4: FT Pairs
   'fourier.pairs.kind': 'Transform pair',
@@ -128,6 +152,10 @@ export const fourier: Record<string, string> = {
   'fourier.conv.play': '▶️ Play',
   'fourier.conv.pause': '⏸️ Pause',
   'fourier.conv.reset': '🔄 Reset',
+  // Per-tab "reset to defaults" buttons (Series / Transform / Filters tabs)
+  'fourier.series.reset': '🔄 Reset',
+  'fourier.spec.reset': '🔄 Reset',
+  'fourier.filter.reset': '🔄 Reset',
   'fourier.conv.readout': 'Output',
   'fourier.conv.panel.x': 'Input',
   'fourier.conv.panel.h': 'Impulse Response',
@@ -160,7 +188,11 @@ export const fourier: Record<string, string> = {
   // Tab 4 — Filters & Bandpass
   'fourier.filter.type.bsf': 'Band-stop (BSF)',
   'fourier.panel.baseband': 'Baseband vs Bandpass',
-  'fourier.bb.mode': 'Bandpass (off = baseband)',
+  'fourier.panel.bbMessage': 'Baseband Message',
+  'fourier.bb.signal': 'Message signal',
+  'fourier.bb.scale': 'Message scale $F$',
+  'fourier.bb.basebandFig': 'Baseband — centered at $f=0$',
+  'fourier.bb.bandpassFig': 'Bandpass — shifted to $\\pm f_c$',
   'fourier.hint.filter': 'The output spectrum is the input times $|H(f)|$; outside the passband it is suppressed.',
   'fourier.hint.baseband': 'Baseband sits at $f=0$ over $[-W,\\,W]$; bandpass is the same shape shifted to $\\pm f_c$.',
   'fourier.hint.iq': '$I$ (green) and $Q$ (blue) are slow baseband signals; the envelope is $\\sqrt{I^2+Q^2}$.',
@@ -181,4 +213,33 @@ export const fourier: Record<string, string> = {
   'fourier.spec.noOverlay': 'FFT only — no simple closed-form transform for this signal (Proakis Table 2.1).',
   'fourier.spec.lineNote': 'Theory lines show $|c_n|$ at $\\pm n f_0$, scaled to the FFT peak for comparison.',
   'fourier.hint.spectrum': 'Pick a signal and watch its Fourier transform $X(f)$. Time shift $t_0$ ramps the phase; scaling $\\alpha$ spreads $|X(f)|$; modulation copies it to $\\pm f_m$.',
+
+  // Filter Studio
+  'fourier.studio.panel': 'Filter Studio',
+  'fourier.studio.source': 'Source',
+  'fourier.studio.source.square': 'Square wave',
+  'fourier.studio.source.sawtooth': 'Sawtooth',
+  'fourier.studio.source.triangle': 'Triangle',
+  'fourier.studio.source.pulse': 'Pulse train',
+  'fourier.studio.source.multitone': 'Multi-tone',
+  'fourier.studio.source.white': 'White noise',
+  'fourier.studio.source.pink': 'Pink noise',
+  'fourier.studio.f0': 'Fundamental f₀',
+  'fourier.studio.filterType': 'Filter type',
+  'fourier.studio.response': 'Response',
+  'fourier.studio.response.ideal': 'Ideal',
+  'fourier.studio.response.butter': 'Butterworth',
+  'fourier.studio.order': 'Order N',
+  'fourier.studio.fc': 'Cutoff fᶜ',
+  'fourier.studio.fc2': 'Upper cutoff f₂',
+  'fourier.studio.listen': '▶ Listen',
+  'fourier.studio.stop': '■ Stop',
+  'fourier.studio.bypass': 'A/B: filtered ↔ bypass',
+  'fourier.studio.spectrumTitle': 'Spectrum — drag the cutoff',
+  'fourier.studio.timeTitle': 'Time domain — input vs filtered output',
+  'fourier.studio.hint.spectrum': 'Output spectrum $|Y(f)|=|X(f)|\\,|H(f)|$. Drag the cutoff on the plot; harmonics outside the passband vanish.',
+  'fourier.studio.hint.time': 'As the cutoff drops, removing high harmonics rounds the waveform — a square wave melts toward a sine.',
+  'fourier.studio.legend.input': 'Input |X(f)|',
+  'fourier.studio.legend.filter': 'Filter |H(f)|',
+  'fourier.studio.legend.output': 'Output |Y(f)|',
 };
