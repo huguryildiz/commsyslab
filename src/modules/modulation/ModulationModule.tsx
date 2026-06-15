@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Panel,
   Slider,
@@ -43,7 +44,13 @@ const CLOUD_MAX = 400;
 const BATCH = 40;
 
 export function ModulationModule() {
-  const [tab, setTab] = useState<'detection' | 'optrx'>('detection');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab = (slug as 'detection' | 'optrx') || 'detection';
+
+  const handleTabChange = (v: string) => {
+    navigate(v === 'detection' ? '/modulation' : `/modulation/${v}`, { replace: true });
+  };
   const [scheme, setScheme] = useState<Scheme>('mpsk');
   const [M, setM] = useState(4);
   const [ebN0Db, setEbN0Db] = useState(8);
@@ -180,7 +187,7 @@ export function ModulationModule() {
       <Segmented<'detection' | 'optrx'>
         ariaLabel={t('modulation.optrx.tabs')}
         value={tab}
-        onChange={setTab}
+        onChange={handleTabChange}
         options={[
           { value: 'detection', label: t('modulation.optrx.tab.detection') },
           { value: 'optrx', label: t('modulation.optrx.tab.optrx') },

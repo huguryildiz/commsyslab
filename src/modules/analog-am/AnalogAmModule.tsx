@@ -2,8 +2,10 @@
  * Amplitude Modulation module — 4-tab shell (Proakis & Salehi Chapter 3).
  * Tabs: AM Schemes (§3.2) · Modulators & Demodulators (§3.3) ·
  * Signal Multiplexing (§3.4) · AM Radio Broadcasting (§3.5).
+ * Tab selection is URL-addressable: /analog-am (Schemes) and /analog-am/:tab.
  */
 import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
@@ -16,7 +18,14 @@ import './analog-am.css';
 type Tab = 'schemes' | 'modimpl' | 'mux' | 'radio';
 
 export function AnalogAmModule() {
-  const [tab, setTab] = useState<Tab>('schemes');
+  // Tab is URL-addressable: /analog-am → schemes; /analog-am/:tab → that tab.
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = (slug as Tab) || 'schemes';
+
+  const handleTabChange = (v: Tab) => {
+    navigate(v === 'schemes' ? '/analog-am' : `/analog-am/${v}`, { replace: true });
+  };
 
   // One shared animation clock drives whichever section is active.
   const [clock, setClock] = useState(0);
@@ -46,7 +55,7 @@ export function AnalogAmModule() {
             { value: 'mux', label: t('analog.tab.mux') },
             { value: 'radio', label: t('analog.tab.radio') },
           ]}
-          onChange={setTab}
+          onChange={handleTabChange}
         />
       </div>
 

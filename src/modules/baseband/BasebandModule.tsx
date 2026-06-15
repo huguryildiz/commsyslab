@@ -1,5 +1,5 @@
 // src/modules/baseband/BasebandModule.tsx
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { t } from '@/i18n';
 import { PulseShapingSection } from './PulseShapingSection';
 import { ReceiverSection } from './ReceiverSection';
@@ -14,7 +14,10 @@ const TABS: { id: Tab; key: string }[] = [
 ];
 
 export function BasebandModule() {
-  const [tab, setTab] = useState<Tab>('pulse');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = (slug as Tab) || 'pulse';
+
   return (
     <div className="bb-module">
       <nav className="bb-tabs">
@@ -23,7 +26,9 @@ export function BasebandModule() {
             key={tb.id}
             type="button"
             className={tab === tb.id ? 'bb-tab bb-tab--active' : 'bb-tab'}
-            onClick={() => setTab(tb.id)}
+            onClick={() =>
+              navigate(tb.id === 'pulse' ? '/baseband' : `/baseband/${tb.id}`, { replace: true })
+            }
           >
             {t(tb.key)}
           </button>

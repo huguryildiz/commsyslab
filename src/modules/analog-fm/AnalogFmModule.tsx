@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
   Panel,
   Slider,
@@ -24,7 +25,13 @@ export function AnalogFmModule() {
   const [fmCarrierAmp, setFmCarrierAmp] = useState(1); // V
   const [fmModIndex, setFmModIndex] = useState(5); // β or kp
 
-  const [activePanel, setActivePanel] = useState<ActivePanel>('fm');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const activePanel: ActivePanel = (slug as ActivePanel) || 'fm';
+
+  const handlePanelChange = (v: string) => {
+    navigate(v === 'fm' ? '/analog-fm' : `/analog-fm/${v}`, { replace: true });
+  };
 
   const [clock, setClock] = useState(0);
   const loop = useSimulationLoop({
@@ -65,7 +72,7 @@ export function AnalogFmModule() {
           <Select<ActivePanel>
             label={t('analog.fm.panel.select')}
             value={activePanel}
-            onChange={setActivePanel}
+            onChange={handlePanelChange}
             options={[
               { value: 'fm', label: t('analog.fm.title') },
               { value: 'demod', label: t('analog.demod.title') },

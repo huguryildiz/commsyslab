@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { EntropySection } from './EntropySection';
@@ -17,14 +17,23 @@ const TABS: { value: Tab; label: string }[] = [
 ];
 
 export function InfoTheoryModule() {
-  const [tab, setTab] = useState<Tab>('entropy');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = (slug as Tab) || 'entropy';
+
+  const handleTabChange = (v: string) => {
+    navigate(v === 'entropy' ? '/information-theory' : `/information-theory/${v}`, {
+      replace: true,
+    });
+  };
+
   return (
     <div className="it-module">
       <Segmented<Tab>
         ariaLabel={t('it.tab.aria')}
         value={tab}
         options={TABS}
-        onChange={setTab}
+        onChange={handleTabChange}
       />
       {tab === 'entropy' && <EntropySection />}
       {tab === 'prefix' && <PrefixKraftSection />}

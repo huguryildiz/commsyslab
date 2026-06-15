@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { ChannelsCapacitySection } from './ChannelsCapacitySection';
@@ -27,7 +27,14 @@ const TABS: { value: Tab; label: string }[] = [
 ];
 
 export function ChannelCodingModule() {
-  const [tab, setTab] = useState<Tab>('channels');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = (slug as Tab) || 'channels';
+
+  const handleTabChange = (v: string) => {
+    navigate(v === 'channels' ? '/channel-coding' : `/channel-coding/${v}`, { replace: true });
+  };
+
   return (
     <div className="cc-module">
       <header className="cc-head">
@@ -38,7 +45,7 @@ export function ChannelCodingModule() {
         ariaLabel={t('cc.title')}
         value={tab}
         options={TABS}
-        onChange={setTab}
+        onChange={handleTabChange}
       />
       {tab === 'channels' && <ChannelsCapacitySection />}
       {tab === 'shannon' && <ShannonLimitSection />}

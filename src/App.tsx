@@ -95,17 +95,25 @@ function Shell() {
           <Route path="/signals/:tab" element={<FourierModule />} />
           <Route path="/fourier" element={<Navigate to="/signals" replace />} />
           <Route path="/analog-am" element={<AnalogAmModule />} />
+          <Route path="/analog-am/:tab" element={<AnalogAmModule />} />
           <Route path="/analog-fm" element={<AnalogFmModule />} />
+          <Route path="/analog-fm/:tab" element={<AnalogFmModule />} />
           <Route path="/analog-noise" element={<AnalogNoiseModule />} />
           <Route path="/random-process" element={<RandomProcessModule />} />
           <Route path="/sampling" element={<AdcModule />} />
+          <Route path="/sampling/:tab" element={<AdcModule />} />
           {/* Delta Modulation is now a tab inside the Analog-to-Digital Conversion module. */}
           <Route path="/delta-modulation" element={<Navigate to="/sampling" replace />} />
           <Route path="/modulation" element={<ModulationModule />} />
+          <Route path="/modulation/:tab" element={<ModulationModule />} />
           <Route path="/information-theory" element={<InfoTheoryModule />} />
+          <Route path="/information-theory/:tab" element={<InfoTheoryModule />} />
           <Route path="/channel-coding" element={<ChannelCodingModule />} />
+          <Route path="/channel-coding/:tab" element={<ChannelCodingModule />} />
           <Route path="/baseband" element={<BasebandModule />} />
+          <Route path="/baseband/:tab" element={<BasebandModule />} />
           <Route path="/wireless" element={<WirelessModule />} />
+          <Route path="/wireless/:tab" element={<WirelessModule />} />
           <Route path="/end-to-end" element={<EndToEndModule />} />
         </Routes>
       </main>

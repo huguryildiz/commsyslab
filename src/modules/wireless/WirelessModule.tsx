@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { FadingChannelSection } from './sections/FadingChannelSection';
@@ -17,7 +17,13 @@ import './wireless.css';
 type Tab = 'fading' | 'doppler' | 'ber' | 'spread' | 'fhss' | 'cdma' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo' | 'cpm';
 
 export function WirelessModule() {
-  const [tab, setTab] = useState<Tab>('fading');
+  const { tab: slug = '' } = useParams<{ tab?: string }>();
+  const navigate = useNavigate();
+  const tab: Tab = (slug as Tab) || 'fading';
+
+  const handleTabChange = (v: string) => {
+    navigate(v === 'fading' ? '/wireless' : `/wireless/${v}`, { replace: true });
+  };
 
   return (
     <div className="wl">
@@ -41,7 +47,7 @@ export function WirelessModule() {
           { value: 'mimo', label: t('wl.tab.mimo') },
           { value: 'cpm', label: t('wl.tab.cpm') },
         ]}
-        onChange={(v) => setTab(v as Tab)}
+        onChange={handleTabChange}
       />
       <div className="wl__grid">
         {tab === 'fading' && <FadingChannelSection />}
