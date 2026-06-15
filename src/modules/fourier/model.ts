@@ -8,15 +8,16 @@ import { linspace, sinc } from '@/lib/dsp/math';
 import {
   seriesCoeffs,
   seriesPartialSum,
-  transferMag,
   ftPair,
   lowpassEquivalent,
   hilbert,
 } from '@/lib/dsp/fourier';
+import { butterworthMag, chebyshev1Mag, chebyshev2Mag } from '@/lib/dsp/analogfilters';
 import { spectrum, type Complex } from '@/lib/dsp/fft';
 import { analyticFt, type AnalyticFtKind } from '@/lib/dsp/ftpairs';
 import { signalEnergy } from '@/lib/dsp/energy';
 import { occupiedBandwidth } from '@/lib/dsp/bandwidth';
+import { bandpassFilterFFT } from '@/lib/dsp/am-impl';
 import {
   evalSignal,
   periodicWave,
@@ -163,7 +164,7 @@ function dftSeriesCoeffs(
   f0: number,
   N: number,
 ): { dc: number; an: number[]; bn: number[] } {
-  const M = 512; // samples per period (power-of-2 for speed)
+  const M = 4096; // samples per period (power-of-2 for speed)
   // Sample one complete period [0, 1/f0)
   const x = Array.from({ length: M }, (_, k) => evalExtWave(kind, f0, k / (M * f0)));
 
@@ -208,7 +209,7 @@ export function buildSeriesSynth(
   tStart: number = 0, // animation: scroll the time window by tStart seconds
 ): SeriesSynthView {
   const tDuration = 2.0; // fixed 2-second window; signal compresses as f0 increases
-  const tSamples = 512;
+  const tSamples = 4096;
   // Local (fixed) display axis [0, tDuration]; the signal is sampled tStart ahead,
   // so increasing tStart scrolls the waveform left while the axis stays put.
   const time = linspace(0, tDuration, tSamples);
@@ -295,7 +296,7 @@ export function buildSpectrumAnalyzer(
   waveKind?: Periodic,
   f0?: number,
   fs: number = 100,
-  N: number = 512,
+  N: number = 4096,
   windowType: WindowType = 'hann',
   tStart: number = 0, // animation: scroll the displayed time window
 ): SpectrumAnalyzerView {
@@ -326,64 +327,51 @@ export function buildSpectrumAnalyzer(
   };
 }
 
-/** Panel 3: LTI Filter |H(f)| */
-export interface FilterView {
+/**
+ * Realizable lowpass filters: compare the ideal brick-wall against the
+ * Butterworth and Chebyshev (type I / II) approximations of a chosen order.
+ * Magnitude is returned both linearly (|H|) and in dB so the roll-off slope
+ * (−20N dB/decade) and the equiripple behaviour are legible.
+ */
+export interface RealizableFilterView {
   freqs: number[];
-  inputMag: number[];
-  filterMag: number[];
-  outputMag: number[];
-  timeInput: number[];
-  timeOutput: number[];
-  timeSigInput: number[];
-  timeSigOutput: number[];
+  ideal: number[];
+  butterworth: number[];
+  cheby1: number[];
+  cheby2: number[];
+  idealDb: number[];
+  butterworthDb: number[];
+  cheby1Db: number[];
+  cheby2Db: number[];
 }
 
-export function buildFilter(
-  filterType: 'lpf' | 'hpf' | 'bpf' | 'bsf' | 'rc',
+const REALFILT_DB_FLOOR = -80; // clamp for log display so −∞ does not blow up the axis
+
+export function buildRealizableFilters(
   fc: number,
-  fc2?: number,
-  signalFreq: number = 50,
-  fs: number = 500,
-  tStart: number = 0, // animation: scroll the displayed time waves
-): FilterView {
-  const freqs = linspace(0, fs / 2, 256);
-  const filterMag = freqs.map((f) => transferMag(filterType, f, fc, fc2));
+  order: number,
+  rippleDb: number,
+  stopDb: number,
+  fMax: number = 100,
+): RealizableFilterView {
+  const freqs = linspace(0, fMax, 2048);
+  const toDb = (m: number): number => Math.max(REALFILT_DB_FLOOR, 20 * Math.log10(Math.max(m, 1e-12)));
 
-  // Example input signal: sum of three tones
-  const N = 512;
-  const time = linspace(0, N / fs, N);
-  const sigAt = (t: number): number =>
-    Math.cos(2 * Math.PI * (signalFreq - 50) * t) +
-    Math.cos(2 * Math.PI * signalFreq * t) +
-    Math.cos(2 * Math.PI * (signalFreq + 50) * t);
-  // Displayed input scrolls with tStart; spectrum from a fixed buffer (stationary).
-  const timeSigInput = time.map((t) => sigAt(tStart + t));
-
-  const spec = spectrum(
-    time.map((t) => sigAt(t)),
-    fs,
-  );
-  const inputMag = spec.mag;
-  const outputMag = spec.mag.map((m, i) => {
-    const f = spec.freq[i];
-    return m * transferMag(filterType, f, fc, fc2);
-  });
-
-  // Time-domain response (simplified: assume filter passband magnitude)
-  const timeSigOutput = timeSigInput.map((s) => {
-    const response = transferMag(filterType, signalFreq, fc, fc2);
-    return s * response;
-  });
+  const ideal = freqs.map((f) => (f <= fc ? 1 : 0));
+  const butterworth = freqs.map((f) => butterworthMag(f, fc, order));
+  const cheby1 = freqs.map((f) => chebyshev1Mag(f, fc, order, rippleDb));
+  const cheby2 = freqs.map((f) => chebyshev2Mag(f, fc, order, stopDb));
 
   return {
     freqs,
-    inputMag,
-    filterMag,
-    outputMag,
-    timeInput: time,
-    timeOutput: time,
-    timeSigInput,
-    timeSigOutput,
+    ideal,
+    butterworth,
+    cheby1,
+    cheby2,
+    idealDb: ideal.map((m) => (m > 0 ? 0 : REALFILT_DB_FLOOR)),
+    butterworthDb: butterworth.map(toDb),
+    cheby1Db: cheby1.map(toDb),
+    cheby2Db: cheby2.map(toDb),
   };
 }
 
@@ -483,7 +471,7 @@ export function buildAnalytic(
   fs: number = 1000,
   tStart: number = 0, // animation: scroll the bandpass signal
 ): AnalyticView {
-  const N = 512;
+  const N = 4096;
   const time = linspace(0, N / fs, N);
 
   // AM signal: (1 + m*cos(2π*fm*t)) * cos(2π*fc*t), scrolled by tStart.
@@ -506,24 +494,125 @@ export function buildAnalytic(
   };
 }
 
-/** Tab 4: baseband (centered at 0) vs bandpass (centered at ±fc) spectra. */
+export interface HilbertView {
+  time: number[];
+  signal: number[];
+  xhat: number[]; // Hilbert transform x̂(t)
+}
+
+/**
+ * Compute a signal from the Basic Signals catalog and its Hilbert transform.
+ * Proakis §2.6 (p. 95): x̂(t) = (1/π) ∫ x(τ)/(t−τ) dτ.
+ * Uses N=2048 samples over [tMin, tMax] so the FFT-based hilbert() has enough resolution.
+ */
+export function buildHilbertView(
+  kind: BasicKind,
+  F: number,
+  tMin: number,
+  tMax: number,
+  N = 2048,
+): HilbertView {
+  const time = linspace(tMin, tMax, N);
+  const signal = time.map((t) => basicSignal(kind, F * t));
+  const xhat = hilbert(signal);
+  return { time, signal, xhat };
+}
+
+/** Tab 5: baseband (centered at 0) vs bandpass (centered at ±fc) spectra of a chosen message. */
 export interface BasebandBandpassView {
   freqs: number[];
-  baseband: number[];
-  bandpass: number[];
-  W: number;
+  baseband: number[]; // normalized |X(f)| of the message, peak 1, centered at f=0
+  bandpass: number[]; // the same shape translated to ±fc (modulation theorem), peak 1 per lobe
+  kind: BasebandKind;
+  F: number;
   fc: number;
   fs: number;
 }
 
-export function buildBasebandBandpass(W: number, fc: number, fs = 1000): BasebandBandpassView {
-  const freqs = linspace(-fs / 2, fs / 2, 512);
-  // Triangular baseband spectrum over [-W, W]; bandpass is it shifted to ±fc.
-  const tri = (f: number, center: number, half: number) =>
-    Math.max(0, 1 - Math.abs(f - center) / half);
-  const baseband = freqs.map((f) => tri(f, 0, W));
-  const bandpass = freqs.map((f) => tri(f, fc, W / 2) + tri(f, -fc, W / 2));
-  return { freqs, baseband, bandpass, W, fc, fs };
+/** Curated baseband-suitable messages (lowpass energy pulses with a closed-form FT). */
+export type BasebandKind = Extract<BasicKind, 'rect' | 'tri' | 'sinc' | 'gaussian'>;
+
+const BASEBAND_TAU = 0.5; // fixed pulse width for the message FT scaling
+
+/**
+ * Baseband vs bandpass spectra for a chosen message — Proakis & Salehi §2.7 (p. 98).
+ * The baseband magnitude |X_ℓ(f)| is the closed-form FT of the message (Table 2.1),
+ * frequency-scaled so its first null sits near f = F. The bandpass spectrum applies
+ * the modulation theorem X(f) = ½[X_ℓ(f-fc) + X_ℓ(f+fc)] — i.e. the SAME shape shifted
+ * to ±fc. Shifting in frequency (not modulating in time) avoids any sampling/aliasing.
+ */
+export function buildBasebandBandpassSignal(
+  kind: BasebandKind,
+  F: number,
+  fc: number,
+  fs = 1000,
+): BasebandBandpassView {
+  const freqs = linspace(-fs / 2, fs / 2, 4096);
+  // |X_ℓ(f)| of the unit message, scaled so the spectrum stretches with F (null ≈ F Hz).
+  const mag = (f: number): number => {
+    const X = analyticFt(kind as AnalyticFtKind, f / F, BASEBAND_TAU);
+    return Math.hypot(X.re, X.im);
+  };
+  const rawBB = freqs.map((f) => mag(f));
+  const peak = Math.max(...rawBB, 1e-12);
+  const baseband = rawBB.map((v) => v / peak);
+  // Translate the (unit-peak) message spectrum to ±fc; lobes are unit-peak when fc > F.
+  const bandpass = freqs.map((f) => (mag(f - fc) + mag(f + fc)) / peak);
+  return { freqs, baseband, bandpass, kind, F, fc, fs };
+}
+
+/** Tab "I/Q Representation": QAM-style bandpass build + coherent I/Q recovery (Proakis §2.7). */
+export interface IQRepresentationView {
+  time: number[];
+  signal: number[]; // bandpass x(t) = x_c·cos − x_s·sin
+  xcTrue: number[]; // true in-phase message x_c(t)
+  xsTrue: number[]; // true quadrature message x_s(t)
+  iRec: number[]; // recovered I = LPF{ 2·x·cos }
+  qRec: number[]; // recovered Q = LPF{ −2·x·sin }
+  envelope: number[]; // V(t) = √(x_c² + x_s²)
+}
+
+/**
+ * Assemble a bandpass signal from two independent baseband messages assigned to the
+ * in-phase and quadrature channels, then recover them by coherent demodulation.
+ * Proakis & Salehi §2.7: x(t) = x_c(t)·cos(2πf_c t) − x_s(t)·sin(2πf_c t).
+ *
+ * Recovery (coherent, unity-gain): mixing by ±2·carrier moves the wanted component to
+ * baseband and the unwanted to ±2f_c; a lowpass with cutoff f_c (between the message
+ * band W and 2f_c, given the narrowband condition W ≪ f_c) returns x_c and x_s.
+ * Pulses are localised and ≈0 at the window edges, so the FFT lowpass (circular) is
+ * artifact-free — unlike a Hilbert transform of a sustained carrier.
+ */
+export function buildIQRepresentation(
+  iKind: BasebandKind,
+  qKind: BasebandKind,
+  W: number, // message bandwidth / pulse-scale (Hz)
+  fc: number, // carrier (Hz)
+  fs = 4000, // ≥ 4·f_c,max so the discarded 2f_c product is representable
+): IQRepresentationView {
+  const N = 4096;
+  const T = N / fs; // ≈ 1.024 s
+  const time = linspace(-T / 2, T / 2, N);
+
+  // Messages: unit-shape pulses scaled by W (width ∝ 1/W), centred in the window.
+  const xcTrue = time.map((t) => basicSignal(iKind, W * t));
+  const xsTrue = time.map((t) => basicSignal(qKind, W * t));
+
+  // Modulate to bandpass (§2.7 sign convention: −sin on the quadrature term).
+  const signal = time.map(
+    (t, i) =>
+      xcTrue[i] * Math.cos(2 * Math.PI * fc * t) - xsTrue[i] * Math.sin(2 * Math.PI * fc * t),
+  );
+
+  // Coherent demodulation, then lowpass to f_c (removes the 2f_c products).
+  const iMix = signal.map((v, i) => 2 * v * Math.cos(2 * Math.PI * fc * time[i]));
+  const qMix = signal.map((v, i) => -2 * v * Math.sin(2 * Math.PI * fc * time[i]));
+  const iRec = bandpassFilterFFT(iMix, fs, 0, fc);
+  const qRec = bandpassFilterFFT(qMix, fs, 0, fc);
+
+  const envelope = time.map((_, i) => Math.hypot(xcTrue[i], xsTrue[i]));
+
+  return { time, signal, xcTrue, xsTrue, iRec, qRec, envelope };
 }
 
 // --- Tab 1: Signals & Systems (Proakis §2.1) ---
@@ -627,7 +716,7 @@ function basicSignal(kind: BasicKind, t: number, tau = 0.5): number {
  * F is a time-rate: for sine → sin(2πF·t); for pulses → width ∝ 1/F.
  */
 export function buildSignalExplorer(kind: BasicKind, ops: SignalOps): SignalExplorerView {
-  const n = Math.max(100, Math.min(2000, ops.N));
+  const n = Math.max(100, Math.min(4096, ops.N));
   const time = linspace(ops.tMin, ops.tMax, n);
   const F = ops.F || 1;
 
