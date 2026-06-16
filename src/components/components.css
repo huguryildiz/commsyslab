@@ -11,22 +11,9 @@
     border-color var(--transition),
     box-shadow var(--transition);
 }
-.panel::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent-2), var(--color-marker));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s ease;
-}
 .panel:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-lift);
-}
-.panel:hover::before {
-  transform: scaleX(1);
 }
 .panel__title {
   font-family: var(--font-head);

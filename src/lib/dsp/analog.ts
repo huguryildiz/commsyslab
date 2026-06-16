@@ -85,6 +85,41 @@ export function amEnvelope(msg: Tone[], Ac: number, a: number, t: number): numbe
 }
 
 /**
+ * Ideal diode + RC peak (envelope) detector — Proakis §3.3, Figs 3.27–3.28
+ * (Book p.142–143). Models a half-wave rectifier feeding an RC lowpass: on each
+ * sample the capacitor charges instantly to the (rectified) input while the diode
+ * conducts (input ≥ the decayed capacitor voltage), otherwise it discharges
+ * through the load resistor R:
+ *
+ *   v[n] = max( max(r[n], 0),  v[n-1]·e^(−Δt / RC) ),   Δt = 1/fs
+ *
+ * Faithful tracking needs 1/f_c ≪ RC ≪ 1/W: too small → the output ripples (LPF
+ * bandwidth too wide); too large → the discharge is too slow and the output lags
+ * the envelope on its falling edges (LPF bandwidth too narrow).
+ *
+ * @param rx received band-pass signal r(t) (the AM waveform seen by the diode)
+ * @param fs sampling rate (Hz)
+ * @param rc RC time constant (s); rc ≤ 0 → pure rectifier (no charge storage)
+ * @returns  capacitor-voltage trace v_C(t), same length as `rx`
+ */
+export function envelopeDetect(rx: number[], fs: number, rc: number): number[] {
+  const n = rx.length;
+  const out = new Array<number>(n);
+  if (n === 0) return out;
+  // Per-sample discharge factor; rc ≤ 0 means the capacitor cannot hold charge.
+  const decay = rc > 0 && fs > 0 ? Math.exp(-1 / (fs * rc)) : 0;
+  let v = Math.max(rx[0], 0);
+  out[0] = v;
+  for (let i = 1; i < n; i++) {
+    const charged = rx[i] > 0 ? rx[i] : 0; // diode conducts only on positive input
+    const discharged = v * decay; // capacitor bleeds through R between peaks
+    v = charged > discharged ? charged : discharged;
+    out[i] = v;
+  }
+  return out;
+}
+
+/**
  * Modulation efficiency η = a²Pmn/(1+a²Pmn).
  * Proakis §3.2.2: ratio of sideband power to total power.
  * For single tone Pmn = 1/2, so η = a²/(2+a²); at a=1 → 1/3.
@@ -241,9 +276,12 @@ export function pllRecoverPhase(u: number[], fc: number, fs: number): number[] {
   const omega = (2 * Math.PI * fc) / fs; // Digital frequency
 
   for (let n = 0; n < u.length; n++) {
-    // Phase detector: error = u[n]·sin(θ̂)
-    // (multiply received signal by negative sine of estimated phase)
-    const phaseError = u[n] * Math.sin(thetaEst);
+    // Phase detector: error = u[n]·(−sin θ̂). The −sin gives NEGATIVE feedback:
+    // after the loop filter averages out the 2·fc term, the control law is
+    // Δ(θ̂−ψ) ≈ −½·loopGain·sin(θ̂−ψ), which drives θ̂ toward the carrier phase ψ.
+    // (A +sin here is positive feedback — the estimate slips phase and the
+    // recovered message rolls off/inverts over time.)
+    const phaseError = -u[n] * Math.sin(thetaEst);
     // Integrator: update phase estimate
     thetaEst += omega + loopGain * phaseError;
     // Wrap to [-π, π]

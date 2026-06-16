@@ -64,6 +64,42 @@ export function periodicWave(kind: Periodic, f0: number, t: number, duty = 0.5):
   }
 }
 
+/**
+ * Truncated Fourier-series approximation of a unit-amplitude periodic wave as a
+ * list of cosine tones (Proakis & Salehi Table 2.1). `maxHarmonic` bounds the
+ * highest harmonic n included. Returned as `Tone[]` so the same sum-of-sinusoids
+ * machinery (evalSignal, AM modulators, FFT) works for non-sinusoidal messages.
+ * `sin(2πnf₀t)` terms are encoded as `cos(2πnf₀t − π/2)`.
+ */
+export function periodicTones(kind: Periodic, f0: number, maxHarmonic: number): Tone[] {
+  const tones: Tone[] = [];
+  switch (kind) {
+    case 'square':
+      // (4/π) Σ_{n odd} sin(2πn f₀ t)/n
+      for (let n = 1; n <= maxHarmonic; n += 2)
+        tones.push({ freq: n * f0, amp: 4 / (Math.PI * n), phase: -Math.PI / 2 });
+      break;
+    case 'sawtooth':
+      // (2/π) Σ_{n≥1} (−1)^{n+1} sin(2πn f₀ t)/n
+      for (let n = 1; n <= maxHarmonic; n++)
+        tones.push({
+          freq: n * f0,
+          amp: ((2 / (Math.PI * n)) * (n % 2 === 1 ? 1 : -1)),
+          phase: -Math.PI / 2,
+        });
+      break;
+    case 'triangle':
+      // (8/π²) Σ_{n odd} cos(2πn f₀ t)/n²  (even → cosine series)
+      for (let n = 1; n <= maxHarmonic; n += 2)
+        tones.push({ freq: n * f0, amp: 8 / (Math.PI * Math.PI * n * n) });
+      break;
+    case 'pulse':
+      // Pulse train is not used as an AM message; fall through to empty.
+      break;
+  }
+  return tones;
+}
+
 // --- Basic signals (Proakis & Salehi §2.1.1–§2.1.3) ---
 
 /** Rectangular pulse Π(t/width): 1 for |t| ≤ width/2, else 0. */

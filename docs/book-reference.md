@@ -86,7 +86,7 @@ Fourier Transform & Spectra · Filters · Bandpass Signals) · **DSP:** `src/lib
 | 3.2.3 SSB AM | 132 | ✅ | `analog.ts` — SSB (USB/LSB) |
 | 3.2.4 VSB AM | 134 | ✅ | `analog.ts` `vsbFilter` (complementary vestige) + AM Schemes tab |
 | 3.3 Modulators and Demodulators | 137 | ✅ | `am-impl.ts` (power-law/switching/balanced/ring + envelope) + Mod & Demod tab (block diagram + animated circuit + dirty/clean FFT) |
-| 3.4 Signal Multiplexing (FDM, QAM) | 144 | ✅ | `am-impl.ts` `fdmCompose`/`fdmSeparate`/`qamModulate`/`qamDemod` + Signal Multiplexing tab (FDM overlap, QAM phase-error crosstalk) |
+| 3.4 Signal Multiplexing (FDM) | 144 | ✅ | `am-impl.ts` `fdmCompose`/`fdmSeparate` + Signal Multiplexing tab (FDM channel stacking and overlap); `qamModulate`/`qamDemod` exist in DSP but not exposed in UI |
 | 3.5 AM Radio Broadcasting | 146 | ✅ | AM Radio tab (superheterodyne frequency plan + image) |
 
 ---

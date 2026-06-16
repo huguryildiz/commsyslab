@@ -18,6 +18,7 @@ export const analogam: Record<string, string> = {
 
   // AM Schemes — scheme selector + sideband toggle
   'analog.am.scheme': 'AM scheme',
+  'analog.am.parameters': 'Parameters',
   'analog.am.scheme.dsb': 'DSB-SC',
   'analog.am.scheme.conventional': 'Conventional',
   'analog.am.scheme.ssb': 'SSB',
@@ -52,13 +53,25 @@ export const analogam: Record<string, string> = {
   'analog.mux.kind': 'Multiplexing',
   'analog.mux.kind.fdm': 'FDM',
   'analog.mux.kind.qam': 'Quadrature (QAM)',
-  'analog.mux.fdm.spacing': 'Carrier spacing',
+  'analog.mux.fdm.channels': 'Channels K',
+  'analog.mux.fdm.spacing': 'Carrier spacing Δf',
   'analog.mux.fdm.bandwidth': 'Channel bandwidth W',
   'analog.mux.fdm.channel': 'Recover channel',
+  'analog.mux.fdm.diagram': 'FDM transmitter → channel → receiver',
+  'analog.mux.fdm.channel.block': 'Channel',
+  'analog.mux.fdm.sources': 'Source messages',
   'analog.mux.fdm.composite': 'Composite FDM spectrum',
-  'analog.mux.fdm.recovered': 'Recovered channel',
+  'analog.mux.fdm.recovered': 'Recovered',
+  'analog.mux.fdm.original': 'Original m(t)',
   'analog.mux.fdm.overlap': 'Channels overlap — spacing < 2W (interference)',
   'analog.mux.fdm.ok': 'Channels separated (spacing ≥ 2W)',
+  'analog.mux.fdm.theory.title': 'FDM — frequency-division multiplexing',
+  'analog.mux.fdm.theory.intro':
+    'Each message is bandlimited to W by a lowpass filter, then modulated onto its own carrier. The K modulator outputs are summed into one composite signal and sent over a single channel (Proakis & Salehi §3.4.1, Fig. 3.31).',
+  'analog.mux.fdm.theory.carriers':
+    'The carriers are stacked in frequency: channel k sits at f_k = f_0 + (k−1)Δf. Each DSB band is 2W wide, so adjacent carriers must be at least 2W apart for the bands not to overlap.',
+  'analog.mux.fdm.theory.sep':
+    'At the receiver a bank of bandpass filters selects one carrier, a demodulator brings it to baseband, and a lowpass filter recovers the message. If Δf < 2W the bands overlap and the recovered channel picks up its neighbours.',
   'analog.mux.qam.phase': 'RX phase error Δφ',
   'analog.mux.qam.crosstalk': 'Crosstalk',
   'analog.mux.qam.m1': 'Channel 1 (cos): m₁ vs recovered',
@@ -74,19 +87,36 @@ export const analogam: Record<string, string> = {
   'analog.am.mode.ssb-usb': 'SSB-USB (Upper sideband)',
   'analog.am.mode.ssb-lsb': 'SSB-LSB (Lower sideband)',
   'analog.am.mode.vsb': 'VSB (Vestigial sideband)',
-  'analog.am.messageFreq': 'Message frequency fₘ',
-  'analog.am.carrierFreq': 'Carrier frequency fᶜ',
-  'analog.am.carrierAmp': 'Carrier amplitude Aᶜ',
-  'analog.am.modIndex': 'Modulation index a',
+  'analog.am.testMsg':
+    'Test message: $m(t) = \\cos(2\\pi f_m t)$ — a single tone, with $f_m$ set by the slider.',
+  'analog.am.messageFreq': 'Message frequency $(f_m)$',
+  'analog.am.carrierFreq': 'Carrier frequency $(f_c)$',
+  'analog.am.carrierAmp': 'Carrier amplitude $(A_c)$',
+  'analog.am.modIndex': 'Modulation index $(a)$',
+  'analog.am.reset': 'Reset',
   'analog.am.warning.overmod': 'Warning: Over-modulation (a > 1) detected',
   'analog.am.spectrum': 'Frequency spectrum',
   'analog.am.timeDomain': 'Time domain waveform',
+  'analog.am.msgTime': 'Message signal — time domain $m(t)$',
+  'analog.am.msgSpectrum': 'Message signal — magnitude spectrum $|M(f)|$',
+  'analog.am.amTime': 'AM signal — time domain $u(t)$',
+  'analog.am.amSpectrum': 'AM signal — magnitude spectrum $|U(f)|$',
+  'analog.am.envelope': 'Envelope',
+
+  // Message signal selector (Fourier signal family)
+  'analog.am.messageWave': 'Message signal',
+  'analog.am.wave.sine': 'Sine',
+  'analog.am.wave.square': 'Square',
+  'analog.am.wave.triangle': 'Triangle',
+  'analog.am.wave.sawtooth': 'Sawtooth',
+  'analog.am.wave.twoTone': 'Two-tone',
+  'analog.am.wave.threeTone': 'Three-tone',
 
   // Power & Efficiency panel
   'analog.power.title': 'Power & Efficiency',
-  'analog.power.carrierPower': 'Carrier power Pᶜ',
-  'analog.power.sidebandPower': 'Sideband power Pₛ',
-  'analog.power.efficiency': 'Modulation efficiency η',
+  'analog.power.carrierPower': 'Carrier power ($P_c$)',
+  'analog.power.sidebandPower': 'Sideband power ($P_s$)',
+  'analog.power.efficiency': 'Efficiency ($\\eta$)',
   'analog.power.chart': 'Power distribution',
 
   // Superheterodyne panel
@@ -107,6 +137,24 @@ export const analogam: Record<string, string> = {
   'analog.super.rfToIf': 'RF → IF frequency translation',
   'analog.super.imageFreq': 'Image frequency fᵢₘₐgₑ',
   'analog.super.chain': 'Receiver chain: RF → Mixer → IF filter → Detector',
+  // Filmstrip: per-stage captions (what each block does to the signal)
+  'analog.super.cap.rf': 'Antenna sees the whole crowded band',
+  'analog.super.cap.mixer': 'Difference → IF, sum term discarded',
+  'analog.super.cap.if': 'Fixed 455 kHz slice — adjacent channels rejected',
+  'analog.super.cap.detector': 'Carrier stripped → baseband audio',
+  'analog.super.cap.audio': 'Baseband message to the loudspeaker',
+  // Takeaway, controls, legend
+  'analog.super.ifLock': 'tune the station — this slice never moves',
+  'analog.super.showImage': 'Show image station',
+  'analog.super.preselector': 'RF preselector filter',
+  'analog.super.reset': 'Reset',
+  'analog.super.collision':
+    'Image not rejected — it lands on the IF too and garbles the audio. Switch the RF preselector on.',
+  'analog.super.legend.wanted': 'wanted station',
+  'analog.super.legend.image': 'image',
+  'analog.super.legend.other': 'other / discarded',
+  'analog.super.legend.window': 'filter passband',
+  'analog.super.theory.title': 'Theory: superheterodyne receiver',
 
   // Demodulation panel (AM-relevant methods)
   'analog.demod.title': 'Demodulation',
@@ -125,6 +173,22 @@ export const analogam: Record<string, string> = {
   'analog.demod.lockStatus': 'PLL lock status',
   'analog.demod.locked': 'Locked',
   'analog.demod.unlocked': 'Unlocked',
+
+  // Envelope-detector dynamics (diode + RC peak detector, Fig 3.27–3.28)
+  'analog.demod.rc': '$RC$ time constant',
+  'analog.demod.dynamics': 'Envelope detector dynamics (charge / discharge)',
+  'analog.demod.envelopeTarget': 'Ideal envelope',
+  'analog.demod.detectorOut': 'Detector output $\\hat{m}(t)$',
+  'analog.demod.rcWindow': 'Good RC window (1/fᶜ … 1/W)',
+  'analog.demod.status.small': 'RC too small (ripple)',
+  'analog.demod.status.large': 'RC too large (lag)',
+  'analog.demod.status.over': 'Over-modulation (a > 1)',
+  'analog.demod.regime.small':
+    'RC too small: the capacitor discharges right after each peak, so the output ripples and follows the carrier instead of the envelope — the lowpass bandwidth is too large (Fig 3.28b).',
+  'analog.demod.regime.large':
+    'RC too large: the capacitor discharges too slowly, so the output lags and clips the envelope on its falling edges — the lowpass bandwidth is too small (Fig 3.28a).',
+  'analog.demod.regime.over':
+    'Over-modulation (a > 1): the envelope crosses zero, so the diode detector cannot recover m(t). Use a ≤ 1 or a coherent detector.',
 
   // Readouts
   'analog.readout.bandwidth': 'Bandwidth',

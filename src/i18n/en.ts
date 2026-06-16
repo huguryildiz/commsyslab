@@ -208,7 +208,7 @@ export const en: Record<string, string> = {
   'it.lz.preset': 'Book example (49 bits)',
   'it.lz.step': 'Step',
   'it.lz.play': '▶ Animate',
-  'it.lz.reset': '↺ Reset',
+  'it.lz.reset': 'Reset',
   'it.lz.dict': 'Dictionary',
   'it.lz.loc': 'Loc',
   'it.lz.contents': 'Contents',

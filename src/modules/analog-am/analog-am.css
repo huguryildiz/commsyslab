@@ -15,9 +15,111 @@
 }
 
 .analog__readouts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+/* Premium metric cards — neon "DC COMPONENT" style (mirrors .fourier__metric). */
+.analog__metric {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  backdrop-filter: blur(var(--glass-blur));
+  transition: border-color var(--transition), box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
+  min-width: 130px;
+}
+.analog__metric::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-2), var(--color-marker));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.analog__metric:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lift);
+}
+.analog__metric:hover::before {
+  transform: scaleX(1);
+}
+.analog__metric__label {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.analog__metric__value {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 0 18px rgba(57, 255, 133, 0.35);
+}
+.analog__metric__value small {
+  font-size: 0.7em;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+/* Keep math case (don't uppercase) when a KaTeX symbol sits in a metric label. */
+.analog__metric__label .katex {
+  text-transform: none;
+}
+.analog__metric--warn .analog__metric__value {
+  color: var(--accent-2);
+  text-shadow: 0 0 18px rgba(255, 150, 50, 0.35);
+}
+
+/* Text variant — categorical readouts (e.g. "Switching", "Conventional AM"):
+   smaller, wrapping mono value with tone-based color instead of a big number. */
+.analog__metric--text {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.analog__metric--text .analog__metric__value {
+  font-size: 0.95rem;
+  line-height: 1.35;
+  white-space: normal;
+  color: var(--text);
+  text-shadow: none;
+}
+.analog__metric--text .analog__metric__value--ok {
+  color: var(--accent);
+  text-shadow: 0 0 16px rgba(57, 255, 133, 0.3);
+}
+.analog__metric--text .analog__metric__value--warn {
+  color: var(--accent-2);
+}
+.analog__metric--text .analog__metric__value--err {
+  color: var(--err);
+}
+
+/* Reset button — full-width with icon + label (inherits button styles from global.css). */
+.analog__reset {
+  margin-top: var(--space-2, 8px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Reset button when used inside a studio audio row (LISTEN + Reset layout). */
+.studio__audio--row .studio__audio__reset {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .analog__plots {
@@ -54,12 +156,74 @@
   gap: 8px;
 }
 
+/* FDM source-message row: one mini-plot per channel (mₖ(t)), columns set inline. */
+.analog__fdm-messages {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+.analog__panel-third {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+/* Stack the per-channel message plots on narrow / mobile-portrait viewports. */
+@media (max-width: 900px) {
+  .analog__fdm-messages {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .analog__label {
   font-size: 12px;
   color: var(--text-dim);
-  font-family: var(--mono);
+  font-family: var(--font); /* IBM Plex Sans — UI/section labels (design system) */
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Legend row below a plot (e.g. AM time-domain: u(t) + envelope). */
+.analog__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.analog__legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.analog__legend__swatch {
+  width: 16px;
+  height: 0;
+  border-top: 2px solid currentColor;
+}
+.analog__legend__swatch--dashed {
+  border-top-style: dashed;
+}
+.analog__legend .katex {
+  color: inherit;
+}
+
+/* Plot subtitle: IBM Plex Sans + inline KaTeX signal name (e.g. "… $m(t)$"). */
+.analog__plot-title {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.analog__plot-title .katex {
+  font-size: 0.95em;
+  color: var(--text);
 }
 
 .analog__fm-panel {
@@ -104,6 +268,11 @@
   grid-column: 1 / -1;
 }
 
+/* Envelope-detector dynamics canvas spans the full demod-panel width. */
+.analog__panel-half--full {
+  grid-column: 1 / -1;
+}
+
 /* Superheterodyne panel */
 
 .analog__super-panel {
@@ -134,6 +303,89 @@
   font-weight: bold;
 }
 
+/* Active chain block while the highlight sweeps the receiver. */
+.analog__chain-block--active {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  box-shadow: 0 0 12px rgba(255, 150, 50, 0.25);
+  transition: var(--transition);
+}
+
+/* Superheterodyne spectral filmstrip: one spectrum per chain block,
+   laid out two per row; collapses to a single column on mobile. */
+.analog__filmstrip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 720px) {
+  .analog__filmstrip {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analog__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  min-width: 0;
+}
+
+/* The cell the highlight is currently on — neon orange glow. */
+.analog__stage--active {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 12px rgba(255, 150, 50, 0.25);
+}
+
+.analog__stage-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.analog__stage-title {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.analog__stage-cap {
+  font-family: var(--font);
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.3;
+}
+
+/* "IF is locked at 455 kHz" takeaway line below the filmstrip. */
+.analog__super-callout {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--accent);
+  text-align: center;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: rgba(57, 255, 133, 0.06);
+}
+.analog__super-callout .katex {
+  color: inherit;
+}
+
+/* Square swatch for the filter-passband legend entry. */
+.analog__legend__swatch--block {
+  width: 14px;
+  height: 12px;
+  border: none;
+  background: currentColor;
+  opacity: 0.4;
+  border-radius: 2px;
+}
+
 /* Warning message */
 
 .analog__warning {
@@ -159,6 +411,11 @@
   overflow-x: auto;
 }
 
+/* AM Schemes tab: nested sub-tab bar (DSB-SC / Conventional / SSB / VSB) under the module tabs. */
+.analog__subtabbar {
+  margin-bottom: 16px;
+}
+
 .analog__hint {
   color: var(--text-dim);
   font-size: 0.9em;
@@ -168,4 +425,85 @@
 /* §3.3 modulator view: keep schematics compact. */
 .analog__plots .schematic {
   max-height: 120px;
+}
+
+/* §3.4 FDM block diagram (Fig 3.31): fill the content column like the other panels. */
+.analog__fdm-diagram .schematic {
+  width: 100%;
+}
+
+/* §3.4 demodulator circuit: span the full content column (overrides the compact
+   .analog__plots cap) on a wide, short canvas — full width but a compact height. */
+.analog__demod-circuit .schematic {
+  width: 100%;
+  max-height: 180px;
+}
+
+/* AM scheme info cards (mirrors .sig-cards / .sig-card in fourier.css) */
+.analog__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: var(--space-3);
+}
+.analog__card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  backdrop-filter: blur(var(--glass-blur));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.analog__card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 14px rgba(57, 255, 133, 0.07);
+}
+.analog__card__title {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+.analog__card__title--green  { color: var(--accent); }
+.analog__card__title--orange { color: var(--accent-2); }
+.analog__card__title--blue   { color: var(--accent-blue); }
+.analog__card__body {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+}
+.analog__card__body p {
+  margin: 0 0 var(--space-1);
+}
+.analog__card__body ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.analog__card__body li {
+  margin-bottom: 2px;
+}
+.analog__card__label {
+  font-weight: 600;
+  color: var(--text);
+}
+.analog__card__formula {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  text-align: center;
+  overflow-x: auto;
+}
+@media (max-width: 600px) {
+  .analog__cards {
+    grid-template-columns: 1fr;
+  }
 }

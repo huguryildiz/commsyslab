@@ -102,6 +102,14 @@ button:disabled {
   cursor: not-allowed;
 }
 
+/* Reset button — SVG icon + label on one row */
+.btn--reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 /* ── Form elements ── */
 select,
 input[type='text'],

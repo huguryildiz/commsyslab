@@ -58,11 +58,20 @@ const SUBSCRIPT: Record<string, string> = {
   '=': '₌',
   '(': '₍',
   ')': '₎',
+  a: 'ₐ',
+  e: 'ₑ',
+  h: 'ₕ',
   i: 'ᵢ',
   j: 'ⱼ',
   k: 'ₖ',
+  l: 'ₗ',
   m: 'ₘ',
   n: 'ₙ',
+  o: 'ₒ',
+  p: 'ₚ',
+  s: 'ₛ',
+  t: 'ₜ',
+  x: 'ₓ',
 };
 
 /** Prepare a canvas context for one plot frame so draw helpers can register cursor points. */
@@ -124,6 +133,9 @@ export interface DrawAxesOptions {
   domainY?: [number, number];
   xTicks?: number[];
   yTicks?: number[];
+  /** Custom tick-label formatters (default: `formatTick`). E.g. render Hz as kHz. */
+  xTickFormat?: (v: number) => string;
+  yTickFormat?: (v: number) => string;
   tickCount?: number;
   grid?: boolean;
   ticks?: boolean;
@@ -253,7 +265,7 @@ export function formatMathLabel(label: string): string {
     .replace(/\\;/g, ' ')
     .replace(/\\quad/g, ' ')
     .replace(/_\{([^}]*)\}/g, (_, sub: string) => toSubscript(sub))
-    .replace(/_([0-9ijkmn+\-=()])/g, (_, sub: string) => toSubscript(sub))
+    .replace(/_([0-9a-z+\-=()])/g, (_, sub: string) => toSubscript(sub))
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -286,6 +298,8 @@ function drawTickLabels(
   bounds: PlotBounds,
   xTicks: number[],
   yTicks: number[],
+  xFmt: (v: number) => string = formatTick,
+  yFmt: (v: number) => string = formatTick,
 ): void {
   ctx.fillStyle = DEFAULT_TICK();
   ctx.font = '10px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
@@ -294,14 +308,14 @@ function drawTickLabels(
   for (const x of xTicks) {
     const px = ax.x(x);
     if (px < bounds.left - 0.5 || px > bounds.right + 0.5) continue;
-    ctx.fillText(formatTick(x), px, bounds.bottom + 5);
+    ctx.fillText(xFmt(x), px, bounds.bottom + 5);
   }
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
   for (const y of yTicks) {
     const py = ax.y(y);
     if (py < bounds.top - 0.5 || py > bounds.bottom + 0.5) continue;
-    ctx.fillText(formatTick(y), bounds.left - 5, py);
+    ctx.fillText(yFmt(y), bounds.left - 5, py);
   }
 }
 
@@ -389,7 +403,7 @@ export function drawAxes(
 
   if (labels) {
     ctx.fillStyle = options.labelColor ?? DEFAULT_TICK();
-    drawTickLabels(ctx, ax, bounds, xTicks, yTicks);
+    drawTickLabels(ctx, ax, bounds, xTicks, yTicks, options.xTickFormat, options.yTickFormat);
   }
 
   if (options.xLabel) {
@@ -705,6 +719,46 @@ export function drawText(
   ctx.font = font;
   ctx.textBaseline = 'middle';
   ctx.fillText(text, ax.x(xData) + dx, ax.y(yData) + dy);
+}
+
+/**
+ * Like drawText but renders "base_sub" strings with a proper canvas subscript:
+ * the base part at normal size and the subscript part in a smaller italic font
+ * shifted down. Strings without "_" are drawn identically to drawText.
+ */
+export function drawSubText(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  xData: number,
+  yData: number,
+  text: string,
+  color: string,
+  dx = 6,
+  dy = -6,
+  baseSize = 11,
+): void {
+  const px = ax.x(xData) + dx;
+  const py = ax.y(yData) + dy;
+  ctx.fillStyle = color;
+  ctx.textBaseline = 'middle';
+
+  const underIdx = text.indexOf('_');
+  if (underIdx === -1) {
+    ctx.font = `${baseSize}px system-ui, sans-serif`;
+    ctx.fillText(text, px, py);
+    return;
+  }
+
+  const base = text.slice(0, underIdx);
+  const sub = text.slice(underIdx + 1);
+  const subSize = Math.round(baseSize * 0.75);
+
+  ctx.font = `italic ${baseSize}px system-ui, sans-serif`;
+  ctx.fillText(base, px, py);
+  const baseW = ctx.measureText(base).width;
+
+  ctx.font = `italic ${subSize}px system-ui, sans-serif`;
+  ctx.fillText(sub, px + baseW + 1, py + Math.round(baseSize * 0.35));
 }
 
 /**

@@ -3,6 +3,7 @@ import {
   amSignal,
   amEnvelope,
   amEfficiency,
+  envelopeDetect,
   vsbFilterMag,
   angleSignal,
   instantFreq,
@@ -27,6 +28,68 @@ describe('amEnvelope', () => {
       expect(env).toBeGreaterThanOrEqual(Ac * (1 - a) - 1e-10);
       expect(env).toBeLessThanOrEqual(Ac * (1 + a) + 1e-10);
     }
+  });
+});
+
+describe('envelopeDetect (diode + RC peak detector, Fig 3.28)', () => {
+  const fc = 20000;
+  const fm = 1000;
+  const fs = 40 * fc; // ~40 samples per carrier cycle
+  const Ac = 1;
+  const a = 0.8;
+  const msg = [{ freq: fm, amp: 1 }];
+  const N = Math.round(fs * (4 / fm)); // 4 message periods
+  const peakEnv = Ac * (1 + a);
+  const tAt = (i: number) => i / fs;
+  const rx = Array.from({ length: N }, (_, i) => amSignal('conventional', msg, fc, Ac, a, tAt(i)));
+  const env = Array.from({ length: N }, (_, i) => amEnvelope(msg, Ac, a, tAt(i)));
+
+  // RC bounds for these params: 1/fc = 50 µs, 1/W = 1/fm = 1000 µs.
+  const RC_SMALL = 5e-6; // ≪ 1/fc → ripple
+  const RC_GOOD = 200e-6; // 1/fc ≪ RC ≪ 1/W
+  const RC_LARGE = 5e-3; // ≫ 1/W → lag
+
+  const maxEnvError = (rc: number) => {
+    const out = envelopeDetect(rx, fs, rc);
+    let e = 0;
+    for (let i = Math.floor(N / 2); i < N; i++) e = Math.max(e, Math.abs(out[i] - env[i]));
+    return e;
+  };
+
+  it('output is non-negative and the same length as the input', () => {
+    const out = envelopeDetect(rx, fs, RC_GOOD);
+    expect(out).toHaveLength(N);
+    expect(out.every((v) => v >= 0)).toBe(true);
+  });
+
+  it('a good RC tracks the AM envelope closely', () => {
+    expect(maxEnvError(RC_GOOD)).toBeLessThan(0.3 * peakEnv);
+  });
+
+  it('smaller RC ⇒ more inter-peak ripple near an envelope peak', () => {
+    const ripple = (rc: number) => {
+      const out = envelopeDetect(rx, fs, rc);
+      const center = Math.round(fs / fm); // one message period in → an envelope max
+      const half = Math.round(fs / fc); // one carrier period
+      let lo = Infinity;
+      let hi = -Infinity;
+      for (let i = center - half; i <= center + half; i++) {
+        lo = Math.min(lo, out[i]);
+        hi = Math.max(hi, out[i]);
+      }
+      return hi - lo;
+    };
+    expect(ripple(RC_SMALL)).toBeGreaterThan(ripple(RC_GOOD));
+  });
+
+  it('too-large RC lags: output sits above the true envelope at a trough', () => {
+    const outLarge = envelopeDetect(rx, fs, RC_LARGE);
+    const outGood = envelopeDetect(rx, fs, RC_GOOD);
+    const trough = Math.round(fs / (2 * fm)); // env minimum for a cos message
+    expect(outLarge[trough]).toBeGreaterThan(env[trough] + 0.2 * Ac);
+    expect(outGood[trough]).toBeLessThan(outLarge[trough]);
+    // The lag also shows up as a much larger tracking error overall.
+    expect(maxEnvError(RC_GOOD)).toBeLessThan(maxEnvError(RC_LARGE));
   });
 });
 
@@ -175,9 +238,9 @@ describe('pllRecoverPhase', () => {
     expect(theta).toHaveLength(100);
   });
 
-  it('recovered phase tracks carrier frequency', () => {
-    const fc = 1000;
-    const fs = 10000;
+  it('locks: recovered carrier cos(θ̂) tracks the reference (no phase slip)', () => {
+    const fc = 2000;
+    const fs = 20 * fc; // 20 samples/carrier cycle, as the demod model uses
     const duration = 0.01; // 10 ms
     const N = Math.ceil(fs * duration);
     const input = new Array(N);
@@ -185,9 +248,22 @@ describe('pllRecoverPhase', () => {
       input[n] = Math.cos((2 * Math.PI * fc * n) / fs);
     }
     const theta = pllRecoverPhase(input, fc, fs);
-    const tail = theta.slice(-10);
-    const correlation = tail.reduce((sum, t, i) => sum + Math.cos(t) * input[N - 10 + i], 0) / 10;
-    expect(correlation).toBeGreaterThan(0.3); // Should have positive correlation
+    // Normalized correlation over the tail ≈ 1 when locked. A sign error in the
+    // phase detector makes the loop slip phase, dropping this well below 1.
+    const tail = 20;
+    let dot = 0;
+    let e2 = 0;
+    let r2 = 0;
+    for (let i = N - tail; i < N; i++) {
+      const c = Math.cos(theta[i]);
+      dot += c * input[i];
+      e2 += c * c;
+      r2 += input[i] * input[i];
+    }
+    const correlation = dot / Math.sqrt(e2 * r2);
+    // Locked → ≈1. A sign error in the phase detector drives this to ~0 or
+    // negative (the estimate slips/inverts), so 0.9 is a meaningful guard.
+    expect(correlation).toBeGreaterThan(0.9);
   });
 });
 
