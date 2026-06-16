@@ -38,3 +38,6 @@ docs/superpowers/
 refs/
 # Visual brainstorming companion (local-only)
 .superpowers/
+
+# Local todo / roadmap (not for the repo)
+TODO.md
