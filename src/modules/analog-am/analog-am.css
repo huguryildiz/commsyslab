@@ -427,9 +427,11 @@
   max-height: 120px;
 }
 
-/* §3.4 FDM block diagram (Fig 3.31): fill the content column like the other panels. */
+/* §3.4 FDM block diagram (Fig 3.31): fill the content column, but cap the physical
+   height so the SVG doesn't scale up and make block labels look oversized. */
 .analog__fdm-diagram .schematic {
   width: 100%;
+  max-height: 240px;
 }
 
 /* §3.4 demodulator circuit: span the full content column (overrides the compact
