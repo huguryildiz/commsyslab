@@ -115,6 +115,9 @@ export function FourierSeriesSection({ clock }: SectionProps) {
                 <li><Formula tex="n f_0" /> — the <Formula tex="n" />-th harmonic</li>
                 <li><Formula tex="c_n" /> — complex amplitude of each harmonic</li>
               </ul>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                <span className="sig-card__label">Dirichlet conditions</span> (sufficient for convergence): over one period <Formula tex="x(t)" /> is absolutely integrable, has finitely many maxima/minima, and finitely many finite discontinuities.
+              </p>
             </div>
           </div>
 
@@ -151,6 +154,10 @@ export function FourierSeriesSection({ clock }: SectionProps) {
                 <li><Formula tex="a_n=2\,\mathrm{Re}\{c_n\}" />, <Formula tex="b_n=-2\,\mathrm{Im}\{c_n\}" /></li>
                 <li>Amplitude: <Formula tex="|c_n|=\tfrac{1}{2}\!\sqrt{a_n^2+b_n^2}" /></li>
               </ul>
+              <p style={{ marginTop: 'var(--space-1)' }}>Equivalently, the amplitude–phase (harmonic) form:</p>
+              <div className="sig-card__formula">
+                <Formula tex="x(t)=c_0+2\sum_{n=1}^{\infty}|c_n|\cos\!\bigl(2\pi n f_0 t+\angle c_n\bigr)" block />
+              </div>
             </div>
           </div>
 
@@ -168,6 +175,10 @@ export function FourierSeriesSection({ clock }: SectionProps) {
                 Each <Formula tex="|c_n|^2" /> is the power contribution of harmonic <Formula tex="n" />.
                 The <strong>Power (N harmonics)</strong> metric above shows what fraction of total power the first <Formula tex="N" /> harmonics capture.
               </p>
+              <p style={{ marginTop: 'var(--space-1)' }}>So the power spectral density of a periodic signal is a line spectrum (§2.5):</p>
+              <div className="sig-card__formula">
+                <Formula tex="S_x(f)=\sum_{n=-\infty}^{\infty}|c_n|^2\,\delta\!\left(f-\tfrac{n}{T_0}\right)" block />
+              </div>
             </div>
           </div>
 

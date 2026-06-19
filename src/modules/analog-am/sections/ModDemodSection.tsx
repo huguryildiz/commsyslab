@@ -113,10 +113,13 @@ function ModulatorInfoCards({ active }: { active: ModulatorKind }) {
       <InfoCard title="Switching Modulator" accent="orange" active={active === 'switching'}>
         <p>
           A diode switch is driven by the carrier, effectively multiplying the input by a
-          periodic square wave <Formula tex="p(t)" /> with Fourier series{' '}
-          <Formula tex="\tfrac{1}{2}+\tfrac{2}{\pi}\cos(2\pi f_c t)-\cdots" />.
-          A BPF at <Formula tex="f_c" /> retains only the fundamental term (§3.3.2).
+          periodic unit square wave <Formula tex="p(t)" /> whose Fourier series contains only
+          odd harmonics of <Formula tex="f_c" /> (Eq. 3.3.7):
         </p>
+        <div className="analog__card__formula">
+          <Formula tex="p(t)=\tfrac{1}{2}+\tfrac{2}{\pi}\sum_{n=1}^{\infty}\frac{(-1)^{n-1}}{2n-1}\cos\!\bigl(2\pi f_c(2n-1)t\bigr)" block />
+        </div>
+        <p>A BPF at <Formula tex="f_c" /> retains only the fundamental term:</p>
         <div className="analog__card__formula">
           <Formula tex="x_p(t)=m(t)\cdot p(t)\xrightarrow{\text{BPF}}\tfrac{1}{2}m(t)\cos(2\pi f_c t)+\tfrac{A_c}{2}\cos(2\pi f_c t)" block />
         </div>

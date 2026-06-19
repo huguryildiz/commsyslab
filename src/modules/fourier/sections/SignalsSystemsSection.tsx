@@ -230,6 +230,29 @@ export function SignalsSystemsSection(_props: SectionProps) {
                   Sum of two periodic signals is periodic only if{' '}
                   <Formula tex="T_1/T_2" /> is rational.
                 </li>
+                <li>
+                  Discrete-time: <Formula tex="x[n+N_0]=x[n]" /> needs a{' '}
+                  <em>rational</em> normalized frequency <Formula tex="f_0" />.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Card: Elementary building-block signals */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--green">Elementary Signals</h3>
+            <div className="sig-card__body">
+              <p>The standard building blocks used throughout the course (§2.1):</p>
+              <div className="sig-card__formula">
+                <Formula tex="\Pi(t)=\begin{cases}1,&|t|\le \tfrac12\\[2pt]0,&|t|>\tfrac12\end{cases}\qquad \Lambda(t)=\Pi(t)*\Pi(t)" block />
+              </div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}>
+                <Formula tex="\operatorname{sinc}(t)=\dfrac{\sin(\pi t)}{\pi t}\qquad \operatorname{sgn}(t)=\begin{cases}+1,&t>0\\-1,&t<0\end{cases}" block />
+              </div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>Ramp: <Formula tex="r(t)=t\,u(t)" /> — the integral of the unit step.</li>
+                <li><Formula tex="\Lambda(t)" /> is the triangular pulse (width 2), a self-convolved rect.</li>
+                <li><Formula tex="\operatorname{sinc}(0)=1" />; zeros at every nonzero integer.</li>
               </ul>
             </div>
           </div>
@@ -315,6 +338,13 @@ export function SignalsSystemsSection(_props: SectionProps) {
                   <Formula tex="e^{j\theta}=\cos\theta+j\sin\theta" />
                 </li>
               </ul>
+              <p style={{ marginTop: 'var(--space-1)' }}>
+                Because <Formula tex="e^{j2\pi f_0 t}" /> is an eigenfunction, an LTI system only
+                scales it by its frequency response <Formula tex="H(f_0)" /> (§2.1):
+              </p>
+              <div className="sig-card__formula">
+                <Formula tex="e^{j2\pi f_0 t}\;\to\;H(f_0)\,e^{j2\pi f_0 t},\quad H(f_0)=\int_{-\infty}^{\infty}h(\tau)\,e^{-j2\pi f_0\tau}\,d\tau" block />
+              </div>
             </div>
           </div>
 

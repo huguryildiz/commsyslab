@@ -314,12 +314,69 @@ export function FourierTransformSection(_props: SectionProps) {
           </div>
 
           <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--green">Linearity, Differentiation &amp; Duality</h3>
+            <div className="sig-card__body">
+              <p>The transform is linear, and differentiation/integration in time become algebraic operations in frequency (§2.3):</p>
+              <div className="sig-card__formula"><Formula tex="\alpha x_1(t)+\beta x_2(t)\;\leftrightarrow\;\alpha X_1(f)+\beta X_2(f)" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\dfrac{d^{\,n}x}{dt^{\,n}}\;\leftrightarrow\;(j2\pi f)^n X(f)" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\int_{-\infty}^{t}\!x(\tau)\,d\tau\;\leftrightarrow\;\dfrac{X(f)}{j2\pi f}+\tfrac12 X(0)\,\delta(f)" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="X(t)\;\leftrightarrow\;x(-f)\quad(\text{duality})" /></div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>Differentiation boosts high frequencies (<Formula tex="\times\,j2\pi f" />).</li>
+                <li>Duality turns each pair into a second pair (e.g. <Formula tex="\Pi\leftrightarrow\operatorname{sinc}" /> ⇒ <Formula tex="\operatorname{sinc}\leftrightarrow\Pi" />).</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="sig-card">
             <h3 className="sig-card__title sig-card__title--blue">Common Pairs (Table 2.1)</h3>
             <div className="sig-card__body">
               <div className="sig-card__formula"><Formula tex="\Pi(t)\;\leftrightarrow\;\operatorname{sinc}(f)" /></div>
               <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\Lambda(t)\;\leftrightarrow\;\operatorname{sinc}^2(f)" /></div>
               <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="e^{-at}u(t)\;\leftrightarrow\;\dfrac{1}{a+j2\pi f}" /></div>
-              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\delta(t)\leftrightarrow 1,\quad \cos(2\pi f_0t)\leftrightarrow\tfrac12[\delta(f-f_0)+\delta(f+f_0)]" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\operatorname{sgn}(t)\leftrightarrow\dfrac{1}{j\pi f},\quad u(t)\leftrightarrow\tfrac12\delta(f)+\dfrac{1}{j2\pi f}" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\delta(t)\leftrightarrow 1,\quad e^{\,j2\pi f_0t}\leftrightarrow\delta(f-f_0)" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\cos(2\pi f_0t)\leftrightarrow\tfrac12[\delta(f-f_0)+\delta(f+f_0)]" /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="\sum_{n}\delta(t-nT_0)\leftrightarrow\dfrac{1}{T_0}\sum_{n}\delta\!\left(f-\tfrac{n}{T_0}\right)" /></div>
+            </div>
+          </div>
+
+          {/* §2.5 — Energy/Power spectral density & autocorrelation */}
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--orange">Autocorrelation &amp; Energy Spectral Density</h3>
+            <div className="sig-card__body">
+              <p>For a finite-energy signal, the autocorrelation measures self-similarity at lag <Formula tex="\tau" /> (§2.5):</p>
+              <div className="sig-card__formula"><Formula tex="R_x(\tau)=\int_{-\infty}^{\infty}x(t)\,x^{*}(t-\tau)\,dt" block /></div>
+              <p style={{ marginTop: 'var(--space-1)' }}>Its Fourier transform is the energy spectral density (ESD):</p>
+              <div className="sig-card__formula"><Formula tex="\mathcal{W}_x(f)=|X(f)|^2=\mathcal{F}\{R_x(\tau)\}" block /></div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>Total energy at zero lag: <Formula tex="E_x=R_x(0)=\int_{-\infty}^{\infty}\mathcal{W}_x(f)\,df" /></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--green">Power Spectral Density (Wiener–Khinchin)</h3>
+            <div className="sig-card__body">
+              <p>For a finite-power signal, the time-averaged autocorrelation defines the PSD (§2.5):</p>
+              <div className="sig-card__formula"><Formula tex="R_x(\tau)=\lim_{T\to\infty}\frac{1}{T}\int_{-T/2}^{T/2}x(t)\,x^{*}(t-\tau)\,dt" block /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="S_x(f)=\mathcal{F}\{R_x(\tau)\},\qquad P_x=\int_{-\infty}^{\infty}S_x(f)\,df" block /></div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>Wiener–Khinchin: PSD and autocorrelation are a Fourier pair.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="sig-card">
+            <h3 className="sig-card__title sig-card__title--blue">LTI Input–Output (Spectral)</h3>
+            <div className="sig-card__body">
+              <p>Passing a signal through an LTI filter <Formula tex="H(f)" /> scales its spectral density by <Formula tex="|H(f)|^2" /> (§2.5):</p>
+              <div className="sig-card__formula"><Formula tex="\mathcal{W}_y(f)=|H(f)|^2\,\mathcal{W}_x(f)" block /></div>
+              <div className="sig-card__formula" style={{ marginTop: 6 }}><Formula tex="S_y(f)=|H(f)|^2\,S_x(f)" block /></div>
+              <ul style={{ marginTop: 'var(--space-1)' }}>
+                <li>Same law for energy (ESD) and power (PSD) signals.</li>
+                <li>The filter never adds power outside its passband.</li>
+              </ul>
             </div>
           </div>
         </div>

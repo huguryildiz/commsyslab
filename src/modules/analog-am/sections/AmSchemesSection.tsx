@@ -303,8 +303,15 @@ export function AmSchemesSection(_props: SectionProps) {
                   <div className="analog__card__formula">
                     <Formula tex="\hat{m}(t) = \mathrm{LPF}\!\left\{u(t)\cdot 2\cos(2\pi f_c t)\right\}" block />
                   </div>
+                  <p>
+                    A phase error <Formula tex="\phi" /> between the received carrier and the local
+                    oscillator attenuates the output by <Formula tex="\cos\phi" /> (§3.2.1):
+                  </p>
+                  <div className="analog__card__formula">
+                    <Formula tex="\hat{m}(t) = \tfrac{1}{2}A_c\,m(t)\cos\phi" block />
+                  </div>
                   <ul style={{ marginTop: 'var(--space-1)' }}>
-                    <li>Phase error in local carrier → signal attenuation</li>
+                    <li><Formula tex="\phi = 90°" /> → output vanishes completely (quadrature null)</li>
                     <li>A phase-locked loop (PLL) is commonly used for carrier recovery</li>
                   </ul>
                 </div>
@@ -354,12 +361,19 @@ export function AmSchemesSection(_props: SectionProps) {
                 <h3 className="analog__card__title analog__card__title--blue">Power &amp; Efficiency</h3>
                 <div className="analog__card__body">
                   <p>
-                    Total transmitted power splits between a large carrier and useful sidebands:
+                    Total transmitted power splits between a carrier term that carries no
+                    information and the useful sidebands (§3.2.2):
                   </p>
                   <div className="analog__card__formula">
-                    <Formula tex="\eta = \frac{a^2 P_{m_n}}{1 + a^2 P_{m_n}}" block />
+                    <Formula tex="P_t = \underbrace{\tfrac{A_c^2}{2}}_{P_c} + \underbrace{\tfrac{A_c^2}{2}\,a^2 P_{m_n}}_{P_s} = \tfrac{A_c^2}{2}\bigl(1 + a^2 P_{m_n}\bigr)" block />
+                  </div>
+                  <p>The modulation efficiency is the sideband fraction of the total power:</p>
+                  <div className="analog__card__formula">
+                    <Formula tex="\eta = \frac{P_s}{P_t} = \frac{a^2 P_{m_n}}{1 + a^2 P_{m_n}}" block />
                   </div>
                   <ul style={{ marginTop: 'var(--space-1)' }}>
+                    <li><Formula tex="P_c = A_c^2/2" /> — carrier power (wasted, no information)</li>
+                    <li><Formula tex="P_s = \tfrac{A_c^2}{2}a^2 P_{m_n}" /> — sideband power (carries the message)</li>
                     <li><Formula tex="P_{m_n}" /> — normalized message power</li>
                     <li>For a sinusoid with <Formula tex="a=1" />: <Formula tex="\eta = 1/3" /> (33 %)</li>
                     <li>Carrier always wastes power, but enables simple envelope detection</li>

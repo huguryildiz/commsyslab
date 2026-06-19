@@ -68,7 +68,7 @@ Fourier Transform & Spectra · Filters · Bandpass Signals) · **DSP:** `src/lib
 | 2.2 Fourier Series | 43 | ✅ | `fourier.ts` — Fourier series; Fourier Series tab (partial-sum synthesis) |
 | 2.3 Fourier Transform | 58 | ✅ | `fourier.ts`, `fft.ts`, `ftpairs.ts` — FFT spectra + FT pairs/properties |
 | 2.4 Filter Design | 85 | ✅ | `window.ts`, `analogfilters.ts`, `filterStudio.ts` — Filters tab (LTI · Realizable Butterworth/Chebyshev · Filter Studio with audio bypass) |
-| 2.5 Power and Energy | 89 | ✅ | `spectrum.ts` — PSD computation |
+| 2.5 Power and Energy | 89 | ✅ | `spectrum.ts` — PSD computation; Fourier Transform tab theory cards (autocorrelation, energy spectral density `W_x(f)=\|X(f)\|²`, PSD / Wiener-Khinchin, LTI spectral I/O); periodic-signal line PSD in Fourier Series tab |
 | 2.6 Hilbert Transform | 95 | ✅ | `fourier.ts` `hilbert()`; Bandpass Signals tab → Hilbert Transform sub-tab |
 | 2.7 Lowpass and Bandpass Signals | 98 | ✅ | `bandwidth.ts`, `ftpairs.ts`; Bandpass Signals tab → Lowpass & Bandpass + I/Q Representation sub-tabs |
 
@@ -86,7 +86,8 @@ Fourier Transform & Spectra · Filters · Bandpass Signals) · **DSP:** `src/lib
 | 3.2.3 SSB AM | 132 | ✅ | `analog.ts` — SSB (USB/LSB) |
 | 3.2.4 VSB AM | 134 | ✅ | `analog.ts` `vsbFilter` (complementary vestige) + AM Schemes tab |
 | 3.3 Modulators and Demodulators | 137 | ✅ | `am-impl.ts` (power-law/switching/balanced/ring + envelope) + Mod & Demod tab (block diagram + animated circuit + dirty/clean FFT) |
-| 3.4 Signal Multiplexing (FDM) | 144 | ✅ | `am-impl.ts` `fdmCompose`/`fdmSeparate` + Signal Multiplexing tab (FDM channel stacking and overlap); `qamModulate`/`qamDemod` exist in DSP but not exposed in UI |
+| 3.4.1 Frequency-Division Multiplexing (FDM) | 144 | ✅ | `am-impl.ts` `fdmCompose`/`fdmSeparate` + Signal Multiplexing tab → FDM sub-tab (channel stacking and overlap) |
+| 3.4.2 Quadrature-Carrier Multiplexing (QAM) | 145 | ✅ | `am-impl.ts` `qamModulate`/`qamDemod` + Signal Multiplexing tab → QAM sub-tab (I/Q channels, RX phase-error crosstalk readout, formula cards Eq. 3.4.1–3.4.2) |
 | 3.5 AM Radio Broadcasting | 146 | ✅ | AM Radio tab (superheterodyne frequency plan + image) |
 
 ---
@@ -101,7 +102,8 @@ Fourier Transform & Spectra · Filters · Bandpass Signals) · **DSP:** `src/lib
 | 4.1 Representation of FM and PM Signals | 161 | ✅ | `analog.ts` `fmModulate`/`pmModulate`; `RepresentationSection.tsx` — message m(t), angle-modulated signal u(t), instantaneous freq/phase (FM/PM toggle, NBFM overlay) |
 | 4.2 Spectral Characteristics of Angle-Mod. Signals | 166 | ✅ | `analog.ts` `besselJ`/`fmBessel`; `SpectrumSection.tsx` — Bessel line spectrum (tone), FFT spectrum (arbitrary msg), Carson bandwidth shading, Bessel curves J₀..J₇ vs β |
 | 4.3.1 FM Modulator Implementations | 171 | ✅ | `ModDemodSection.tsx` — Direct FM (VCO/varactor) and Armstrong indirect FM block diagrams (`FmModDemodDiagram.tsx`) |
-| 4.3.2 FM Demodulator / Discriminator | 175 | ✅ | `analog.ts` `fmDiscriminator`; `ModDemodSection.tsx` — discriminator simulation (differentiate → envelope → LPF) with AWGN noise toggle; block diagram in `FmDiscriminatorDiagram` |
+| 4.3.2 FM Demodulator / Discriminator | 175 | ✅ | `analog.ts` `fmDiscriminate`; `ModDemodSection.tsx` — discriminator sub-tab (differentiate → envelope → LPF) with AWGN noise toggle; block diagram in `FmDiscriminatorDiagram`; varactor-VCO and Armstrong multiplier formula cards |
+| 4.3.3 PLL FM Demodulator | 177 | ✅ | `analog.ts` `fmPllDemodulate`; `ModDemodSection.tsx` — PLL sub-tab (2nd-order loop, B_n / ζ controls, linearized phase-error + transfer-function cards Eq. 4.3.21–4.3.28); `FmPllDiagram` |
 | 4.4.1 Superheterodyne FM Receiver | 179 | ✅ | `RadioSection.tsx` `SuperHetSubTab` — interactive block diagram, RF/LO/IF freq readouts (88–108 MHz band, f_IF = 10.7 MHz) |
 | 4.4.2 FM Stereo Multiplexing | 182 | ✅ | `analog.ts` `stereoMuxSpectrum`; `RadioSection.tsx` `StereoSubTab` — composite baseband spectrum (L+R / pilot / L−R DSB-SC), balance slider |
 | 4.4.3 Pre-emphasis and De-emphasis | 185 | ✅ | `analog.ts` `preEmphasisMagDb`/`deEmphasisMagDb`/`emphasisSnrGainDb`; `RadioSection.tsx` `PreEmphSubTab` — H_pe/H_de frequency response, SNR gain readout (τ = 75 µs standard) |

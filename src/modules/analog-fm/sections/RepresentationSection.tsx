@@ -263,14 +263,19 @@ export function RepresentationSection() {
                   <Formula tex="\Delta f_{\max} = k_f\max|m(t)| \qquad \Delta\phi_{\max} = k_p\max|m(t)|" block />
                 </div>
                 <p>
-                  For a tone <Formula tex="m(t)=A_m\cos(2\pi f_m t)" />, the FM index is the deviation per
-                  message frequency:
+                  For a single tone <Formula tex="m(t)=a\cos(2\pi f_m t)" /> the modulated signal
+                  takes the canonical single-tone form (Eqs. 4.1.11–4.1.14):
                 </p>
                 <div className="analog__card__formula">
-                  <Formula tex="\beta = \frac{\Delta f}{f_m} = \frac{k_f A_m}{f_m}" block />
+                  <Formula tex="u(t)=\begin{cases} A_c\cos\!\bigl(2\pi f_c t + \beta_p\cos(2\pi f_m t)\bigr), & \text{PM} \\[6pt] A_c\cos\!\bigl(2\pi f_c t + \beta_f\sin(2\pi f_m t)\bigr), & \text{FM} \end{cases}" block />
+                </div>
+                <p>where the PM and FM modulation indices are:</p>
+                <div className="analog__card__formula">
+                  <Formula tex="\beta_p = k_p\,a \qquad \beta_f = \frac{k_f\,a}{f_m} = \frac{\Delta f}{f_m}" block />
                 </div>
                 <ul>
                   <li><Formula tex="\Delta f" /> — peak frequency deviation</li>
+                  <li>For a general message: <Formula tex="\beta_p = k_p\max|m(t)|" />, <Formula tex="\beta_f = k_f\max|m(t)|/W" /> (Eq. 4.2.20)</li>
                   <li>Larger <Formula tex="\beta" /> → wider spectrum (see the Spectrum tab)</li>
                 </ul>
               </div>

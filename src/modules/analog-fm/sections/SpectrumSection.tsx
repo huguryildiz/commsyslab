@@ -167,9 +167,33 @@ export function SpectrumSection() {
                     <div className="analog__card__formula">
                       <Formula tex="u(t) = A_c\sum_{n=-\infty}^{\infty} J_n(\beta)\cos\!\bigl(2\pi(f_c + n f_m)t\bigr)" block />
                     </div>
+                    <p>
+                      For a small index <Formula tex="\beta" /> only the carrier and the first
+                      sideband pair survive — this is why NBFM looks like AM (Eq. 4.2.6):
+                    </p>
+                    <div className="analog__card__formula">
+                      <Formula tex="J_0(\beta)\approx 1,\quad J_1(\beta)\approx \tfrac{\beta}{2},\quad J_n(\beta)\approx 0\ (n>1)" block />
+                    </div>
                     <ul>
                       <li>Theoretically infinite sidebands; most power sits near the carrier</li>
                       <li><Formula tex="J_{-n}(\beta) = (-1)^n J_n(\beta)" /></li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="analog__card">
+                  <h3 className="analog__card__title analog__card__title--green">Constant-envelope power</h3>
+                  <div className="analog__card__body">
+                    <p>
+                      Angle modulation only changes the phase, so the total power is independent
+                      of <Formula tex="\beta" /> — the Bessel coefficients always satisfy Parseval:
+                    </p>
+                    <div className="analog__card__formula">
+                      <Formula tex="\sum_{n=-\infty}^{\infty} J_n^2(\beta) = 1 \;\Longrightarrow\; P = \tfrac{A_c^2}{2}" block />
+                    </div>
+                    <ul>
+                      <li>Increasing <Formula tex="\beta" /> redistributes power into more sidebands, never adds power</li>
+                      <li>Constant envelope → FM tolerates nonlinear (saturated) amplifiers</li>
                     </ul>
                   </div>
                 </div>

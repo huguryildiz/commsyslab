@@ -187,9 +187,13 @@ export function ModDemodSection({ clock: _clock, loop: _loop }: SectionProps) {
                   <Formula tex="f_i(t) = f_c + k_f\,m(t)" block />
                 </div>
                 <p>
-                  A varactor diode varies the LC tank capacitance, shifting the oscillation
-                  frequency linearly with the control voltage <Formula tex="m(t)" />.
+                  A varactor diode acts as a voltage-dependent capacitor
+                  <Formula tex="C(t)=C_0+k_0 m(t)" /> in the LC tank. For small deviations the tank
+                  frequency tracks the message almost linearly (Eq. 4.3.5):
                 </p>
+                <div className="analog__card__formula">
+                  <Formula tex="f_i(t)=\frac{1}{2\pi\sqrt{L_0 C(t)}}\approx f_c\!\left[1-\frac{k_0}{2C_0}m(t)\right]" block />
+                </div>
               </div>
             </div>
 
@@ -201,8 +205,16 @@ export function ModDemodSection({ clock: _clock, loop: _loop }: SectionProps) {
                   then multiplies the instantaneous frequency deviation by <Formula tex="n" /> via a
                   frequency multiplier (Fig. 4.9):
                 </p>
+                <p>
+                  An <Formula tex="\times n" /> frequency multiplier raises both the carrier and the
+                  phase deviation by the factor <Formula tex="n" /> (Eqs. 4.3.6–4.3.7):
+                </p>
                 <div className="analog__card__formula">
-                  <Formula tex="\Delta f_{\text{out}} = n\,\Delta f_{\text{NBFM}}" block />
+                  <Formula tex="u(t)=A_c\cos\!\bigl(2\pi n f_1 t + n\,\phi(t)\bigr)\;\Rightarrow\;\Delta f_{\text{out}} = n\,\Delta f_{\text{NBFM}}" block />
+                </div>
+                <p>A mixer then translates the carrier down to the desired band (Eq. 4.3.8):</p>
+                <div className="analog__card__formula">
+                  <Formula tex="u(t)=A_c\cos\!\bigl(2\pi(n f_1 - f_{LO})t + n\,\phi(t)\bigr)" block />
                 </div>
                 <ul>
                   <li>Maintains a crystal-stable carrier (no free-running VCO)</li>
@@ -297,9 +309,25 @@ export function ModDemodSection({ clock: _clock, loop: _loop }: SectionProps) {
                         bandwidth <Formula tex="B_n" /> and damping <Formula tex="\zeta" /></li>
                       <li><strong>VCO</strong> — integrates control voltage to track carrier phase</li>
                     </ol>
-                    <p>At phase lock, the VCO control voltage is proportional to the message:</p>
+                    <p>
+                      When the loop is locked the phase error <Formula tex="\phi_e=\phi-\phi_v" /> is
+                      small, so <Formula tex="\sin\phi_e\approx\phi_e" /> and the loop is linear. The
+                      phase error then obeys (Eq. 4.3.21):
+                    </p>
                     <div className="analog__card__formula">
-                      <Formula tex="v(t) = \frac{k_f}{k_v}\,m(t)" block />
+                      <Formula tex="\frac{d\phi_e}{dt} + 2\pi k_v\,v(t) = \frac{d\phi}{dt}" block />
+                    </div>
+                    <p>In the frequency domain the control voltage follows (Eqs. 4.3.24–4.3.25):</p>
+                    <div className="analog__card__formula">
+                      <Formula tex="V(f) = \frac{G(f)}{1 + \dfrac{k_v}{jf}G(f)}\,\Phi(f)" block />
+                    </div>
+                    <p>
+                      Designing <Formula tex="|k_v G(f)/jf|\gg 1" /> over the message band makes the
+                      output track the phase derivative, so at lock the VCO control voltage is
+                      proportional to the message (Eq. 4.3.28):
+                    </p>
+                    <div className="analog__card__formula">
+                      <Formula tex="v(t) = \frac{1}{2\pi k_v}\frac{d\phi(t)}{dt} = \frac{k_f}{k_v}\,m(t)" block />
                     </div>
                     <p>
                       The 2nd-order loop filter uses natural frequency <Formula tex="\omega_n = 2\pi B_n" />

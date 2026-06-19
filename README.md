@@ -54,8 +54,8 @@ All twelve modules are live and follow book-chapter order.
 | # | Module | What it covers |
 |---|--------|----------------|
 | 01 | **Signals & Spectra** | Basic signals, convolution, Fourier series synthesis, FFT & spectra, transform pairs, filter design (LTI · realizable · studio with audio), Hilbert transform, bandpass & I/Q representation |
-| 02 | **Amplitude Modulation (AM)** | DSB-SC, conventional AM, SSB & VSB, power/efficiency; power-law, switching, balanced & ring modulators with circuit block diagrams; envelope & coherent demodulators; FDM channel stacking; superheterodyne receiver frequency plan |
-| 03 | **Angle Modulation (FM/PM)** | FM & PM waveforms, instantaneous frequency, Bessel sidebands, Carson bandwidth, discriminator detection |
+| 02 | **Amplitude Modulation (AM)** | DSB-SC, conventional AM, SSB & VSB, power/efficiency; power-law, switching, balanced & ring modulators with circuit block diagrams; envelope & coherent demodulators; FDM channel stacking & quadrature-carrier multiplexing (QAM); superheterodyne receiver frequency plan |
+| 03 | **Angle Modulation (FM/PM)** | FM & PM waveforms, instantaneous frequency, Bessel sidebands, Carson bandwidth, discriminator & PLL detection; FM radio (stereo multiplexing, pre/de-emphasis, superheterodyne) |
 | 04 | **Random Processes** | Ensembles, autocorrelation, ergodicity, PSD, LTI filtering of random processes |
 | 05 | **Noise in Analog Systems** | Output SNR, demodulation gain, FM threshold, pre/de-emphasis for DSB-SC / AM / FM |
 | 06 | **Analog-to-Digital Conversion** | Nyquist theorem, aliasing, PCM coding, scalar quantization, SQNR, delta modulation, audio playback |
