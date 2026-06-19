@@ -11,6 +11,57 @@ export const en: Record<string, string> = {
   'nav.adc': 'Analog-to-Digital Conversion',
   'adc.tab.sampling': 'Sampling & Quantization',
   'adc.tab.deltamod': 'Delta Modulation',
+  // Analog-to-Digital Conversion — 4-tab shell (Proakis Ch. 7)
+  'adc.tab.sampling2': 'Sampling',
+  'adc.tab.quantization': 'Quantization',
+  'adc.tab.waveform': 'Waveform Coding',
+  'adc.tab.media': 'Source & Media Coding',
+  'adc.sub.scalar': 'Scalar',
+  'adc.sub.vector': 'Vector',
+  'adc.sub.pcm': 'PCM & Companding',
+  'adc.sub.dpcm': 'DPCM',
+  'adc.sub.dm': 'Delta Modulation',
+  'adc.placeholder.title': 'Planned simulation',
+  'adc.placeholder.vector':
+    'Vector quantization (LBG codebook, Voronoi regions) — added in the next Phase-1 step.',
+  'adc.placeholder.dpcm':
+    'Differential PCM (predictive coding) — added in the next Phase-1 step.',
+  'adc.placeholder.media':
+    'LPC analysis-synthesis (§7.5), digital audio / Σ-Δ (§7.6), and JPEG DCT (§7.7) — planned for Phase 2–3.',
+  // Sampling section info cards (§7.1)
+  'adc.card.nyquist.title': 'Nyquist criterion',
+  'adc.card.nyquist.body':
+    'A signal of bandwidth $W$ is fully captured when sampled at $f_s \\ge 2W$. Below that rate the spectral replicas overlap.',
+  'adc.card.aliasing.title': 'Aliasing',
+  'adc.card.aliasing.body':
+    'Undersampling folds high frequencies onto low ones at $|f - f_s\\,\\mathrm{round}(f/f_s)|$ — the alias cannot be undone after sampling.',
+  'adc.card.recon.title': 'Reconstruction',
+  'adc.card.recon.body':
+    'Ideal lowpass interpolation rebuilds $x(t)=\\sum_n x(nT_s)\\,\\mathrm{sinc}(2W(t-nT_s))$ — exact at every sample instant.',
+  // Scalar quantization info cards (§7.2.1)
+  'adc.card.quant.title': 'Uniform quantization',
+  'adc.card.quant.body':
+    'Each sample is rounded to one of $L=2^R$ levels spaced by $\\Delta=2m_{max}/L$; the rounding error rides in $[-\\Delta/2,\\Delta/2]$.',
+  'adc.card.sqnr.title': 'SQNR',
+  'adc.card.sqnr.body':
+    'Quantization noise power is $\\Delta^2/12$, so SQNR rises about $6.02R+\\alpha$ dB — roughly 6 dB per extra bit.',
+  'adc.card.midrisetread.title': 'Mid-rise vs mid-tread',
+  'adc.card.midrisetread.body':
+    'Mid-rise has no zero level (a decision boundary at 0); mid-tread places a level at 0 — better for near-silence.',
+  // PCM section info cards (§7.3, 7.4.1)
+  'adc.card.pcm.title': 'PCM bitstream',
+  'adc.card.pcm.body':
+    'Each level index becomes an $R$-bit codeword; the line rate is $R_b=R\\,f_s$ bits/s.',
+  'adc.card.gray.title': 'Gray vs natural binary',
+  'adc.card.gray.body':
+    'Gray coding makes adjacent levels differ in one bit, so a single bit error shifts the decoded level by only one step.',
+  // Delta modulation info cards (§7.4.3)
+  'adc.card.dm.title': 'Delta modulation',
+  'adc.card.dm.body':
+    'A 1-bit predictor climbs or drops by $\\Delta$ each sample: $\\hat{x}[n]=\\hat{x}[n-1]\\pm\\Delta$.',
+  'adc.card.slope.title': 'Slope overload vs granular noise',
+  'adc.card.slope.body':
+    'The staircase tracks at most $\\Delta f_s$ per second; steeper inputs cause slope overload, flat inputs cause granular hunting.',
   'nav.modulation': 'Digital Modulation & Detection',
   'nav.baseband': 'Baseband & ISI',
   'nav.huffman': 'Huffman & Entropy',
