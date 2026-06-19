@@ -105,6 +105,8 @@ function Shell() {
           <Route path="/random-process" element={<RandomProcessModule />} />
           <Route path="/random-process/:tab" element={<RandomProcessModule />} />
           <Route path="/sampling" element={<AdcModule />} />
+          {/* Old deep link: Delta Modulation now lives under the Waveform Coding tab. */}
+          <Route path="/sampling/deltamod" element={<Navigate to="/sampling/waveform" replace />} />
           <Route path="/sampling/:tab" element={<AdcModule />} />
           {/* Delta Modulation is now a tab inside the Analog-to-Digital Conversion module. */}
           <Route path="/delta-modulation" element={<Navigate to="/sampling" replace />} />

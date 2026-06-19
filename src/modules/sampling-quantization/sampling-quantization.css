@@ -60,3 +60,7 @@
 .adc__subtabbar {
   margin-bottom: var(--space-3);
 }
+
+.adc__tabbar {
+  margin-bottom: var(--space-3);
+}
