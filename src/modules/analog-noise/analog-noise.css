@@ -6,30 +6,6 @@
   padding: var(--space-4);
 }
 
-.an__head h1 {
-  background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.an__head p {
-  color: var(--text-dim);
-  font-family: var(--mono);
-}
-
-.an__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
-}
-
-@media (max-width: 900px) {
-  .an__grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ── Tabbed layout (Ch 6 rebuild) ───────────────────────────────────────── */
 .an__tabbar {
   border-bottom: 1px solid var(--border);

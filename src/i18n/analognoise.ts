@@ -1,8 +1,6 @@
 export const analognoise: Record<string, string> = {
   'nav.analogNoise': 'Noise in Analog Systems',
   'an.title': 'Noise in Analog Systems',
-  'an.subtitle':
-    'Effect of noise on AM/FM, threshold, pre/de-emphasis, and link budget — Proakis Ch 6',
 
   // Top-level tabs
   'an.tab.ariaLabel': 'Chapter 6 tabs',

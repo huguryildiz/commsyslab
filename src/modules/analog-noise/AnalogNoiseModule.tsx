@@ -19,10 +19,6 @@ export function AnalogNoiseModule() {
 
   return (
     <div className="an">
-      <header className="an__head">
-        <h1>{t('an.title')}</h1>
-        <p>{t('an.subtitle')}</p>
-      </header>
       <div className="an__tabbar">
         <Segmented<Tab>
           ariaLabel={t('an.tab.ariaLabel')}
