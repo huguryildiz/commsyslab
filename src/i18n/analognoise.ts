@@ -59,6 +59,13 @@ export const analognoise: Record<string, string> = {
   'an.emph.theory':
     'Pre-emphasis boosts high frequencies at the transmitter; de-emphasis $H_d(f)=1/(1+jf/f_1)$ cuts them at the receiver, restoring the message while suppressing the parabolic FM noise. With $\\tau=75\\,\\mu s$ ($f_1\\approx2122$ Hz) and $W=15$ kHz the pair adds roughly +13 dB (Eq. 6.2.42).',
 
+  // §6.3 Comparison
+  'an.cmp.title': 'Parameters',
+  'an.cmp.plot': 'Output SNR vs baseband SNR',
+  'an.cmp.tableTitle': 'Scheme comparison',
+  'an.cmp.theory':
+    'SSB and DSB-SC match the baseline SNR; SSB does it in half the bandwidth. Conventional AM stays below the baseline ($\\eta<1$) but uses the simplest receiver. FM/PM climb as $\\beta^2$ above threshold, trading the wide Carson bandwidth $2(\\beta+1)W$ for noise immunity — FM is 3× PM at equal $\\beta$.',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',

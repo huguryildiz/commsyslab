@@ -119,3 +119,24 @@
   color: var(--text-faint);
   font-size: 0.8rem;
 }
+
+/* ── Comparison table ───────────────────────────────────────────────────── */
+.an__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.an__table th,
+.an__table td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+.an__table th {
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.an__table td {
+  font-family: var(--mono);
+  color: var(--text);
+}
