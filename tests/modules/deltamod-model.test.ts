@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { buildDeltaModView, type DeltaModParams } from '@/modules/deltamod/model';
+import {
+  buildDeltaModView,
+  type DeltaModParams,
+} from '@/modules/sampling-quantization/sections/waveform/deltamod-model';
 
 const base: DeltaModParams = {
   toneFreq: 2,
