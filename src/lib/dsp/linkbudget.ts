@@ -80,3 +80,74 @@ export function fadeMarginDb(shadowSigmaDb: number, targetOutage: number): numbe
   if (shadowSigmaDb <= 0) return 0;
   return shadowSigmaDb * qfuncInv(targetOutage);
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Analog-system transmission losses & noise — Proakis & Salehi §6.4
+// (Reuses BOLTZMANN and freeSpacePathLossDb above.)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Standard reference temperature T₀ = 290 K (Proakis §6.4.2). */
+export const T0 = 290;
+
+/** §6.4.1 — one-sided thermal-noise PSD N₀ = kT (W/Hz). */
+export function noiseFloorN0(tempK: number): number {
+  return BOLTZMANN * tempK;
+}
+
+/** §6.4.1 — available thermal noise power P_n = kTB (W). */
+export function thermalNoisePower(tempK: number, bandwidthHz: number): number {
+  return BOLTZMANN * tempK * bandwidthHz;
+}
+
+/** §6.4.2 — effective noise temperature Tₑ = T₀(F − 1) (K), F linear. */
+export function noiseFigureToTemp(F: number, t0 = T0): number {
+  return t0 * (F - 1);
+}
+
+/** §6.4.2 — noise figure F = 1 + Tₑ/T₀ (linear), from effective temperature. */
+export function tempToNoiseFigure(Te: number, t0 = T0): number {
+  return 1 + Te / t0;
+}
+
+export interface FriisStage {
+  gainDb: number;
+  noiseFigureDb: number;
+}
+export interface FriisResult {
+  F: number; // linear total noise figure
+  fDb: number; // dB
+  Te: number; // equivalent effective temperature (K)
+}
+
+/** §6.4.2 — Friis cascade: F = F₁ + (F₂−1)/G₁ + (F₃−1)/(G₁G₂) + … */
+export function friisCascade(stages: FriisStage[], t0 = T0): FriisResult {
+  let F = 0;
+  let gainProd = 1;
+  for (let i = 0; i < stages.length; i++) {
+    const Fi = 10 ** (stages[i].noiseFigureDb / 10);
+    F += i === 0 ? Fi : (Fi - 1) / gainProd;
+    gainProd *= 10 ** (stages[i].gainDb / 10);
+  }
+  return { F, fDb: 10 * Math.log10(F), Te: noiseFigureToTemp(F, t0) };
+}
+
+/** §6.4.3 — wireline loss L_dB = (dB/km)·km. */
+export function cableLossDb(distanceKm: number, dbPerKm: number): number {
+  return distanceKm * dbPerKm;
+}
+
+export interface RepeaterParams {
+  ptDbW: number; // transmit power (dBW)
+  perSegLossDb: number; // loss per segment L (dB)
+  faDb: number; // repeater noise figure F_a (dB)
+  tempK: number; // reference temperature for N₀
+  bandwidthHz: number; // noise-equivalent bandwidth B
+  segments: number; // K
+}
+
+/** §6.4.4 — output SNR (dB) for K equal repeater segments:
+ *  (S/N)_o = P_T / (K · L · F_a · N₀ · B). */
+export function repeaterChainSnrDb(p: RepeaterParams): number {
+  const n0bDbW = 10 * Math.log10(noiseFloorN0(p.tempK) * p.bandwidthHz);
+  return p.ptDbW - 10 * Math.log10(p.segments) - p.perSegLossDb - p.faDb - n0bDbW;
+}
