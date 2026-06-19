@@ -1,16 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { ModulationModule } from '@/modules/modulation/ModulationModule';
+
+// The module reads its active tab from the URL (useParams/useNavigate), so it must be
+// rendered inside a router with the same routes registered in App.tsx.
+function renderModule() {
+  return render(
+    <MemoryRouter initialEntries={['/modulation']}>
+      <Routes>
+        <Route path="/modulation" element={<ModulationModule />} />
+        <Route path="/modulation/:tab" element={<ModulationModule />} />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
 
 describe('ModulationModule', () => {
   it('renders controls and the SER panel', () => {
-    render(<ModulationModule />);
+    renderModule();
     expect(screen.getByLabelText(/Scheme/i)).toBeTruthy();
     expect(screen.getByLabelText(/Symbol-error rate versus Eb\/N0/i)).toBeTruthy();
   });
 
   it('shows the constellation plane for a 2-D scheme (M-PSK) and a not-drawable notice for M-FSK', () => {
-    render(<ModulationModule />);
+    renderModule();
     const scheme = screen.getByLabelText(/Scheme/i) as HTMLSelectElement;
     fireEvent.change(scheme, { target: { value: 'mpsk' } });
     expect(screen.getByLabelText(/Signal-space constellation/i)).toBeTruthy();
@@ -20,7 +34,7 @@ describe('ModulationModule', () => {
   });
 
   it('defaults to the detection view and switches to the optimum receiver', () => {
-    render(<ModulationModule />);
+    renderModule();
     // both tabs exist
     const optrxTab = screen.getByRole('tab', { name: 'Optimum receiver' });
     expect(screen.getByRole('tab', { name: 'Constellation & detection' })).toHaveAttribute(
@@ -35,7 +49,7 @@ describe('ModulationModule', () => {
   });
 
   it('on the optimum-receiver tab, selecting QPSK shows the constellation-landing decision panel', () => {
-    render(<ModulationModule />);
+    renderModule();
     fireEvent.click(screen.getByRole('tab', { name: 'Optimum receiver' }));
     const setSelect = screen.getByLabelText('Signal set') as HTMLSelectElement;
     fireEvent.change(setSelect, { target: { value: 'qpsk' } });
@@ -47,7 +61,7 @@ describe('ModulationModule', () => {
   });
 
   it('on the optimum-receiver tab, selecting Custom shows the editor and the dim≥3 min-distance panel', () => {
-    render(<ModulationModule />);
+    renderModule();
     fireEvent.click(screen.getByRole('tab', { name: 'Optimum receiver' }));
     const setSelect = screen.getByLabelText('Signal set') as HTMLSelectElement;
     fireEvent.change(setSelect, { target: { value: 'custom' } });

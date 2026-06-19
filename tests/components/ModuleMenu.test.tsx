@@ -17,7 +17,7 @@ describe('ModuleMenu', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(12);
     expect(screen.getByRole('link', { name: /Signals & Spectra/i })).toHaveAttribute(
       'href',
-      '/fourier',
+      '/signals',
     );
     expect(screen.getByRole('link', { name: /Noise in Analog Systems/i })).toHaveAttribute(
       'href',

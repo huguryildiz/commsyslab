@@ -18,11 +18,11 @@ describe('App shell', () => {
     const menu = screen.getByRole('menu');
     expect(within(menu).getByRole('link', { name: /Signals & Spectra/i })).toHaveAttribute(
       'href',
-      '#/fourier',
+      '/signals',
     );
     expect(within(menu).getByRole('link', { name: /Noise in Analog Systems/i })).toHaveAttribute(
       'href',
-      '#/analog-noise',
+      '/analog-noise',
     );
   });
 });
