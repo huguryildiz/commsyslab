@@ -1,7 +1,15 @@
 import { useMemo, useState } from 'react';
 import { Panel, Select, Slider, Formula, TheoryBox, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
-import { linScale, drawAxes, drawLine, drawStems, shadeRegion, drawVLine, type Axes } from '@/lib/plot/draw';
+import {
+  linScale,
+  drawAxes,
+  drawLine,
+  drawStems,
+  shadeRegion,
+  drawVLine,
+  type Axes,
+} from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
 import { t } from '@/i18n';
 import {
@@ -227,36 +235,108 @@ export function RandomVariableSection() {
             />
             {kind === 'gaussian' && (
               <>
-                <Slider label={<HintText text={t('rp.func.m')} />} min={-3} max={3} step={0.1} value={m} onChange={setM} />
-                <Slider label={<HintText text={t('rp.func.sigma')} />} min={0.3} max={3} step={0.1} value={sigma} onChange={setSigma} />
+                <Slider
+                  label={<HintText text={t('rp.func.m')} />}
+                  min={-3}
+                  max={3}
+                  step={0.1}
+                  value={m}
+                  onChange={setM}
+                />
+                <Slider
+                  label={<HintText text={t('rp.func.sigma')} />}
+                  min={0.3}
+                  max={3}
+                  step={0.1}
+                  value={sigma}
+                  onChange={setSigma}
+                />
               </>
             )}
             {kind === 'uniform' && (
               <>
-                <Slider label={<HintText text="$a$" />} min={-3} max={2.5} step={0.1} value={a} onChange={setA} />
-                <Slider label={<HintText text="$b$" />} min={-2.5} max={3} step={0.1} value={b} onChange={setB} />
+                <Slider
+                  label={<HintText text="$a$" />}
+                  min={-3}
+                  max={2.5}
+                  step={0.1}
+                  value={a}
+                  onChange={setA}
+                />
+                <Slider
+                  label={<HintText text="$b$" />}
+                  min={-2.5}
+                  max={3}
+                  step={0.1}
+                  value={b}
+                  onChange={setB}
+                />
               </>
             )}
             {kind === 'rayleigh' && (
-              <Slider label={<HintText text={t('rp.func.sigma')} />} min={0.3} max={3} step={0.1} value={sigma} onChange={setSigma} />
+              <Slider
+                label={<HintText text={t('rp.func.sigma')} />}
+                min={0.3}
+                max={3}
+                step={0.1}
+                value={sigma}
+                onChange={setSigma}
+              />
             )}
             {kind === 'binomial' && (
               <>
-                <Slider label={<HintText text="$n$" />} min={2} max={40} step={1} value={n} onChange={setN} />
-                <Slider label={<HintText text="$p$" />} min={0.05} max={0.95} step={0.05} value={p} onChange={setP} />
+                <Slider
+                  label={<HintText text="$n$" />}
+                  min={2}
+                  max={40}
+                  step={1}
+                  value={n}
+                  onChange={setN}
+                />
+                <Slider
+                  label={<HintText text="$p$" />}
+                  min={0.05}
+                  max={0.95}
+                  step={0.05}
+                  value={p}
+                  onChange={setP}
+                />
               </>
             )}
             {kind === 'bernoulli' && (
-              <Slider label={<HintText text="$p$" />} min={0.05} max={0.95} step={0.05} value={p} onChange={setP} />
+              <Slider
+                label={<HintText text="$p$" />}
+                min={0.05}
+                max={0.95}
+                step={0.05}
+                value={p}
+                onChange={setP}
+              />
             )}
-            <Slider label={<HintText text={t('rp.rv.samples')} />} min={100} max={5000} step={100} value={samples} onChange={setSamples} />
+            <Slider
+              label={<HintText text={t('rp.rv.samples')} />}
+              min={100}
+              max={5000}
+              step={100}
+              value={samples}
+              onChange={setSamples}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
 
           <Panel title={t('rp.qfunc.title')}>
-            <Slider label={<HintText text={t('rp.qfunc.threshold')} />} min={-3} max={3.5} step={0.05} value={qx} onChange={setQx} />
+            <Slider
+              label={<HintText text={t('rp.qfunc.threshold')} />}
+              min={-3}
+              max={3.5}
+              step={0.05}
+              value={qx}
+              onChange={setQx}
+            />
           </Panel>
         </aside>
 
@@ -268,7 +348,12 @@ export function RandomVariableSection() {
 
           <Panel title={t('rp.rv.pdf')}>
             <PlotTitle textKey="rp.rv.pdf" />
-            <Canvas height={210} draw={drawPdf} deps={[view]} ariaLabel="Probability density / mass function with sample histogram" />
+            <Canvas
+              height={210}
+              draw={drawPdf}
+              deps={[view]}
+              ariaLabel="Probability density / mass function with sample histogram"
+            />
             <Legend
               entries={[
                 { color: CHART.blue, label: t('rp.rv.trace.pdf') },
@@ -276,7 +361,12 @@ export function RandomVariableSection() {
               ]}
             />
             <PlotTitle textKey="rp.rv.cdf" />
-            <Canvas height={170} draw={drawCdf} deps={[view]} ariaLabel="Cumulative distribution function" />
+            <Canvas
+              height={170}
+              draw={drawCdf}
+              deps={[view]}
+              ariaLabel="Cumulative distribution function"
+            />
             <Formula tex="f_X(x)=\dfrac{d}{dx}F_X(x),\quad \int_{-\infty}^{\infty} f_X(x)\,dx=1" />
             <TheoryBox>
               <HintText text={t('rp.rv.theory')} />
@@ -287,9 +377,17 @@ export function RandomVariableSection() {
             <div className="rp__readouts">
               <Metric label={t('rp.qfunc.value')} value={qfunc(qx).toFixed(4)} />
               <Metric label={t('rp.qfunc.boundExp')} value={qb.upperExp.toFixed(4)} />
-              <Metric label={t('rp.qfunc.boundTight')} value={Number.isFinite(qb.upperTight) ? qb.upperTight.toFixed(4) : '—'} />
+              <Metric
+                label={t('rp.qfunc.boundTight')}
+                value={Number.isFinite(qb.upperTight) ? qb.upperTight.toFixed(4) : '—'}
+              />
             </div>
-            <Canvas height={210} draw={drawQ} deps={[qx, qView]} ariaLabel="Q-function tail of the standard normal density" />
+            <Canvas
+              height={210}
+              draw={drawQ}
+              deps={[qx, qView]}
+              ariaLabel="Q-function tail of the standard normal density"
+            />
             <Formula tex="Q(x)=\int_x^{\infty}\tfrac{1}{\sqrt{2\pi}}e^{-t^2/2}\,dt,\quad \tfrac12 e^{-x^2/2}\ \text{(5.1.8)},\ \tfrac{1}{\sqrt{2\pi}\,x}e^{-x^2/2}\ \text{(5.1.9)}" />
             <TheoryBox>
               <HintText text={t('rp.qfunc.theory')} />

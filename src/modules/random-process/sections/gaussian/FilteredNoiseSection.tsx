@@ -51,8 +51,15 @@ export function FilteredNoiseSection() {
 
   const drawPsd = (ctx: CanvasRenderingContext2D, ww: number, h: number) => {
     const yTop = (n0 / 2) * 2.2;
-    const ax: Axes = { x: linScale([-fmax, fmax], [PAD.l, ww - PAD.r]), y: linScale([0, yTop], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [-fmax, fmax], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$S(f)$', domainY: [0, yTop] });
+    const ax: Axes = {
+      x: linScale([-fmax, fmax], [PAD.l, ww - PAD.r]),
+      y: linScale([0, yTop], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [-fmax, fmax], {
+      xLabel: '$f\\,(\\mathrm{Hz})$',
+      yLabel: '$S(f)$',
+      domainY: [0, yTop],
+    });
     for (const [a, b] of bands) shadeRegion(ctx, ax, a, b, 0, n0 / 2, alpha(CHART.orange, 0.18));
     drawLine(ctx, ax, [-fmax, fmax], [n0 / 2, n0 / 2], CHART.dim, 1.4, true); // white input
     drawLine(ctx, ax, psd.xs, psd.out, CHART.blue, 2); // bandpass output
@@ -60,8 +67,15 @@ export function FilteredNoiseSection() {
 
   const drawIq = (ctx: CanvasRenderingContext2D, ww: number, h: number) => {
     const yTop = Math.max(n0, n0 / 2) * 1.6;
-    const ax: Axes = { x: linScale([-fmax, fmax], [PAD.l, ww - PAD.r]), y: linScale([0, yTop], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [-fmax, fmax], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$S_{X_c}(f)$', domainY: [0, yTop] });
+    const ax: Axes = {
+      x: linScale([-fmax, fmax], [PAD.l, ww - PAD.r]),
+      y: linScale([0, yTop], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [-fmax, fmax], {
+      xLabel: '$f\\,(\\mathrm{Hz})$',
+      yLabel: '$S_{X_c}(f)$',
+      domainY: [0, yTop],
+    });
     shadeRegion(ctx, ax, -w, w, 0, iqLevel, alpha(CHART.green, 0.2));
     drawLine(ctx, ax, [-fmax, -w, -w, w, w, fmax], [0, 0, iqLevel, iqLevel, 0, 0], CHART.green, 2);
   };
@@ -70,8 +84,15 @@ export function FilteredNoiseSection() {
     const fM = Math.max(4 * rcFc, 2 * bneq + 4);
     const xs = Array.from({ length: 240 }, (_, i) => (fM * i) / 239);
     const mag = xs.map((f) => 1 / (1 + (f / rcFc) ** 2)); // |H(f)|²
-    const ax: Axes = { x: linScale([0, fM], [PAD.l, ww - PAD.r]), y: linScale([0, 1.15], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [0, fM], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$|H(f)|^2$', domainY: [0, 1.15] });
+    const ax: Axes = {
+      x: linScale([0, fM], [PAD.l, ww - PAD.r]),
+      y: linScale([0, 1.15], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [0, fM], {
+      xLabel: '$f\\,(\\mathrm{Hz})$',
+      yLabel: '$|H(f)|^2$',
+      domainY: [0, 1.15],
+    });
     shadeRegion(ctx, ax, 0, bneq, 0, 1, alpha(CHART.blue, 0.16));
     drawLine(ctx, ax, [0, bneq, bneq], [1, 1, 0], CHART.blue, 1.6, true); // equivalent brick wall
     drawLine(ctx, ax, xs, mag, CHART.orange, 2);
@@ -91,14 +112,47 @@ export function FilteredNoiseSection() {
                 { value: 'h2', label: t('rp.bp.filter.h2') },
               ]}
             />
-            <Slider label={<HintText text={t('rp.white.n0')} />} min={0.1} max={4} step={0.1} value={n0} onChange={setN0} />
-            <Slider label={<HintText text={t('rp.bp.fc')} />} min={15} max={60} step={1} unit="Hz" value={fc} onChange={setFc} />
-            <Slider label={<HintText text={t('rp.bp.w')} />} min={2} max={20} step={1} unit="Hz" value={w} onChange={setW} />
+            <Slider
+              label={<HintText text={t('rp.white.n0')} />}
+              min={0.1}
+              max={4}
+              step={0.1}
+              value={n0}
+              onChange={setN0}
+            />
+            <Slider
+              label={<HintText text={t('rp.bp.fc')} />}
+              min={15}
+              max={60}
+              step={1}
+              unit="Hz"
+              value={fc}
+              onChange={setFc}
+            />
+            <Slider
+              label={<HintText text={t('rp.bp.w')} />}
+              min={2}
+              max={20}
+              step={1}
+              unit="Hz"
+              value={w}
+              onChange={setW}
+            />
           </Panel>
           <Panel title={t('rp.bp.bneq')}>
-            <Slider label={<HintText text={t('rp.bp.rcfc')} />} min={2} max={40} step={1} unit="Hz" value={rcFc} onChange={setRcFc} />
+            <Slider
+              label={<HintText text={t('rp.bp.rcfc')} />}
+              min={2}
+              max={40}
+              step={1}
+              unit="Hz"
+              value={rcFc}
+              onChange={setRcFc}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -111,7 +165,12 @@ export function FilteredNoiseSection() {
 
           <Panel title={t('rp.bp.psd')}>
             <PlotTitle textKey="rp.bp.psd" />
-            <Canvas height={200} draw={drawPsd} deps={[psd, fc, w, n0, filt]} ariaLabel="White input, bandpass filter, and output PSD" />
+            <Canvas
+              height={200}
+              draw={drawPsd}
+              deps={[psd, fc, w, n0, filt]}
+              ariaLabel="White input, bandpass filter, and output PSD"
+            />
             <Legend
               entries={[
                 { color: CHART.dim, label: t('rp.bp.trace.input'), dashed: true },
@@ -123,13 +182,23 @@ export function FilteredNoiseSection() {
 
           <Panel title={t('rp.bp.iq')}>
             <PlotTitle textKey="rp.bp.iq" />
-            <Canvas height={180} draw={drawIq} deps={[iqLevel, w, fc, n0]} ariaLabel="Lowpass in-phase and quadrature component PSD" />
+            <Canvas
+              height={180}
+              draw={drawIq}
+              deps={[iqLevel, w, fc, n0]}
+              ariaLabel="Lowpass in-phase and quadrature component PSD"
+            />
             <Formula tex="X(t)=X_c(t)\cos 2\pi f_c t-X_s(t)\sin 2\pi f_c t,\quad S_{X_c}=S_{X_s}" />
           </Panel>
 
           <Panel title={t('rp.bp.bneq')}>
             <PlotTitle textKey="rp.bp.bneq" />
-            <Canvas height={190} draw={drawBneq} deps={[rcFc, bneq]} ariaLabel="RC filter response and its noise-equivalent bandwidth rectangle" />
+            <Canvas
+              height={190}
+              draw={drawBneq}
+              deps={[rcFc, bneq]}
+              ariaLabel="RC filter response and its noise-equivalent bandwidth rectangle"
+            />
             <Legend
               entries={[
                 { color: CHART.orange, label: t('rp.bp.trace.filter') },

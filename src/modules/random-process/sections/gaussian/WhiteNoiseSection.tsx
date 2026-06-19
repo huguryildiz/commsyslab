@@ -49,40 +49,76 @@ export function WhiteNoiseSection() {
   }, [temp]);
 
   const t1 = (NS - 1) / FS;
-  const [lo, hi, onWheel, , onPan] = useZoom(0, t1, { minSpan: t1 / 8, maxSpan: t1, clampMin: 0, clampMax: t1 });
+  const [lo, hi, onWheel, , onPan] = useZoom(0, t1, {
+    minSpan: t1 / 8,
+    maxSpan: t1,
+    clampMin: 0,
+    clampMax: t1,
+  });
   const amp = useMemo(() => Math.max(0.1, ...sample.x.map(Math.abs)) * 1.15, [sample]);
 
   const drawSamples = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    const ax: Axes = { x: linScale([lo, hi], [PAD.l, w - PAD.r]), y: linScale([-amp, amp], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [lo, hi], { xLabel: '$t\\,(\\mathrm{s})$', yLabel: '$X(t)$', domainY: [-amp, amp] });
+    const ax: Axes = {
+      x: linScale([lo, hi], [PAD.l, w - PAD.r]),
+      y: linScale([-amp, amp], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [lo, hi], {
+      xLabel: '$t\\,(\\mathrm{s})$',
+      yLabel: '$X(t)$',
+      domainY: [-amp, amp],
+    });
     drawLine(ctx, ax, sample.ts, sample.x, CHART.green, 1.2);
   };
 
   const drawPsd = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
     const level = n0 / 2;
     const yTop = level * 2.2;
-    const ax: Axes = { x: linScale([-FS / 2, FS / 2], [PAD.l, w - PAD.r]), y: linScale([0, yTop], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [-FS / 2, FS / 2], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$S_n(f)$', domainY: [0, yTop] });
+    const ax: Axes = {
+      x: linScale([-FS / 2, FS / 2], [PAD.l, w - PAD.r]),
+      y: linScale([0, yTop], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [-FS / 2, FS / 2], {
+      xLabel: '$f\\,(\\mathrm{Hz})$',
+      yLabel: '$S_n(f)$',
+      domainY: [0, yTop],
+    });
     drawLine(ctx, ax, [-FS / 2, FS / 2], [level, level], CHART.blue, 2);
   };
 
   const drawAcf = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
     const lvl = n0 / 2;
     const tauMax = 0.2;
-    const ax: Axes = { x: linScale([-tauMax, tauMax], [PAD.l, w - PAD.r]), y: linScale([0, lvl * 1.3], [h - PAD.b, PAD.t]) };
-    drawAxes(ctx, ax, [-tauMax, tauMax], { xLabel: '$\\tau\\,(\\mathrm{s})$', yLabel: '$R_n(\\tau)$', domainY: [0, lvl * 1.3] });
+    const ax: Axes = {
+      x: linScale([-tauMax, tauMax], [PAD.l, w - PAD.r]),
+      y: linScale([0, lvl * 1.3], [h - PAD.b, PAD.t]),
+    };
+    drawAxes(ctx, ax, [-tauMax, tauMax], {
+      xLabel: '$\\tau\\,(\\mathrm{s})$',
+      yLabel: '$R_n(\\tau)$',
+      domainY: [0, lvl * 1.3],
+    });
     drawStems(ctx, ax, [0], [lvl], CHART.orange, 4);
   };
 
   const drawQuantum = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
-    const ax: Axes = { x: linScale([0, 6], [PAD.l, w - PAD.r]), y: linScale([0, 1.15], [h - PAD.b, PAD.t]) };
+    const ax: Axes = {
+      x: linScale([0, 6], [PAD.l, w - PAD.r]),
+      y: linScale([0, 1.15], [h - PAD.b, PAD.t]),
+    };
     drawAxes(ctx, ax, [0, 6], {
       xLabel: '$f\\,(\\mathrm{THz})$',
       yLabel: '$S_n(f)/kT$',
       domainY: [0, 1.15],
     });
     drawLine(ctx, ax, [0, 6], [1, 1], CHART.dim, 1.5, true);
-    drawLine(ctx, ax, quantum.fs.map((f) => f / 1e12), quantum.norm, CHART.blue, 2);
+    drawLine(
+      ctx,
+      ax,
+      quantum.fs.map((f) => f / 1e12),
+      quantum.norm,
+      CHART.blue,
+      2,
+    );
   };
 
   return (
@@ -90,10 +126,27 @@ export function WhiteNoiseSection() {
       <div className="module-layout">
         <aside className="rp__controls">
           <Panel title={t('rp.white.controls')}>
-            <Slider label={<HintText text={t('rp.white.n0')} />} min={0.1} max={4} step={0.1} value={n0} onChange={setN0} />
-            <Slider label={<HintText text={t('rp.white.temp')} />} min={50} max={400} step={10} unit="K" value={temp} onChange={setTemp} />
+            <Slider
+              label={<HintText text={t('rp.white.n0')} />}
+              min={0.1}
+              max={4}
+              step={0.1}
+              value={n0}
+              onChange={setN0}
+            />
+            <Slider
+              label={<HintText text={t('rp.white.temp')} />}
+              min={50}
+              max={400}
+              step={10}
+              unit="K"
+              value={temp}
+              onChange={setTemp}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -105,20 +158,42 @@ export function WhiteNoiseSection() {
 
           <Panel title={t('rp.white.samples')}>
             <PlotTitle textKey="rp.white.samples" />
-            <Canvas height={170} draw={drawSamples} deps={[sample, lo, hi, amp]} ariaLabel="White-noise realization" onWheel={onWheel} onPan={onPan} />
+            <Canvas
+              height={170}
+              draw={drawSamples}
+              deps={[sample, lo, hi, amp]}
+              ariaLabel="White-noise realization"
+              onWheel={onWheel}
+              onPan={onPan}
+            />
           </Panel>
 
           <Panel title={t('rp.white.psd')}>
             <PlotTitle textKey="rp.white.psd" />
-            <Canvas height={150} draw={drawPsd} deps={[n0]} ariaLabel="Flat white-noise power spectral density" />
+            <Canvas
+              height={150}
+              draw={drawPsd}
+              deps={[n0]}
+              ariaLabel="Flat white-noise power spectral density"
+            />
             <PlotTitle textKey="rp.white.acf" />
-            <Canvas height={150} draw={drawAcf} deps={[n0]} ariaLabel="Impulsive white-noise autocorrelation" />
+            <Canvas
+              height={150}
+              draw={drawAcf}
+              deps={[n0]}
+              ariaLabel="Impulsive white-noise autocorrelation"
+            />
             <Formula tex="S_n(f)=\tfrac{N_0}{2}\ \xleftrightarrow{\ \mathcal{F}\ }\ R_n(\tau)=\tfrac{N_0}{2}\,\delta(\tau)" />
           </Panel>
 
           <Panel title={t('rp.white.quantum')}>
             <PlotTitle textKey="rp.white.quantum" />
-            <Canvas height={190} draw={drawQuantum} deps={[quantum]} ariaLabel="Quantum thermal-noise PSD versus the white approximation" />
+            <Canvas
+              height={190}
+              draw={drawQuantum}
+              deps={[quantum]}
+              ariaLabel="Quantum thermal-noise PSD versus the white approximation"
+            />
             <Legend
               entries={[
                 { color: CHART.blue, label: t('rp.white.trace.quantum') },

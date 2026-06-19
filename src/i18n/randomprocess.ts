@@ -103,12 +103,6 @@ export const randomprocess: Record<string, string> = {
   'rp.gen.reset': 'Reset',
   'rp.gen.realizations': '$M$ (realizations)',
 
-  // ── Filter generator (§5.3 controls) ─────────────────────────────────────
-  'rp.filt.title': 'White noise → filter',
-  'rp.filt.kind': 'Filter',
-  'rp.filt.kind.rc': 'RC low-pass',
-  'rp.filt.kind.ideal': 'Ideal LPF',
-
   // ── §5.2 section titles ──────────────────────────────────────────────────
   'rp.ensemble.title': 'Ensemble & mean (§5.2.1)',
   'rp.autocorr.title': 'Autocorrelation & ergodicity (§5.2.2)',
@@ -140,7 +134,6 @@ export const randomprocess: Record<string, string> = {
 
   // ── §5.3 section titles ──────────────────────────────────────────────────
   'rp.filtermag.title': 'Filter magnitude $|H(f)|^2$ (§5.2.4)',
-  'rp.filterhist.title': 'Filtered Gaussian stays Gaussian (§5.3.3)',
 
   // ── §5.3 sub-tabs ────────────────────────────────────────────────────────
   'rp.gauss.sub.ariaLabel': '§5.3 topic',
@@ -206,11 +199,4 @@ export const randomprocess: Record<string, string> = {
   'rp.trace.timeAvg': 'time average',
   'rp.trace.ensemble': 'ensemble average',
   'rp.trace.estimate': 'estimate',
-
-  // ── Placeholders (built in later phases) ─────────────────────────────────
-  'rp.soon.title': 'Coming soon',
-  'rp.soon.prob':
-    'The §5.1 probability review (distributions, Q-function, Bayes, functions of a random variable, joint Gaussian, and the central limit theorem) is under construction.',
-  'rp.soon.gaussianExtra':
-    'Dedicated §5.3.1 Gaussian-process and §5.3.2 white-noise sections (thermal-noise model, in-phase/quadrature decomposition, noise-equivalent bandwidth) are under construction.',
 };

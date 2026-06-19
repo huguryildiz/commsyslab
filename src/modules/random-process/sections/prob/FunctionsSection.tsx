@@ -55,12 +55,42 @@ export function FunctionsSection() {
       <div className="module-layout">
         <aside className="rp__controls">
           <Panel title={t('rp.func.controls')}>
-            <Slider label={<HintText text={t('rp.func.a')} />} min={-3} max={3} step={0.1} value={a} onChange={setA} />
-            <Slider label={<HintText text={t('rp.func.b')} />} min={-3} max={3} step={0.1} value={b} onChange={setB} />
-            <Slider label={<HintText text={t('rp.func.m')} />} min={-2} max={2} step={0.1} value={m} onChange={setM} />
-            <Slider label={<HintText text={t('rp.func.sigma')} />} min={0.3} max={2.5} step={0.1} value={sigma} onChange={setSigma} />
+            <Slider
+              label={<HintText text={t('rp.func.a')} />}
+              min={-3}
+              max={3}
+              step={0.1}
+              value={a}
+              onChange={setA}
+            />
+            <Slider
+              label={<HintText text={t('rp.func.b')} />}
+              min={-3}
+              max={3}
+              step={0.1}
+              value={b}
+              onChange={setB}
+            />
+            <Slider
+              label={<HintText text={t('rp.func.m')} />}
+              min={-2}
+              max={2}
+              step={0.1}
+              value={m}
+              onChange={setM}
+            />
+            <Slider
+              label={<HintText text={t('rp.func.sigma')} />}
+              min={0.3}
+              max={2.5}
+              step={0.1}
+              value={sigma}
+              onChange={setSigma}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -73,7 +103,12 @@ export function FunctionsSection() {
 
           <Panel title={t('rp.func.plot')}>
             <PlotTitle textKey="rp.func.plot" />
-            <Canvas height={250} draw={draw} deps={[view]} ariaLabel="Input and output Gaussian densities of Y = aX + b" />
+            <Canvas
+              height={250}
+              draw={draw}
+              deps={[view]}
+              ariaLabel="Input and output Gaussian densities of Y = aX + b"
+            />
             <Legend
               entries={[
                 { color: CHART.blue, label: t('rp.func.trace.in') },

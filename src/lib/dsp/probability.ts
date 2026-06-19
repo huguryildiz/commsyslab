@@ -73,8 +73,12 @@ export function binom(n: number, k: number): number {
 /** Binomial pmf (Eq. 5.1.5): k successes in n independent Bernoulli(p) trials. */
 export function binomialPmf(k: number, n: number, p: number): number {
   if (k < 0 || k > n) return 0;
-  const logP = logFactorial(n) - logFactorial(k) - logFactorial(n - k) +
-    k * Math.log(p || 1e-300) + (n - k) * Math.log(1 - p || 1e-300);
+  const logP =
+    logFactorial(n) -
+    logFactorial(k) -
+    logFactorial(n - k) +
+    k * Math.log(p || 1e-300) +
+    (n - k) * Math.log(1 - p || 1e-300);
   return Math.exp(logP);
 }
 export function binomialCdf(k: number, n: number, p: number): number {

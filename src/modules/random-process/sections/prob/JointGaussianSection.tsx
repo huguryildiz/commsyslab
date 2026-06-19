@@ -47,10 +47,26 @@ export function JointGaussianSection() {
       <div className="module-layout">
         <aside className="rp__controls">
           <Panel title={t('rp.joint.controls')}>
-            <Slider label={<HintText text={t('rp.joint.rho')} />} min={-0.95} max={0.95} step={0.05} value={rho} onChange={setRho} />
-            <Slider label={<HintText text={t('rp.rv.samples')} />} min={300} max={3000} step={100} value={count} onChange={setCount} />
+            <Slider
+              label={<HintText text={t('rp.joint.rho')} />}
+              min={-0.95}
+              max={0.95}
+              step={0.05}
+              value={rho}
+              onChange={setRho}
+            />
+            <Slider
+              label={<HintText text={t('rp.rv.samples')} />}
+              min={300}
+              max={3000}
+              step={100}
+              value={count}
+              onChange={setCount}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -63,7 +79,12 @@ export function JointGaussianSection() {
 
           <Panel title={t('rp.joint.plot')}>
             <PlotTitle textKey="rp.joint.plot" />
-            <Canvas height={360} draw={draw} deps={[view]} ariaLabel="Scatter of jointly Gaussian samples with covariance ellipses" />
+            <Canvas
+              height={360}
+              draw={draw}
+              deps={[view]}
+              ariaLabel="Scatter of jointly Gaussian samples with covariance ellipses"
+            />
             <Formula tex="\rho_{X,Y}=\dfrac{\operatorname{cov}(X,Y)}{\sigma_X\sigma_Y},\quad |\rho_{X,Y}|\le 1" />
             <TheoryBox>
               <HintText text={t('rp.joint.theory')} />

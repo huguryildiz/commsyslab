@@ -4,7 +4,13 @@ import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
 import { t } from '@/i18n';
-import { type CltBase, cltSampleMeans, cltBaseStats, gaussianPdf, densityHistogram } from '@/lib/dsp/probability';
+import {
+  type CltBase,
+  cltSampleMeans,
+  cltBaseStats,
+  gaussianPdf,
+  densityHistogram,
+} from '@/lib/dsp/probability';
 import { PAD, PlotTitle, Metric, Legend } from './probShared';
 
 const DEFAULTS = { base: 'uniform' as CltBase, n: 1 };
@@ -68,9 +74,18 @@ export function CltSection() {
                 { value: 'exponential', label: t('rp.clt.base.exponential') },
               ]}
             />
-            <Slider label={<HintText text={t('rp.clt.n')} />} min={1} max={50} step={1} value={n} onChange={setN} />
+            <Slider
+              label={<HintText text={t('rp.clt.n')} />}
+              min={1}
+              max={50}
+              step={1}
+              value={n}
+              onChange={setN}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -83,7 +98,12 @@ export function CltSection() {
 
           <Panel title={t('rp.clt.plot')}>
             <PlotTitle textKey="rp.clt.plot" />
-            <Canvas height={260} draw={draw} deps={[view]} ariaLabel="Histogram of sample means converging to a Gaussian" />
+            <Canvas
+              height={260}
+              draw={draw}
+              deps={[view]}
+              ariaLabel="Histogram of sample means converging to a Gaussian"
+            />
             <Legend
               entries={[
                 { color: CHART.green, label: t('rp.clt.trace.hist'), block: true },

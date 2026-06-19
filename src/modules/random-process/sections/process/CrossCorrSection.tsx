@@ -83,7 +83,11 @@ export function CrossCorrSection() {
       x: linScale([lo, hi], [PAD.l, w - PAD.r]),
       y: linScale([-yMax, yMax], [h - PAD.b, PAD.t]),
     };
-    drawAxes(ctx, ax, [lo, hi], { xLabel: '$\\tau\\,(\\mathrm{s})$', yLabel: '$R(\\tau)$', domainY: [-yMax, yMax] });
+    drawAxes(ctx, ax, [lo, hi], {
+      xLabel: '$\\tau\\,(\\mathrm{s})$',
+      yLabel: '$R(\\tau)$',
+      domainY: [-yMax, yMax],
+    });
     drawLine(ctx, ax, view.taus, view.rx, CHART.green, 1.6);
     drawLine(ctx, ax, view.taus, view.ry, CHART.orange, 1.6, true);
     drawLine(ctx, ax, view.taus, view.rxy, CHART.blue, 2);
@@ -94,7 +98,11 @@ export function CrossCorrSection() {
       x: linScale([lo, hi], [PAD.l, w - PAD.r]),
       y: linScale([-yMaxZ, yMaxZ], [h - PAD.b, PAD.t]),
     };
-    drawAxes(ctx, ax, [lo, hi], { xLabel: '$\\tau\\,(\\mathrm{s})$', yLabel: '$R_Z(\\tau)$', domainY: [-yMaxZ, yMaxZ] });
+    drawAxes(ctx, ax, [lo, hi], {
+      xLabel: '$\\tau\\,(\\mathrm{s})$',
+      yLabel: '$R_Z(\\tau)$',
+      domainY: [-yMaxZ, yMaxZ],
+    });
     drawLine(ctx, ax, view.taus, view.rSum, CHART.dim, 1.6, true);
     drawLine(ctx, ax, view.taus, view.rz, CHART.blue, 2);
   };
@@ -106,12 +114,44 @@ export function CrossCorrSection() {
       <div className="module-layout">
         <aside className="rp__controls">
           <Panel title={t('rp.cross.controls')}>
-            <Slider label={<HintText text="$A$" />} min={0.2} max={3} step={0.1} value={amplitude} onChange={setAmplitude} />
-            <Slider label={<HintText text="$f_0$" />} min={1} max={20} step={1} unit="Hz" value={f0} onChange={setF0} />
-            <Slider label={<HintText text={t('rp.cross.phi')} />} min={0} max={180} step={5} unit="°" value={phiDeg} onChange={setPhiDeg} />
-            <Slider label={<HintText text={t('rp.gen.realizations')} />} min={50} max={600} step={50} value={M} onChange={setM} />
+            <Slider
+              label={<HintText text="$A$" />}
+              min={0.2}
+              max={3}
+              step={0.1}
+              value={amplitude}
+              onChange={setAmplitude}
+            />
+            <Slider
+              label={<HintText text="$f_0$" />}
+              min={1}
+              max={20}
+              step={1}
+              unit="Hz"
+              value={f0}
+              onChange={setF0}
+            />
+            <Slider
+              label={<HintText text={t('rp.cross.phi')} />}
+              min={0}
+              max={180}
+              step={5}
+              unit="°"
+              value={phiDeg}
+              onChange={setPhiDeg}
+            />
+            <Slider
+              label={<HintText text={t('rp.gen.realizations')} />}
+              min={50}
+              max={600}
+              step={50}
+              value={M}
+              onChange={setM}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -121,8 +161,13 @@ export function CrossCorrSection() {
             <Metric label={t('rp.cross.rxy0')} value={view.rxy0.toFixed(3)} />
             <Metric label={t('rp.cross.pz')} value={view.pz.toFixed(3)} />
             <div className="rp__metric">
-              <span className="rp__metric__label"><HintText text={t('rp.cross.state')} /></span>
-              <span className="rp__metric__value" style={{ color: uncorrelated ? CHART.green : CHART.orange }}>
+              <span className="rp__metric__label">
+                <HintText text={t('rp.cross.state')} />
+              </span>
+              <span
+                className="rp__metric__value"
+                style={{ color: uncorrelated ? CHART.green : CHART.orange }}
+              >
                 {t(uncorrelated ? 'rp.cross.uncorr' : 'rp.cross.corr')}
               </span>
             </div>
@@ -130,7 +175,14 @@ export function CrossCorrSection() {
 
           <Panel title={t('rp.cross.plotXY')}>
             <PlotTitle textKey="rp.cross.plotXY" />
-            <Canvas height={220} draw={drawXY} deps={[view, lo, hi, yMax]} ariaLabel="Auto- and cross-correlation of two sinusoids" onWheel={onWheel} onPan={onPan} />
+            <Canvas
+              height={220}
+              draw={drawXY}
+              deps={[view, lo, hi, yMax]}
+              ariaLabel="Auto- and cross-correlation of two sinusoids"
+              onWheel={onWheel}
+              onPan={onPan}
+            />
             <Legend
               entries={[
                 { color: CHART.green, label: t('rp.cross.trace.rx') },
@@ -143,7 +195,14 @@ export function CrossCorrSection() {
 
           <Panel title={t('rp.cross.plotSum')}>
             <PlotTitle textKey="rp.cross.plotSum" />
-            <Canvas height={220} draw={drawSum} deps={[view, lo, hi, yMaxZ]} ariaLabel="Sum-process autocorrelation with and without the cross term" onWheel={onWheel} onPan={onPan} />
+            <Canvas
+              height={220}
+              draw={drawSum}
+              deps={[view, lo, hi, yMaxZ]}
+              ariaLabel="Sum-process autocorrelation with and without the cross term"
+              onWheel={onWheel}
+              onPan={onPan}
+            />
             <Legend
               entries={[
                 { color: CHART.blue, label: t('rp.cross.trace.rz') },

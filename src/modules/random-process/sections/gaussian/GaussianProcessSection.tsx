@@ -39,7 +39,11 @@ export function GaussianProcessSection() {
       x: linScale([-FMAX, FMAX], [PAD.l, ww - PAD.r]),
       y: linScale([0, yTop], [h - PAD.b, PAD.t]),
     };
-    drawAxes(ctx, ax, [-FMAX, FMAX], { xLabel: '$f\\,(\\mathrm{Hz})$', yLabel: '$S_X(f)$', domainY: [0, yTop] });
+    drawAxes(ctx, ax, [-FMAX, FMAX], {
+      xLabel: '$f\\,(\\mathrm{Hz})$',
+      yLabel: '$S_X(f)$',
+      domainY: [0, yTop],
+    });
     shadeRegion(ctx, ax, -w, w, 0, s0, alpha(CHART.blue, 0.22));
     drawLine(ctx, ax, [-FMAX, -w, -w, w, w, FMAX], [0, 0, s0, s0, 0, 0], CHART.blue, 2);
   };
@@ -49,7 +53,11 @@ export function GaussianProcessSection() {
       x: linScale([slice.lo, slice.hi], [PAD.l, ww - PAD.r]),
       y: linScale([0, slice.yMax], [h - PAD.b, PAD.t]),
     };
-    drawAxes(ctx, ax, [slice.lo, slice.hi], { xLabel: '$x$', yLabel: '$f_X(x)$', domainY: [0, slice.yMax] });
+    drawAxes(ctx, ax, [slice.lo, slice.hi], {
+      xLabel: '$x$',
+      yLabel: '$f_X(x)$',
+      domainY: [0, slice.yMax],
+    });
     const bw = slice.centers[1] - slice.centers[0];
     const half = (ax.x(bw) - ax.x(0)) / 2;
     for (let i = 0; i < slice.centers.length; i++) {
@@ -65,10 +73,27 @@ export function GaussianProcessSection() {
       <div className="module-layout">
         <aside className="rp__controls">
           <Panel title={t('rp.gp.controls')}>
-            <Slider label={<HintText text={t('rp.gp.s0')} />} min={0.2} max={3} step={0.1} value={s0} onChange={setS0} />
-            <Slider label={<HintText text={t('rp.gp.w')} />} min={1} max={10} step={0.5} unit="Hz" value={w} onChange={setW} />
+            <Slider
+              label={<HintText text={t('rp.gp.s0')} />}
+              min={0.2}
+              max={3}
+              step={0.1}
+              value={s0}
+              onChange={setS0}
+            />
+            <Slider
+              label={<HintText text={t('rp.gp.w')} />}
+              min={1}
+              max={10}
+              step={0.5}
+              unit="Hz"
+              value={w}
+              onChange={setW}
+            />
             <div className="rp__reset">
-              <button type="button" onClick={reset}>{t('rp.gen.reset')}</button>
+              <button type="button" onClick={reset}>
+                {t('rp.gen.reset')}
+              </button>
             </div>
           </Panel>
         </aside>
@@ -80,13 +105,23 @@ export function GaussianProcessSection() {
 
           <Panel title={t('rp.gp.psd')}>
             <PlotTitle textKey="rp.gp.psd" />
-            <Canvas height={200} draw={drawPsd} deps={[s0, w]} ariaLabel="Flat band-limited power spectral density" />
+            <Canvas
+              height={200}
+              draw={drawPsd}
+              deps={[s0, w]}
+              ariaLabel="Flat band-limited power spectral density"
+            />
             <Formula tex="\sigma^2=R_X(0)=\int_{-\infty}^{\infty} S_X(f)\,df=2S_0W" />
           </Panel>
 
           <Panel title={t('rp.gp.slice')}>
             <PlotTitle textKey="rp.gp.slice" />
-            <Canvas height={220} draw={drawSlice} deps={[slice]} ariaLabel="Gaussian slice distribution with sample histogram" />
+            <Canvas
+              height={220}
+              draw={drawSlice}
+              deps={[slice]}
+              ariaLabel="Gaussian slice distribution with sample histogram"
+            />
             <Legend
               entries={[
                 { color: CHART.blue, label: t('rp.gp.trace.pdf') },
