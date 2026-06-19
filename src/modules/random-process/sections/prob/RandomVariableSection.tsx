@@ -410,6 +410,17 @@ export function RandomVariableSection() {
               <CardFormula tex="f_X(x)=\frac{d}{dx}F_X(x),\quad P(a<X\le b)=\int_a^b f_X(x)\,dx" />
             </FormulaCard>
 
+            <FormulaCard title={<>Common distributions (§5.1.3, Eq. 5.1.5)</>} accent="blue">
+              <p>
+                The discrete models for binary data — Bernoulli (one bit) and Binomial (the error
+                count over <Formula tex="n" /> independent bits):
+              </p>
+              <CardFormula tex="P(X=1)=p,\quad P(X=0)=1-p" />
+              <CardFormula tex="P(X=k)=\binom{n}{k}p^k(1-p)^{n-k},\quad k=0,\dots,n" />
+              <p>And the continuous uniform model on an interval (e.g. a random phase):</p>
+              <CardFormula tex="f_X(x)=\begin{cases}\dfrac{1}{b-a} & a\le x\le b\\[2pt] 0 & \text{otherwise}\end{cases}" />
+            </FormulaCard>
+
             <FormulaCard title={<>Gaussian variable (§5.1.3, Eq. 5.1.6)</>} accent="orange">
               <p>
                 The normal density — the model for thermal noise — has mean <Formula tex="m" /> and

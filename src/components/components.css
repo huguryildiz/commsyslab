@@ -202,6 +202,69 @@
   }
 }
 
+/* ── Info cards: glanceable concept explainers on the interactive surface ── */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: var(--space-3);
+}
+.info-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  backdrop-filter: blur(var(--glass-blur));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.info-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 14px rgba(57, 255, 133, 0.07);
+}
+.info-card__title {
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin: 0;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--border);
+}
+.info-card__title--green {
+  color: var(--accent);
+}
+.info-card__title--orange {
+  color: var(--accent-2);
+}
+.info-card__title--blue {
+  color: var(--accent-blue);
+}
+.info-card__body {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+  margin: 0;
+}
+.info-card__body p {
+  margin: 0 0 var(--space-1);
+}
+.info-card__body ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+.info-card__body li {
+  margin-bottom: 2px;
+}
+@media (max-width: 600px) {
+  .info-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Scroll-to-zoom affordance overlay on zoomable canvases ── */
 .zoom-hint {
   position: absolute;

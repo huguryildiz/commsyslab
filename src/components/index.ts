@@ -7,4 +7,6 @@ export { Formula, HintText } from './Formula';
 export { Readout } from './Readout';
 export { Panel } from './Panel';
 export { TheoryBox } from './TheoryBox';
+export { InfoCard } from './InfoCard';
+export type { InfoCardProps, InfoCardAccent } from './InfoCard';
 export { TransportControls } from './TransportControls';

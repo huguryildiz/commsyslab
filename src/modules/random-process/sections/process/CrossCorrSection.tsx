@@ -249,6 +249,15 @@ export function CrossCorrSection() {
               <CardFormula tex="R_Z(\tau)=R_X(\tau)+R_Y(\tau)+R_{XY}(\tau)+R_{YX}(\tau)" />
               <CardFormula tex="S_Z(f)=S_X(f)+S_Y(f)+2\,\mathrm{Re}\{S_{XY}(f)\}" />
             </FormulaCard>
+
+            <FormulaCard title={<>Modulated process (§5.2.5, Eq. 5.2.17)</>} accent="green">
+              <p>
+                Multiplying a WSS process by a carrier (with random uniform phase) shifts its
+                spectrum to <Formula tex="\pm f_0" /> and quarters it — the line spectra seen here:
+              </p>
+              <CardFormula tex="Y(t)=X(t)\cos(2\pi f_0 t+\Theta)" />
+              <CardFormula tex="S_Y(f)=\tfrac14\big[S_X(f-f_0)+S_X(f+f_0)\big]" />
+            </FormulaCard>
           </FormulaCards>
         </div>
       </div>

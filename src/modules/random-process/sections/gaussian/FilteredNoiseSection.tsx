@@ -243,6 +243,31 @@ export function FilteredNoiseSection() {
               <CardFormula tex="S_{X_c}(f)=S_{X_s}(f)=S_X(f-f_c)+S_X(f+f_c)" />
             </FormulaCard>
 
+            <FormulaCard title={<>Envelope &amp; phase form (§5.3.3, Eq. 5.3.8)</>} accent="green">
+              <p>
+                Equivalently, the bandpass noise can be written with a slowly-varying envelope{' '}
+                <Formula tex="A(t)" /> and phase <Formula tex="\theta(t)" />, both lowpass random
+                processes:
+              </p>
+              <CardFormula tex="X(t)=A(t)\cos\big(2\pi f_c t+\theta(t)\big)" />
+            </FormulaCard>
+
+            <FormulaCard
+              title={<>I/Q power &amp; correlation (§5.3.3, Eq. 5.3.9)</>}
+              accent="orange"
+            >
+              <p>
+                Each component carries the full bandpass power, so the power splits equally between
+                them:
+              </p>
+              <CardFormula tex="P_{X_c}=P_{X_s}=P_X=\int_{-\infty}^{\infty} S_X(f)\,df" />
+              <p>
+                <Formula tex="X_c" /> and <Formula tex="X_s" /> are uncorrelated when the bandpass
+                PSD is symmetric about <Formula tex="f_c" /> — true for <Formula tex="H_1" />, not
+                for <Formula tex="H_2" />.
+              </p>
+            </FormulaCard>
+
             <FormulaCard title={<>Noise-equivalent bandwidth (§5.3.3, Eq. 5.3.12)</>} accent="blue">
               <p>
                 <Formula tex="B_\mathrm{neq}" /> is the width of an ideal brick-wall filter (gain{' '}
