@@ -37,6 +37,14 @@ export const analognoise: Record<string, string> = {
   'an.psd.theory':
     'In FM the output-noise PSD is parabolic ($N_0 f^2/A_c^2$): high-frequency message components suffer far more noise — this motivates pre-emphasis. PM has a flat noise PSD. FM gains $3\\beta^2 P_{M_n}$ over baseband and PM gains $\\beta^2 P_{M_n}$ (FM is 3× better, ≈ +4.8 dB). SNR rises as $\\beta^2$ — about +6 dB per doubling of $\\beta$ — at the cost of bandwidth $2(\\beta+1)W$.',
 
+  // §6.2.1 Threshold
+  'an.thr.title': 'FM threshold effect',
+  'an.thr.betaSel': 'Highlight $\\beta$',
+  'an.thr.gain': 'Above-threshold gain',
+  'an.thr.plot': 'Output SNR vs baseband SNR',
+  'an.thr.theory':
+    'Above threshold FM SNR follows the straight high-SNR line; below the threshold $\\gamma_{th}=20(\\beta+1)$ the demodulator produces clicks and the SNR collapses. Larger $\\beta$ gives more gain but a higher threshold — design rule: pick the largest $\\beta$ with $\\gamma\\ge 20(\\beta+1)$.',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',
