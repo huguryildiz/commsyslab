@@ -1,4 +1,4 @@
-// Random-process DSP (Proakis & Salehi §4.2–4.4). Pure, framework-free.
+// Random-process DSP (Proakis & Salehi §5.2–5.3). Pure, framework-free.
 
 import { gaussian, sigmaFromN0 } from './awgn';
 import { fft, ifft } from './fft';
@@ -31,7 +31,7 @@ export interface ProcessParams {
 }
 
 /** σ for the discrete white process from N0 (continuous PSD N0/2 sampled at fs).
- *  Verify exact scaling against Proakis §4.4 when wiring absolute PSD readouts. */
+ *  Verify exact scaling against Proakis §5.3 when wiring absolute PSD readouts. */
 function whiteSigma(p: ProcessParams): number {
   return sigmaFromN0(p.n0); // σ = sqrt(N0/2)
 }
@@ -107,7 +107,7 @@ function genColored(p: ProcessParams, rng: () => number): Float64Array[] {
   );
 }
 
-/** Random ±A NRZ with a uniform start delay so the process is WSS (Proakis §4.2). */
+/** Random ±A NRZ with a uniform start delay so the process is WSS (Proakis §5.2). */
 function genNrz(p: ProcessParams, rng: () => number): Float64Array[] {
   const samplesPerSymbol = Math.max(1, Math.round(p.fs / p.f0)); // T = 1/f0
   const out: Float64Array[] = [];
@@ -163,7 +163,7 @@ export function ensembleAutocorr(ensemble: Float64Array[], maxLag: number): Floa
 }
 
 /** One-sided averaged periodogram (bins 0..N/2). Magnitude-squared of the FFT,
- *  averaged over the ensemble. Absolute scaling verified vs Proakis §4.3 later. */
+ *  averaged over the ensemble. Absolute scaling verified vs Proakis §5.2.5 later. */
 export function periodogram(ensemble: Float64Array[]): Float64Array {
   const N = ensemble[0].length;
   const half = Math.floor(N / 2);

@@ -1,4 +1,8 @@
-/* src/modules/random-process/random-process.css — token-driven (no hard-coded hex/px beyond layout) */
+/* src/modules/random-process/random-process.css — token-driven (no hard-coded hex beyond layout).
+ * Structural classes (.rp__tabbar, .rp__section, .rp__controls, .rp__content, .rp__readouts,
+ * .rp__metric*, .rp__legend*, .rp__plot-title, .rp__cards, .rp__card*, .rp__hint, .rp__placeholder)
+ * mirror the analog module's visual language using the Chapter-5 (random-process) namespace. */
+
 .rp {
   display: flex;
   flex-direction: column;
@@ -15,13 +19,153 @@
   color: var(--text-dim);
   font-family: var(--mono);
 }
-.rp__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
+
+/* ── Tab bars ──────────────────────────────────────────────────────────────── */
+.rp__tabbar {
+  width: 100%;
+  overflow-x: auto;
 }
-@media (max-width: 900px) {
-  .rp__grid {
-    grid-template-columns: 1fr;
-  }
+.rp__subtabbar {
+  margin-bottom: 16px;
+}
+.rp__section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Two-column module layout columns ─────────────────────────────────────── */
+.rp__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.rp__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* ── Readout metric chips ─────────────────────────────────────────────────── */
+.rp__readouts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp__metric {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  backdrop-filter: blur(var(--glass-blur));
+  transition: border-color var(--transition), box-shadow var(--transition);
+  min-width: 130px;
+}
+.rp__metric:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lift);
+}
+.rp__metric__label {
+  font-family: var(--font);
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.rp__metric__label .katex {
+  text-transform: none;
+}
+.rp__metric__value {
+  font-family: var(--mono);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 0 18px rgba(57, 255, 133, 0.35);
+}
+
+/* ── Reset button ─────────────────────────────────────────────────────────── */
+.rp__reset {
+  margin-top: var(--space-2, 8px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ── Plot titles & legends ────────────────────────────────────────────────── */
+.rp__plot-title {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.rp__plot-title .katex {
+  font-size: 0.95em;
+  color: var(--text);
+}
+.rp__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.rp__legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.rp__legend__swatch {
+  width: 16px;
+  height: 0;
+  border-top: 2px solid currentColor;
+}
+.rp__legend__swatch--dashed {
+  border-top-style: dashed;
+}
+.rp__legend__swatch--block {
+  width: 14px;
+  height: 12px;
+  border: none;
+  background: currentColor;
+  opacity: 0.4;
+  border-radius: 2px;
+}
+.rp__legend .katex {
+  color: inherit;
+}
+
+/* ── Theory hint text ─────────────────────────────────────────────────────── */
+.rp__hint {
+  color: var(--text-dim);
+  font-size: 0.9em;
+  margin-bottom: var(--space-2, 8px);
+}
+
+/* ── Placeholder card (sections built in later phases) ────────────────────── */
+.rp__placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-4);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  color: var(--text-dim);
+}
+.rp__placeholder h3 {
+  font-family: var(--font-head);
+  color: var(--text);
+  margin: 0;
 }

@@ -100,6 +100,7 @@ function Shell() {
           <Route path="/analog-fm/:tab" element={<AnalogFmModule />} />
           <Route path="/analog-noise" element={<AnalogNoiseModule />} />
           <Route path="/random-process" element={<RandomProcessModule />} />
+          <Route path="/random-process/:tab" element={<RandomProcessModule />} />
           <Route path="/sampling" element={<AdcModule />} />
           <Route path="/sampling/:tab" element={<AdcModule />} />
           {/* Delta Modulation is now a tab inside the Analog-to-Digital Conversion module. */}
