@@ -81,6 +81,13 @@ export const analognoise: Record<string, string> = {
   'an.thermal.theory':
     'Every resistor at temperature $T$ delivers white thermal noise with one-sided PSD $N_0=kT$, so the available noise power in bandwidth $B$ is $P_n=kTB$. At the standard $T_0=290$ K this gives the $N_0\\approx4\\times10^{-21}$ W/Hz (−174 dBm/Hz) noise floor (§6.4.1).',
 
+  // §6.4.2 Noise figure & Friis
+  'an.figure.title': 'Amplifier cascade (3 stages)',
+  'an.figure.stage': 'Stage',
+  'an.figure.diagram': 'Friis cascade',
+  'an.figure.theory':
+    'A noise figure $F=1+T_e/T_0$ measures how much an amplifier degrades SNR. In a cascade the total figure $F=F_1+(F_2-1)/G_1+(F_3-1)/(G_1 G_2)+\\dots$ is dominated by the first stage, so the receiver front end should be a low-noise, high-gain amplifier (§6.4.2).',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',

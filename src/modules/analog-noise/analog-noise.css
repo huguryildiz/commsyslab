@@ -140,3 +140,17 @@
   font-family: var(--mono);
   color: var(--text);
 }
+
+/* ── Friis cascade stage group ──────────────────────────────────────────── */
+.an__stage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.an__stage-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
