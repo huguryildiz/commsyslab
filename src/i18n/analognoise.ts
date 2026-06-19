@@ -55,4 +55,21 @@ export const analognoise: Record<string, string> = {
     'Tek yan bant: $u(t)=A_c[m\\cos\\omega_c t \\mp \\hat m\\sin\\omega_c t]$. Koherent demod ile $m(t)$ geri alınır.',
   'an.ssb.theory':
     'SSB çıkış SNR’si de baseband ile aynıdır ($(S/N)_o=(S/N)_b$), ancak yalnızca $W$ bant genişliği kullanır — DSB-SC’nin yarısı. Aynı SNR, yarı bant: bu yüzden bant-kritik linklerde tercih edilir.',
+
+  // §6.1.4 Conventional AM
+  'an.cam.title': 'Conventional AM',
+  'an.cam.aIndex': 'Modülasyon indeksi $a$',
+  'an.cam.note':
+    'Zarf dedektörü: diyot + RC. Yüksek SNR’de çıkış senkron demod ile aynı, $(S/N)_o=\\eta\\,(S/N)_b$.',
+  'an.cam.envPanel': 'Alınan işaret ve zarf dedektörü',
+  'an.cam.msgPanel': 'DC bloklamadan sonra geri alınan mesaj',
+  'an.cam.threshold':
+    '⚠ Eşik etkisi: $\\gamma$ düşük olduğunda zarf dedektörü sinyali gürültüyle iç içe geçirir; çıkış bozulur.',
+  'an.cam.trace.refEnv': 'Gerçek zarf $A_c[1+a m_n]$',
+  'an.cam.trace.detEnv': 'Dedektör çıkışı',
+  'an.cam.trace.r': 'Alınan $r(t)$',
+  'an.cam.trace.refMsg': 'Mesaj $a\\,m_n(t)$',
+  'an.cam.trace.recovered': 'Geri alınan',
+  'an.cam.theory':
+    'Conventional AM verimliliği $\\eta=a^2 P_{M_n}/(1+a^2 P_{M_n})<1$ olduğundan çıkış SNR’si daima baseband’in altındadır (taşıyıcı güç israfı). Basit zarf dedektörü yalnızca yüksek SNR’de çalışır; eşik altında ($\\gamma$ küçük) sinyal gürültüye gömülür (§6.1.4).',
 };
