@@ -13,6 +13,16 @@
 .an__subtabbar {
   margin-bottom: 16px;
 }
+/* Shared channel-scenario panel: match the 320px left controls column. */
+.an__channel {
+  width: 320px;
+  max-width: 100%;
+}
+@media (max-width: 820px) {
+  .an__channel {
+    width: 100%;
+  }
+}
 .an__section {
   display: flex;
   flex-direction: column;

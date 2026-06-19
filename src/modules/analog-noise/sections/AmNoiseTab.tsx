@@ -34,26 +34,28 @@ export function AmNoiseTab() {
           onChange={setSub}
         />
       </div>
-      <Panel title={t('an.am.channel')}>
-        <Slider
-          label={<HintText text={t('an.gen.gamma')} />}
-          min={0}
-          max={40}
-          step={1}
-          unit="dB"
-          value={gammaDb}
-          onChange={setGammaDb}
-        />
-        <Slider
-          label={<HintText text={t('an.gen.fm')} />}
-          min={1}
-          max={12}
-          step={1}
-          unit="Hz"
-          value={fm}
-          onChange={setFm}
-        />
-      </Panel>
+      <div className="an__channel">
+        <Panel title={t('an.am.channel')}>
+          <Slider
+            label={<HintText text={t('an.gen.gamma')} />}
+            min={0}
+            max={40}
+            step={1}
+            unit="dB"
+            value={gammaDb}
+            onChange={setGammaDb}
+          />
+          <Slider
+            label={<HintText text={t('an.gen.fm')} />}
+            min={1}
+            max={12}
+            step={1}
+            unit="Hz"
+            value={fm}
+            onChange={setFm}
+          />
+        </Panel>
+      </div>
       {sub === 'baseband' && <BasebandSection {...props} />}
       {sub === 'dsb' && <DsbScSection {...props} />}
       {sub === 'ssb' && <SsbSection {...props} />}
