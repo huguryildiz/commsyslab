@@ -1,5 +1,6 @@
 // Proakis §7.4.1 — companding (non-uniform PCM).
 // μ-law ref: CCSM mulaw.m / invmulaw.m (Eq. 7.4.8). A-law: Book Eq. 7.4.9.
+import { quantize } from './quantize';
 
 export type CompandingLaw = 'mu' | 'A' | 'none';
 
@@ -31,4 +32,44 @@ export function aLawExpand(y: number, A = 87.56): number {
   const thr = 1 / denom; // |y| value at the |x| = 1/A breakpoint
   if (ay < thr) return (s * ay * denom) / A;
   return (s * Math.exp(ay * denom - 1)) / A;
+}
+
+/** Companded PCM: normalize → compress → uniform quantize → expand → denormalize.
+ *  Proakis §7.4.1, Fig 7.8. Ref CCSM mula_pcm.m. */
+export function compandedQuantize(
+  x: number,
+  mMax: number,
+  bits: number,
+  law: CompandingLaw,
+  param: number,
+): number {
+  const xn = x / mMax; // normalize to [-1, 1]
+  const c =
+    law === 'mu' ? muLawCompress(xn, param) : law === 'A' ? aLawCompress(xn, param) : xn;
+  const cq = quantize(c, 1, bits, 'midrise'); // uniform quantize on [-1, 1]
+  const xe =
+    law === 'mu' ? muLawExpand(cq, param) : law === 'A' ? aLawExpand(cq, param) : cq;
+  return xe * mMax; // denormalize
+}
+
+/** SQNR (dB) of a full-period sinusoid at each amplitude (fraction of full scale)
+ *  under the given companding law. Shows companding flattening SQNR vs input level. */
+export function sqnrVsAmplitude(
+  amplitudes: number[],
+  bits: number,
+  law: CompandingLaw,
+  param: number,
+  samples = 2000,
+): number[] {
+  return amplitudes.map((amp) => {
+    let sig = 0;
+    let err = 0;
+    for (let i = 0; i < samples; i++) {
+      const x = amp * Math.sin((2 * Math.PI * i) / samples);
+      const q = compandedQuantize(x, 1, bits, law, param);
+      sig += x * x;
+      err += (x - q) * (x - q);
+    }
+    return err === 0 ? Infinity : 10 * Math.log10(sig / err);
+  });
 }
