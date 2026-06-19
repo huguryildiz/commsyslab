@@ -128,3 +128,15 @@ export function quadratureNoise(
   const ns = smooth > 1 ? lowpassMA(raw(), smooth) : raw();
   return { nc, ns };
 }
+
+/** Demodulator-output noise PSD for angle modulation (Proakis §6.2 Eq. 6.2.13–6.2.15).
+ *  FM: parabolic N₀ f²/A_c² ; PM: flat N₀/A_c². */
+export function angleNoisePsd(
+  freqs: number[],
+  scheme: 'fm' | 'pm',
+  ac: number,
+  n0: number,
+): number[] {
+  const a2 = ac * ac;
+  return freqs.map((f) => (scheme === 'fm' ? (n0 * f * f) / a2 : n0 / a2));
+}

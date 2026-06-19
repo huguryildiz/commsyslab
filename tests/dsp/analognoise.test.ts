@@ -9,6 +9,7 @@ import {
   lowpassMA,
   coherentDemod,
   quadratureNoise,
+  angleNoisePsd,
 } from '@/lib/dsp/analognoise';
 import { emphasisSnrGainDb } from '@/lib/dsp/analog';
 import { makeRng } from '@/lib/dsp/random';
@@ -125,5 +126,18 @@ describe('signal-chain helpers', () => {
     expect(ns.length).toBe(2048);
     const mean = nc.reduce((a, b) => a + b, 0) / nc.length;
     expect(Math.abs(mean)).toBeLessThan(0.1);
+  });
+});
+
+describe('angleNoisePsd', () => {
+  it('PM PSD is flat = N0/Ac^2', () => {
+    const psd = angleNoisePsd([1, 100, 1000], 'pm', 2, 1e-3);
+    expect(psd[0]).toBeCloseTo(1e-3 / 4, 12);
+    expect(psd[2]).toBeCloseTo(psd[0], 12);
+  });
+
+  it('FM PSD is parabolic = N0 f^2/Ac^2', () => {
+    const psd = angleNoisePsd([10, 20], 'fm', 2, 1e-3);
+    expect(psd[1] / psd[0]).toBeCloseTo(4, 6); // doubling f → 4× PSD
   });
 });
