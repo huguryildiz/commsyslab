@@ -101,6 +101,14 @@ export const analognoise: Record<string, string> = {
   'an.pathloss.theory':
     'Free-space loss grows as the square of distance, $L=(4\\pi d/\\lambda)^2$ — about +6 dB per doubling of $d$ (and with frequency). A wireline cable instead loses a fixed dB per km, so its loss is linear in length. The received power is $P_R=P_T-L$ (§6.4.3).',
 
+  // §6.4.4 Repeaters
+  'an.rep.title': 'Repeater chain',
+  'an.rep.loss': 'Loss per segment $L$',
+  'an.rep.fa': 'Repeater NF $F_a$',
+  'an.rep.diagram': 'K-segment cascade',
+  'an.rep.theory':
+    'Repeaters every segment offset the loss so long links stay feasible, but in an analog chain the noise accumulates: $(S/N)_o=P_T/(K L F_a N_0 B)$, degrading as $-10\\log_{10}K$ (about −3 dB per doubling of $K$). Digital regenerative repeaters detect and retransmit, so noise does not accumulate (§6.4.4).',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',
