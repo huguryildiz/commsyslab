@@ -33,4 +33,19 @@ export const analognoise: Record<string, string> = {
   'an.bb.trace.noisy': 'Gürültülü çıkış',
   'an.bb.theory':
     'Baseband sistemde çıkış SNR’si doğrudan $\\gamma=P_R/(N_0 W)$’dir. DSB-SC ve SSB tam olarak bunu verir; conventional AM bunun altında ($\\eta<1$), FM ise eşik üstünde bunun $3\\beta^2 P_{M_n}$ katıdır.',
+
+  // §6.1.2 DSB-SC
+  'an.dsb.title': 'DSB-SC demodülasyonu',
+  'an.dsb.note':
+    'Koherent demod: $r(t)$ ile $\\cos\\omega_c t$ çarpılıp LPF uygulanır; karesel gürültü $n_s$ atılır.',
+  'an.dsb.passband': 'Alınan işaret $r(t)=u(t)+n(t)$',
+  'an.dsb.output': 'Demodüle çıkış $y(t)$ ve mesaj $m(t)$',
+  'an.dsb.gain': 'Demod kazancı',
+  'an.dsb.bw': 'Bant genişliği',
+  'an.dsb.trace.r': 'Alınan $r(t)$',
+  'an.dsb.trace.u': 'Modüleli $u(t)$',
+  'an.dsb.trace.y': 'Çıkış $y(t)$',
+  'an.dsb.trace.m': 'Mesaj $m(t)$',
+  'an.dsb.theory':
+    'DSB-SC’de koherent demod sonrası çıkış SNR’si baseband ile aynıdır: $(S/N)_o=(S/N)_b$ (kazanç 0 dB). Karesel gürültü bileşeni $n_s$ atılır; bedeli $2W$ bant genişliğidir.',
 };
