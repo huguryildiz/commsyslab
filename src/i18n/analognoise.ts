@@ -45,6 +45,20 @@ export const analognoise: Record<string, string> = {
   'an.thr.theory':
     'Above threshold FM SNR follows the straight high-SNR line; below the threshold $\\gamma_{th}=20(\\beta+1)$ the demodulator produces clicks and the SNR collapses. Larger $\\beta$ gives more gain but a higher threshold — design rule: pick the largest $\\beta$ with $\\gamma\\ge 20(\\beta+1)$.',
 
+  // §6.2.2 Pre/De-emphasis
+  'an.emph.title': 'Pre/de-emphasis',
+  'an.emph.W': 'Audio bandwidth $W$',
+  'an.emph.tau': 'Time constant $\\tau$',
+  'an.emph.gain': 'SNR improvement',
+  'an.emph.filter': 'Pre/de-emphasis response',
+  'an.emph.noise': 'Output noise PSD before/after de-emphasis',
+  'an.emph.trace.pre': 'Pre-emphasis $|H_p|$',
+  'an.emph.trace.de': 'De-emphasis $|H_d|$',
+  'an.emph.trace.before': 'No de-emphasis',
+  'an.emph.trace.after': 'With de-emphasis',
+  'an.emph.theory':
+    'Pre-emphasis boosts high frequencies at the transmitter; de-emphasis $H_d(f)=1/(1+jf/f_1)$ cuts them at the receiver, restoring the message while suppressing the parabolic FM noise. With $\\tau=75\\,\\mu s$ ($f_1\\approx2122$ Hz) and $W=15$ kHz the pair adds roughly +13 dB (Eq. 6.2.42).',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',
