@@ -73,6 +73,14 @@ export const analognoise: Record<string, string> = {
   'an.link.sub.pathloss': 'Path loss',
   'an.link.sub.repeater': 'Repeaters',
 
+  // §6.4.1 Thermal noise
+  'an.thermal.title': 'Thermal noise source',
+  'an.thermal.temp': 'Temperature $T$',
+  'an.thermal.bw': 'Bandwidth $B$',
+  'an.thermal.plot': 'Noise PSD $N_0=kT$ vs temperature',
+  'an.thermal.theory':
+    'Every resistor at temperature $T$ delivers white thermal noise with one-sided PSD $N_0=kT$, so the available noise power in bandwidth $B$ is $P_n=kTB$. At the standard $T_0=290$ K this gives the $N_0\\approx4\\times10^{-21}$ W/Hz (−174 dBm/Hz) noise floor (§6.4.1).',
+
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
   'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',
