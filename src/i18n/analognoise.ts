@@ -13,4 +13,14 @@ export const analognoise: Record<string, string> = {
 
   // Generic
   'an.gen.reset': 'Sıfırla',
+  'an.gen.gamma': 'Baseband SNR $\\gamma=P_R/(N_0 W)$',
+  'an.gen.fm': 'Mesaj frekansı $f_m$',
+
+  // §6.1 AM noise tab
+  'an.am.sub.ariaLabel': 'AM gürültü alt sekmeleri',
+  'an.am.sub.baseband': 'Baseband',
+  'an.am.sub.dsb': 'DSB-SC',
+  'an.am.sub.ssb': 'SSB',
+  'an.am.sub.am': 'Conventional AM',
+  'an.am.channel': 'Kanal senaryosu',
 };
