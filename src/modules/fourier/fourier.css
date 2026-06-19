@@ -25,7 +25,7 @@
 /* Side-by-side baseband / bandpass spectra; stacks on narrow viewports. */
 .fourier__spectrum-pair {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -205,7 +205,7 @@
 /* Signal reference card grid (Signals & Systems tab) */
 .sig-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
   margin-top: var(--space-3);
 }
@@ -220,6 +220,8 @@
   flex-direction: column;
   gap: var(--space-2);
   transition: border-color var(--transition), box-shadow var(--transition);
+  min-width: 0;
+  overflow: hidden;
 }
 .sig-card:hover {
   border-color: var(--border-strong);

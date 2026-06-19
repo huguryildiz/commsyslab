@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Select, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Select, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -97,7 +97,7 @@ export function CltSection() {
             <Metric label="$\sigma^2/n$" value={(variance / n).toFixed(4)} />
           </div>
 
-          <Panel title={t('rp.clt.plot')}>
+          <Panel title={<HintText text={t('rp.clt.plot')} />}>
             <PlotTitle textKey="rp.clt.plot" />
             <Canvas
               height={260}
@@ -112,9 +112,6 @@ export function CltSection() {
               ]}
             />
             <Formula tex="\bar{Y}=\frac1n\sum_{i=1}^{n}X_i\ \xrightarrow{\ d\ }\ \mathcal{N}\!\left(m,\,\tfrac{\sigma^2}{n}\right)" />
-            <TheoryBox>
-              <HintText text={t('rp.clt.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.1.6 Sums of random variables and the CLT */}

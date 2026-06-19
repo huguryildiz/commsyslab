@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -97,9 +97,7 @@ export function BasebandSection({ gammaDb, fm, fs, N, channel }: AmSectionProps)
             />
             <Formula tex="\left(\tfrac{S}{N}\right)_b=\dfrac{P_R}{N_0 W}" block />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.bb.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

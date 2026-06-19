@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Panel, Slider, Segmented, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Segmented, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -133,7 +133,7 @@ export function PathLossSection() {
             <Metric label={<HintText text="$L$" />} value={lossNow.toFixed(1)} unit="dB" />
             <Metric label={<HintText text="$P_R$" />} value={prDbw.toFixed(1)} unit="dBW" />
           </div>
-          <Panel title={t('an.pathloss.plot')}>
+          <Panel title={<HintText text={t('an.pathloss.plot')} />}>
             <Canvas
               height={230}
               draw={draw}
@@ -147,9 +147,7 @@ export function PathLossSection() {
               block
             />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.pathloss.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

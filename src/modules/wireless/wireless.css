@@ -6,25 +6,12 @@
   padding: var(--space-4);
 }
 
-.wl__head h1 {
-  font-family: var(--font-head);
-  background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.wl__head p {
-  color: var(--text-dim);
-  font-family: var(--font);
-}
-
 .wl .segmented {
   margin-bottom: var(--space-2);
 }
 
 .wl__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: var(--space-4);
 }

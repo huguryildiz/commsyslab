@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Navigate, Route, Routes, useLocation } from 'react
 import { t } from '@/i18n';
 import { BrandIcon } from '@/components/BrandIcon';
 import { ModuleMenu } from '@/components/ModuleMenu';
+import { ModuleTitle } from '@/components/ModuleTitle';
 import { Home } from '@/pages/Home';
 import { StartPage } from '@/pages/StartPage';
 import { FourierModule } from '@/modules/fourier/FourierModule';
@@ -88,6 +89,7 @@ function Shell() {
       )}
 
       <main className="app__main">
+        <ModuleTitle />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/start" element={<StartPage />} />

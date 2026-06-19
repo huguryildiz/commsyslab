@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, shadeRegion, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -104,7 +104,7 @@ export function GaussianProcessSection() {
             <Metric label={t('rp.gp.sigma2')} value={sigma2.toFixed(2)} />
           </div>
 
-          <Panel title={t('rp.gp.psd')}>
+          <Panel title={<HintText text={t('rp.gp.psd')} />}>
             <PlotTitle textKey="rp.gp.psd" />
             <Canvas
               height={200}
@@ -115,7 +115,7 @@ export function GaussianProcessSection() {
             <Formula tex="\sigma^2=R_X(0)=\int_{-\infty}^{\infty} S_X(f)\,df=2S_0W" />
           </Panel>
 
-          <Panel title={t('rp.gp.slice')}>
+          <Panel title={<HintText text={t('rp.gp.slice')} />}>
             <PlotTitle textKey="rp.gp.slice" />
             <Canvas
               height={220}
@@ -129,9 +129,6 @@ export function GaussianProcessSection() {
                 { color: CHART.green, label: t('rp.gp.trace.hist'), block: true },
               ]}
             />
-            <TheoryBox>
-              <HintText text={t('rp.gp.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.3.1 Gaussian processes */}

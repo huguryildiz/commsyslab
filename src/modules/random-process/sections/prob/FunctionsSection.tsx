@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -55,7 +55,7 @@ export function FunctionsSection() {
     <div className="rp__section">
       <div className="module-layout">
         <aside className="rp__controls">
-          <Panel title={t('rp.func.controls')}>
+          <Panel title={<HintText text={t('rp.func.controls')} />}>
             <Slider
               label={<HintText text={t('rp.func.a')} />}
               min={-3}
@@ -102,7 +102,7 @@ export function FunctionsSection() {
             <Metric label="$\sigma_Y^2$" value={(sY * sY).toFixed(3)} />
           </div>
 
-          <Panel title={t('rp.func.plot')}>
+          <Panel title={<HintText text={t('rp.func.plot')} />}>
             <PlotTitle textKey="rp.func.plot" />
             <Canvas
               height={250}
@@ -117,9 +117,6 @@ export function FunctionsSection() {
               ]}
             />
             <Formula tex="f_Y(y)=\sum_i \dfrac{f_X(x_i)}{|g'(x_i)|};\quad Y=aX+b,\ X\sim\mathcal{N}(m,\sigma^2)\ \Rightarrow\ Y\sim\mathcal{N}(am+b,\,a^2\sigma^2)" />
-            <TheoryBox>
-              <HintText text={t('rp.func.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.1.4 Functions of a random variable */}

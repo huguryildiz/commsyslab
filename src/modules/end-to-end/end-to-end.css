@@ -4,17 +4,6 @@
   gap: 16px;
 }
 
-.e2e__head h1 {
-  background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.e2e__head p {
-  color: var(--text-dim);
-}
-
 .e2e-chain {
   display: flex;
   align-items: stretch;

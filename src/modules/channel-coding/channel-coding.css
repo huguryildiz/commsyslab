@@ -5,21 +5,6 @@
   flex-direction: column;
   gap: 16px;
 }
-.cc-head h1 {
-  margin: 0;
-  font-family: var(--font-head);
-  font-size: 1.6rem;
-  background: linear-gradient(135deg, var(--accent), var(--accent-blue), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.cc-head p {
-  margin: 4px 0 0;
-  color: var(--text-dim);
-  font-family: var(--mono);
-  font-size: 13px;
-}
 .cc-section {
   display: grid;
   grid-template-columns: 300px 1fr;

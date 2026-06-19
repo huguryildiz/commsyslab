@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -194,7 +194,7 @@ export function CrossCorrSection() {
             <Formula tex="R_{XY}(\tau)=E[X(t)\,Y(t+\tau)]=\tfrac{A^2}{2}\cos(2\pi f_0\tau+\varphi)" />
           </Panel>
 
-          <Panel title={t('rp.cross.plotSum')}>
+          <Panel title={<HintText text={t('rp.cross.plotSum')} />}>
             <PlotTitle textKey="rp.cross.plotSum" />
             <Canvas
               height={220}
@@ -211,9 +211,6 @@ export function CrossCorrSection() {
               ]}
             />
             <Formula tex="S_Z(f)=S_X(f)+S_Y(f)+2\,\mathrm{Re}[S_{XY}(f)],\quad P_Z=A^2(1+\cos\varphi)" />
-            <TheoryBox>
-              <HintText text={t('rp.cross.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.2.3 cross-correlation & §5.2.6 sum process */}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawScatter, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -78,7 +78,7 @@ export function JointGaussianSection() {
             <Metric label={t('rp.joint.cov')} value={rho.toFixed(2)} />
           </div>
 
-          <Panel title={t('rp.joint.plot')}>
+          <Panel title={<HintText text={t('rp.joint.plot')} />}>
             <PlotTitle textKey="rp.joint.plot" />
             <Canvas
               height={360}
@@ -87,9 +87,6 @@ export function JointGaussianSection() {
               ariaLabel="Scatter of jointly Gaussian samples with covariance ellipses"
             />
             <Formula tex="\rho_{X,Y}=\dfrac{\operatorname{cov}(X,Y)}{\sigma_X\sigma_Y},\quad |\rho_{X,Y}|\le 1" />
-            <TheoryBox>
-              <HintText text={t('rp.joint.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.1.5 Multiple random variables (correlation, covariance, ρ) */}

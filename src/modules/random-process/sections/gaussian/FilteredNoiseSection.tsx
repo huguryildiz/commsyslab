@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Select, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Select, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, shadeRegion, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -140,7 +140,7 @@ export function FilteredNoiseSection() {
               onChange={setW}
             />
           </Panel>
-          <Panel title={t('rp.bp.bneq')}>
+          <Panel title={<HintText text={t('rp.bp.bneq')} />}>
             <Slider
               label={<HintText text={t('rp.bp.rcfc')} />}
               min={2}
@@ -164,7 +164,7 @@ export function FilteredNoiseSection() {
             <Metric label={t('rp.bp.bneqVal')} value={bneq.toFixed(2)} />
           </div>
 
-          <Panel title={t('rp.bp.psd')}>
+          <Panel title={<HintText text={t('rp.bp.psd')} />}>
             <PlotTitle textKey="rp.bp.psd" />
             <Canvas
               height={200}
@@ -181,7 +181,7 @@ export function FilteredNoiseSection() {
             <Formula tex="P_X=\int_{-\infty}^{\infty} S_X(f)\,df=\begin{cases}2N_0W & (H_1)\\ N_0W & (H_2)\end{cases}" />
           </Panel>
 
-          <Panel title={t('rp.bp.iq')}>
+          <Panel title={<HintText text={t('rp.bp.iq')} />}>
             <PlotTitle textKey="rp.bp.iq" />
             <Canvas
               height={180}
@@ -192,7 +192,7 @@ export function FilteredNoiseSection() {
             <Formula tex="X(t)=X_c(t)\cos 2\pi f_c t-X_s(t)\sin 2\pi f_c t,\quad S_{X_c}=S_{X_s}" />
           </Panel>
 
-          <Panel title={t('rp.bp.bneq')}>
+          <Panel title={<HintText text={t('rp.bp.bneq')} />}>
             <PlotTitle textKey="rp.bp.bneq" />
             <Canvas
               height={190}
@@ -207,9 +207,6 @@ export function FilteredNoiseSection() {
               ]}
             />
             <Formula tex="B_\mathrm{neq}=\dfrac{\int_{-\infty}^{\infty}|H(f)|^2\,df}{2H_\mathrm{max}^2}=\dfrac{1}{4RC}=\dfrac{\pi f_c}{2}" />
-            <TheoryBox>
-              <HintText text={t('rp.bp.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.3.3 Filtered (bandpass) noise processes */}

@@ -111,17 +111,19 @@ export function Schematic({
   if (!zoomable) return svg;
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div>
       {svg}
-      <span className="zoom-hint" aria-hidden="true">
-        <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-          <circle cx="4.5" cy="4.5" r="3" stroke="currentColor" strokeWidth="1.2" />
-          <line x1="7" y1="7" x2="10" y2="10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-          <line x1="4.5" y1="2.5" x2="4.5" y2="6.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-          <line x1="2.5" y1="4.5" x2="6.5" y2="4.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-        </svg>
-        scroll: zoom · drag: pan
-      </span>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+        <span className="zoom-hint" style={{ position: 'static' }} aria-hidden="true">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <circle cx="4.5" cy="4.5" r="3" stroke="currentColor" strokeWidth="1.2" />
+            <line x1="7" y1="7" x2="10" y2="10" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1="4.5" y1="2.5" x2="4.5" y2="6.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+            <line x1="2.5" y1="4.5" x2="6.5" y2="4.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+          </svg>
+          scroll: zoom · drag: pan
+        </span>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -116,7 +116,7 @@ export function SsbSection({ gammaDb, fm, fs, N, W, channel }: AmSectionProps) {
             <Metric label={t('an.dsb.gain')} value={gain.toFixed(1)} unit="dB" />
             <Metric label={t('an.dsb.bw')} value="W" />
           </div>
-          <Panel title={t('an.dsb.passband')}>
+          <Panel title={<HintText text={t('an.dsb.passband')} />}>
             <Canvas
               height={180}
               draw={drawPassband}
@@ -132,7 +132,7 @@ export function SsbSection({ gammaDb, fm, fs, N, W, channel }: AmSectionProps) {
               ]}
             />
           </Panel>
-          <Panel title={t('an.dsb.output')}>
+          <Panel title={<HintText text={t('an.dsb.output')} />}>
             <Canvas
               height={200}
               draw={drawOutput}
@@ -152,9 +152,7 @@ export function SsbSection({ gammaDb, fm, fs, N, W, channel }: AmSectionProps) {
               block
             />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.ssb.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

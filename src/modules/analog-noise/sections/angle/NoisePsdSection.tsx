@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Segmented, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Segmented, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -117,9 +117,7 @@ export function NoisePsdSection() {
               block
             />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.psd.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

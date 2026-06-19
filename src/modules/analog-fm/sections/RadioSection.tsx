@@ -174,7 +174,7 @@ function PreEmphSubTab() {
             </div>
           </div>
 
-          <Panel key={resetKey} title={t('analog.fm.radio.emphasis.plot')}>
+          <Panel key={resetKey} title={<HintText text={t('analog.fm.radio.emphasis.plot')} />}>
             <Canvas
               draw={draw}
               deps={[peMag, deMag, fLo, fHi]}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawStems, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -169,7 +169,7 @@ export function WhiteNoiseSection() {
             />
           </Panel>
 
-          <Panel title={t('rp.white.psd')}>
+          <Panel title={<HintText text={t('rp.white.psd')} />}>
             <PlotTitle textKey="rp.white.psd" />
             <Canvas
               height={150}
@@ -201,9 +201,6 @@ export function WhiteNoiseSection() {
                 { color: CHART.dim, label: t('rp.white.trace.flat'), dashed: true },
               ]}
             />
-            <TheoryBox>
-              <HintText text={t('rp.white.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.3.2 White & thermal noise */}

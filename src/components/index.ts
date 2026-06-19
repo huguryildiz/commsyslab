@@ -10,3 +10,4 @@ export { TheoryBox } from './TheoryBox';
 export { InfoCard } from './InfoCard';
 export type { InfoCardProps, InfoCardAccent } from './InfoCard';
 export { TransportControls } from './TransportControls';
+export { ModuleTitle } from './ModuleTitle';

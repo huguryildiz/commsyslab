@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -171,9 +171,7 @@ export function RepeaterSection() {
             />
             <Formula tex="\left(\tfrac{S}{N}\right)_o=\dfrac{P_T}{K\,L\,F_a\,N_0 B}" block />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.rep.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

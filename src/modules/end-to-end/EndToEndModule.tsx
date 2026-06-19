@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { t } from '@/i18n';
 import { runLink, type LinkConfig } from '@/lib/sim/link';
 import type { Scheme } from '@/lib/dsp/modulation';
 import { ChainStrip, type Stage } from './ChainStrip';
@@ -41,11 +40,6 @@ export function EndToEndModule() {
 
   return (
     <div className="e2e">
-      <header className="e2e__head">
-        <h1>{t('e2e.title')}</h1>
-        <p>{t('e2e.subtitle')}</p>
-      </header>
-
       <ChainStrip selected={stage} onSelect={setStage} status={status} />
       <SourceSinkCompare r={result} />
 

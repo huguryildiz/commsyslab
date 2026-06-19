@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -110,7 +110,7 @@ export function BayesSection() {
             <Metric label={t('rp.bayes.postX0Y0')} value={r.postX0Y0.toFixed(3)} />
           </div>
 
-          <Panel title={t('rp.bayes.plot')}>
+          <Panel title={<HintText text={t('rp.bayes.plot')} />}>
             <PlotTitle textKey="rp.bayes.plot" />
             <Canvas
               height={260}
@@ -125,9 +125,6 @@ export function BayesSection() {
               ]}
             />
             <Formula tex="P(E_1\mid E_2)=\dfrac{P(E_1\cap E_2)}{P(E_2)},\quad P(X_i\mid Y)=\dfrac{P(X_i)\,P(Y\mid X_i)}{\sum_j P(X_j)\,P(Y\mid X_j)}" />
-            <TheoryBox>
-              <HintText text={t('rp.bayes.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.1.1 Conditional probability & §5.1.2 Bayes's rule */}

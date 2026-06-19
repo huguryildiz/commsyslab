@@ -37,10 +37,6 @@ export function ChannelCodingModule() {
 
   return (
     <div className="cc-module">
-      <header className="cc-head">
-        <h1>{t('cc.title')}</h1>
-        <p>{t('cc.subtitle')}</p>
-      </header>
       <Segmented<Tab>
         ariaLabel={t('cc.title')}
         value={tab}

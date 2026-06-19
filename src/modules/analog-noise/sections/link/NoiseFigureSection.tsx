@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Schematic, Block, Wire, Arrowhead, MathLabel } from '@/lib/plot/schematic';
 import { t } from '@/i18n';
 import { friisCascade, type FriisStage } from '@/lib/dsp/linkbudget';
@@ -120,9 +120,7 @@ export function NoiseFigureSection() {
               block
             />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.figure.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

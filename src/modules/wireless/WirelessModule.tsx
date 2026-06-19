@@ -27,10 +27,6 @@ export function WirelessModule() {
 
   return (
     <div className="wl">
-      <header className="wl__head">
-        <h1>{t('wl.title')}</h1>
-        <p>{t('wl.subtitle')}</p>
-      </header>
       <Segmented
         ariaLabel={t('wl.title')}
         value={tab}

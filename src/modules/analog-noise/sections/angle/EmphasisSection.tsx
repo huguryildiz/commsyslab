@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -149,9 +149,7 @@ export function EmphasisSection() {
               block
             />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.emph.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

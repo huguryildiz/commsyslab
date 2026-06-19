@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Panel, Segmented, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Segmented, Formula, HintText } from '@/components';
 import { t } from '@/i18n';
 import type { Derived, ProcessParams } from '../model';
 import { ProcessControls, EnsemblePanel, AutocorrPanel, PsdPanel, FilterMagPanel } from '../panels';
@@ -72,44 +72,21 @@ export function ProcessTab({ params, set, resample, reset, d }: Props) {
             <Panel title={t('rp.ensemble.title')}>
               <EnsemblePanel d={d} params={params} />
               <Formula tex="m_X(t)=E[X(t)],\quad R_X(t_1,t_2)=E[X(t_1)X(t_2)]" />
-              <TheoryBox>
-                A random process is an <em>ensemble</em> of sample functions. The mean is an average
-                down the ensemble at each instant <Formula tex="t" />; for a stationary process it
-                does not depend on <Formula tex="t" /> (Proakis §5.2.1).
-              </TheoryBox>
             </Panel>
 
             <Panel title={t('rp.autocorr.title')}>
               <AutocorrPanel d={d} />
               <Formula tex="R_X(\tau)=E[X(t)\,X(t+\tau)]=R_X(-\tau)" />
-              <TheoryBox>
-                A wide-sense stationary (WSS) process has a constant mean and an autocorrelation
-                that depends only on the lag <Formula tex="\tau=t_1-t_2" /> (Def. 5.2.3). When the
-                time average from one realization matches the ensemble average, the process is
-                <em> ergodic</em> in autocorrelation — raise <Formula tex="M" /> to watch them
-                converge.
-              </TheoryBox>
             </Panel>
 
             <Panel title={t('rp.psd.title')}>
               <PsdPanel d={d} params={params} />
               <Formula tex="S_X(f)=\mathcal{F}\{R_X(\tau)\},\quad P_X=\int_{-\infty}^{\infty} S_X(f)\,df=R_X(0)" />
-              <TheoryBox>
-                Wiener–Khinchin (Eq. 5.2.15): the power spectral density is the Fourier transform of
-                the autocorrelation. Blue is the averaged periodogram estimate (normalized), dashed
-                orange is theory. White noise is flat; the RC filter rolls it off; NRZ follows a
-                <Formula tex="\operatorname{sinc}^2" /> shape.
-              </TheoryBox>
             </Panel>
 
             <Panel title={t('rp.filter.title')}>
               <FilterMagPanel d={d} params={params} />
               <Formula tex="m_Y=m_X\,H(0),\quad S_Y(f)=|H(f)|^2\,S_X(f)" />
-              <TheoryBox>
-                Passing a WSS process through an LTI system shapes its spectrum by
-                <Formula tex="|H(f)|^2" /> (Eq. 5.2.23); the output stays WSS and jointly stationary
-                with the input (§5.2.4).
-              </TheoryBox>
             </Panel>
 
             {/* Book formulas — §5.2.1 averages · §5.2.2 WSS · §5.2.4 LTI · §5.2.5 PSD */}

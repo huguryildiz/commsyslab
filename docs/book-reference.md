@@ -149,22 +149,26 @@ styled by `.rp__card*` in `random-process.css`.
 
 ### Chapter 6 — Effect of Noise on Analog Communication (pp. 255–295) ✅
 
-**Module:** `src/modules/analog-noise/` · **DSP:** `src/lib/dsp/analognoise.ts`
+**Module:** `src/modules/analog-noise/` (4 tabs) · **DSP:** `src/lib/dsp/analognoise.ts`,
+`src/lib/dsp/linkbudget.ts` (§6.4, shared with wireless), reuses `analog.ts` (`amSignal`,
+`envelopeDetect`, `emphasisSnrGainDb`, `preEmphasisMagDb`).
 
-| Subsection                                       | Page | Status | Repo mapping                               |
-| ------------------------------------------------ | ---- | ------ | ------------------------------------------ |
-| 6.1 Effect of Noise on AM Systems                | 255  | ✅     | `DemodOutputSection.tsx`, `analognoise.ts` |
-| 6.1.1 Baseband System                            | 256  | ✅     | Basic SNR analysis                         |
-| 6.1.2 DSB-SC AM                                  | 256  | ✅     | `analognoise.ts`                           |
-| 6.1.3 SSB AM                                     | 258  | ✅     | `analognoise.ts`                           |
-| 6.1.4 Conventional AM                            | 259  | ✅     | `analognoise.ts`                           |
-| 6.2 Effect of Noise on Angle Modulation          | 263  | ✅     | `ThresholdEmphasisSection.tsx`             |
-| 6.2.1 Threshold Effect                           | 271  | ✅     | `ThresholdEmphasisSection.tsx`             |
-| 6.2.2 Pre-emphasis and De-emphasis (FM)          | 274  | ✅     | `ThresholdEmphasisSection.tsx`             |
-| 6.3 Comparison of Analog-Modulation Systems      | 277  | ✅     | `ComparisonSection.tsx`                    |
-| 6.4 Transmission Losses and Noise                | 278  | ⬜     | —                                          |
-| 6.4.1 Thermal Noise Sources                      | 279  | ⬜     | —                                          |
-| 6.4.2 Effective Noise Temperature / Noise Figure | 280  | ⬜     | —                                          |
+| Subsection                                       | Page | Status | Repo mapping                                  |
+| ------------------------------------------------ | ---- | ------ | --------------------------------------------- |
+| 6.1 Effect of Noise on AM Systems                | 255  | ✅     | `AmNoiseTab.tsx` (4 sub-tabs)                 |
+| 6.1.1 Baseband System                            | 256  | ✅     | `am/BasebandSection.tsx`                       |
+| 6.1.2 DSB-SC AM                                  | 256  | ✅     | `am/DsbScSection.tsx` (real coherent chain)    |
+| 6.1.3 SSB AM                                     | 258  | ✅     | `am/SsbSection.tsx`                            |
+| 6.1.4 Conventional AM                            | 259  | ✅     | `am/ConventionalAmSection.tsx` (envelope+thr.) |
+| 6.2 Effect of Noise on Angle Modulation          | 263  | ✅     | `angle/NoisePsdSection.tsx` (FM/PM, `angleNoisePsd`) |
+| 6.2.1 Threshold Effect                           | 271  | ✅     | `angle/ThresholdSection.tsx` (Fig 6.5 family)  |
+| 6.2.2 Pre-emphasis and De-emphasis (FM)          | 274  | ✅     | `angle/EmphasisSection.tsx` (Eq. 6.2.42)       |
+| 6.3 Comparison of Analog-Modulation Systems      | 277  | ✅     | `ComparisonSection.tsx` (curves + table)       |
+| 6.4 Transmission Losses and Noise                | 278  | ✅     | `LinkBudgetTab.tsx` (4 sub-tabs), `linkbudget.ts` |
+| 6.4.1 Thermal Noise Sources                      | 279  | ✅     | `link/ThermalNoiseSection.tsx` (kTB)           |
+| 6.4.2 Effective Noise Temperature / Noise Figure | 280  | ✅     | `link/NoiseFigureSection.tsx` (Friis cascade)  |
+| 6.4.3 Transmission Losses                        | 283  | ✅     | `link/PathLossSection.tsx` (path loss)         |
+| 6.4.4 Repeaters for Signal Transmission          | 284  | ✅     | `link/RepeaterSection.tsx` (K-segment SNR)     |
 
 ---
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -123,9 +123,7 @@ export function ThresholdSection() {
             <Legend entries={BETAS.map((b, i) => ({ color: COLORS[i], label: `β=${b}` }))} />
             <Formula tex="\left(\tfrac{S}{N}\right)_{b,\mathrm{th}}=20(\beta+1)" block />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.thr.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

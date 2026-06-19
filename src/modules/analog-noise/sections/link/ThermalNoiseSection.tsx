@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -84,7 +84,7 @@ export function ThermalNoiseSection() {
             <Metric label={<HintText text="$P_n=kTB$" />} value={pn.toExponential(2)} unit="W" />
             <Metric label={<HintText text="$T_0$ floor" />} value="4.0e-21" unit="W/Hz" />
           </div>
-          <Panel title={t('an.thermal.plot')}>
+          <Panel title={<HintText text={t('an.thermal.plot')} />}>
             <Canvas
               height={220}
               draw={draw}
@@ -95,9 +95,7 @@ export function ThermalNoiseSection() {
             />
             <Formula tex="P_n=kTB,\quad N_0=kT,\quad k=1.38\times10^{-23}\,\mathrm{J/K}" block />
           </Panel>
-          <TheoryBox>
-            <HintText text={t('an.thermal.theory')} />
-          </TheoryBox>
+
         </div>
       </div>
     </div>

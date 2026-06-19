@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Select, Slider, Formula, TheoryBox, HintText } from '@/components';
+import { Panel, Select, Slider, Formula, HintText } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import {
   linScale,
@@ -329,7 +329,7 @@ export function RandomVariableSection() {
             </div>
           </Panel>
 
-          <Panel title={t('rp.qfunc.title')}>
+          <Panel title={<HintText text={t('rp.qfunc.title')} />}>
             <Slider
               label={<HintText text={t('rp.qfunc.threshold')} />}
               min={-3}
@@ -347,7 +347,7 @@ export function RandomVariableSection() {
             <Metric label={t('rp.rv.var')} value={stats.variance.toFixed(3)} />
           </div>
 
-          <Panel title={t('rp.rv.pdf')}>
+          <Panel title={<HintText text={t('rp.rv.pdf')} />}>
             <PlotTitle textKey="rp.rv.pdf" />
             <Canvas
               height={210}
@@ -369,12 +369,9 @@ export function RandomVariableSection() {
               ariaLabel="Cumulative distribution function"
             />
             <Formula tex="f_X(x)=\dfrac{d}{dx}F_X(x),\quad \int_{-\infty}^{\infty} f_X(x)\,dx=1" />
-            <TheoryBox>
-              <HintText text={t('rp.rv.theory')} />
-            </TheoryBox>
           </Panel>
 
-          <Panel title={t('rp.qfunc.title')}>
+          <Panel title={<HintText text={t('rp.qfunc.title')} />}>
             <div className="rp__readouts">
               <Metric label={t('rp.qfunc.value')} value={qfunc(qx).toFixed(4)} />
               <Metric label={t('rp.qfunc.boundExp')} value={qb.upperExp.toFixed(4)} />
@@ -390,9 +387,6 @@ export function RandomVariableSection() {
               ariaLabel="Q-function tail of the standard normal density"
             />
             <Formula tex="Q(x)=\int_x^{\infty}\tfrac{1}{\sqrt{2\pi}}e^{-t^2/2}\,dt,\quad \tfrac12 e^{-x^2/2}\ \text{(5.1.8)},\ \tfrac{1}{\sqrt{2\pi}\,x}e^{-x^2/2}\ \text{(5.1.9)}" />
-            <TheoryBox>
-              <HintText text={t('rp.qfunc.theory')} />
-            </TheoryBox>
           </Panel>
 
           {/* Book formulas — §5.1.3 Random variables (CDF/PDF, Gaussian, Q-function) */}

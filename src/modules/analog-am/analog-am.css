@@ -453,7 +453,7 @@
 /* AM scheme info cards (mirrors .sig-cards / .sig-card in fourier.css) */
 .analog__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 16px;
   margin-top: var(--space-3);
 }
@@ -467,6 +467,8 @@
   flex-direction: column;
   gap: var(--space-2);
   transition: border-color var(--transition), box-shadow var(--transition);
+  min-width: 0;
+  overflow: hidden;
 }
 .analog__card:hover {
   border-color: var(--border-strong);
