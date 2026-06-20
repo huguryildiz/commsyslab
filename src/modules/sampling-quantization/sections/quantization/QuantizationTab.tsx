@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { ScalarQuantSection } from './ScalarQuantSection';
-import { PlaceholderSection } from '../PlaceholderSection';
+import { VectorQuantSection } from './VectorQuantSection';
 
 type Sub = 'scalar' | 'vector';
 
@@ -22,11 +22,7 @@ export function QuantizationTab() {
           ]}
         />
       </div>
-      {sub === 'scalar' ? (
-        <ScalarQuantSection />
-      ) : (
-        <PlaceholderSection bodyKey="adc.placeholder.vector" />
-      )}
+      {sub === 'scalar' ? <ScalarQuantSection /> : <VectorQuantSection />}
     </div>
   );
 }
