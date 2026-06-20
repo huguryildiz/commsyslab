@@ -348,3 +348,93 @@ export function convBerHardBound(code: ConvCode, ebN0Db: number): number {
   }
   return beta * p2;
 }
+
+// ─── §13.3.4 distance spectrum & full union bounds ──────────────────────────
+
+/** BSC pairwise error probability P₂(d) for a weight-d competitor (Eq. 13.3.10/13.3.13). */
+function bscPairwiseP2(d: number, p: number): number {
+  let p2 = 0;
+  for (let e = Math.floor(d / 2) + 1; e <= d; e++) {
+    p2 += binom(d, e) * p ** e * (1 - p) ** (d - e);
+  }
+  if (d % 2 === 0) p2 += 0.5 * binom(d, d / 2) * p ** (d / 2) * (1 - p) ** (d / 2);
+  return p2;
+}
+
+/**
+ * Distance spectrum {d → {paths a_d, infoErrors β_d}} for first-return paths of output
+ * weight ≤ maxD. a_d = number of weight-d merging paths (Eq. 13.3.10); β_d = Σ input weights
+ * of those paths (Eq. 13.3.16, the bit-error coefficient f(d)). DFS pruned by output weight.
+ * Book §13.3.4.
+ */
+export function distanceSpectrum(
+  code: ConvCode,
+  maxD: number,
+): Map<number, { paths: number; infoErrors: number }> {
+  const { L } = code;
+  const spec = new Map<number, { paths: number; infoErrors: number }>();
+  const CAP = 64;
+  const add = (d: number, inW: number): void => {
+    const cur = spec.get(d) ?? { paths: 0, infoErrors: 0 };
+    cur.paths += 1;
+    cur.infoErrors += inW;
+    spec.set(d, cur);
+  };
+  const visit = (state: number, outW: number, inW: number, depth: number): void => {
+    if (depth > CAP) return;
+    for (let input = 0; input < 2; input++) {
+      const ns = nextState(state, input, L);
+      const no = outW + bitWeight(branchOutputs(state, input, code));
+      const ni = inW + input;
+      if (no > maxD) continue;
+      if (ns === 0) {
+        if (state !== 0) add(no, ni); // real first-return path
+      } else {
+        visit(ns, no, ni, depth + 1);
+      }
+    }
+  };
+  const s1 = nextState(0, 1, L);
+  visit(s1, bitWeight(branchOutputs(0, 1, code)), 1, 1);
+  return spec;
+}
+
+/**
+ * Full soft-decision bit-error union bound: P_b ≤ Σ_{d=d_free}^{d_free+terms−1} β_d·Q(√(2 R_c d γ_b)).
+ * `terms` ≥ 1; terms = 1 reproduces the leading-term `convBerSoftBound`. Book Eq. 13.3.16.
+ */
+export function convBerSoftBoundFull(code: ConvCode, ebN0Db: number, terms: number): number {
+  const d0 = freeDistance(code);
+  if (!isFinite(d0)) return NaN;
+  const spec = distanceSpectrum(code, d0 + Math.max(0, terms - 1));
+  const g = 10 ** (ebN0Db / 10);
+  let sum = 0;
+  for (let d = d0; d < d0 + terms; d++) {
+    const beta = spec.get(d)?.infoErrors ?? 0;
+    sum += beta * qfunc(Math.sqrt(2 * RATE * d * g));
+  }
+  return sum;
+}
+
+/**
+ * Full hard-decision bit-error union bound: P_b ≤ Σ_{d} β_d·P₂(d) with BSC crossover
+ * p = Q(√(2 R_c γ_b)). `terms` = 1 reproduces `convBerHardBound`. Book Eq. 13.3.10–13.3.16.
+ */
+export function convBerHardBoundFull(code: ConvCode, ebN0Db: number, terms: number): number {
+  const d0 = freeDistance(code);
+  if (!isFinite(d0)) return NaN;
+  const spec = distanceSpectrum(code, d0 + Math.max(0, terms - 1));
+  const g = 10 ** (ebN0Db / 10);
+  const p = qfunc(Math.sqrt(2 * RATE * g));
+  let sum = 0;
+  for (let d = d0; d < d0 + terms; d++) {
+    const beta = spec.get(d)?.infoErrors ?? 0;
+    sum += beta * bscPairwiseP2(d, p);
+  }
+  return sum;
+}
+
+/** Viterbi trellis state count = 2^((L−1)k) (k = 1): complexity grows exponentially with L. §13.3.3. */
+export function trellisStateCount(code: ConvCode): number {
+  return 2 ** (code.L - 1);
+}

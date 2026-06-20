@@ -16,6 +16,10 @@ import {
   awgnSoftReceive,
   convBerHardBound,
   convBerSoftBound,
+  distanceSpectrum,
+  convBerSoftBoundFull,
+  convBerHardBoundFull,
+  trellisStateCount,
 } from '@/lib/dsp/convcodes';
 import { uncodedBerBpsk } from '@/lib/dsp/blockcodes';
 import { makeRng } from '@/lib/dsp/random';
@@ -141,5 +145,33 @@ describe('AWGN soft receive + soft advantage', () => {
     }
     expect(hardWins).toBeGreaterThan(0);
     expect(softWins).toBeGreaterThan(hardWins);
+  });
+});
+
+describe('distance spectrum & full union bound (§13.3.4)', () => {
+  it('spectrum leading term: d_free=5, a_5=1, beta_5=1 for the book (2,1,3) code', () => {
+    const spec = distanceSpectrum(BOOK_CODE, 8);
+    expect(freeDistance(BOOK_CODE)).toBe(5);
+    expect(spec.get(5)).toEqual({ paths: 1, infoErrors: 1 });
+    // beta_d matches the existing weightSpectrum
+    for (const [d, v] of spec) {
+      expect(v.infoErrors).toBe(weightSpectrum(BOOK_CODE, 8).get(d));
+    }
+  });
+
+  it('1-term full bound equals the leading-term bound', () => {
+    expect(convBerSoftBoundFull(BOOK_CODE, 4, 1)).toBeCloseTo(convBerSoftBound(BOOK_CODE, 4), 12);
+    expect(convBerHardBoundFull(BOOK_CODE, 4, 1)).toBeCloseTo(convBerHardBound(BOOK_CODE, 4), 12);
+  });
+
+  it('adding terms tightens (increases) the union bound', () => {
+    const one = convBerSoftBoundFull(BOOK_CODE, 4, 1);
+    const five = convBerSoftBoundFull(BOOK_CODE, 4, 5);
+    expect(five).toBeGreaterThan(one);
+  });
+
+  it('trellis state count is 2^(L-1)', () => {
+    expect(trellisStateCount(BOOK_CODE)).toBe(4); // L=3
+    expect(trellisStateCount(makeConvCode(4, [1, 1, 1, 1], [1, 0, 1, 1]))).toBe(8);
   });
 });
