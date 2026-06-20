@@ -14,6 +14,7 @@ import { t } from '@/i18n';
 import { PRESETS, signalPeak, type Tone } from '@/lib/dsp/signals';
 import type { QuantizerType } from '@/lib/dsp/quantize';
 import { lloydMaxDesign, uniformDistortion, type SourcePdf } from '@/lib/dsp/lloydmax';
+import { useZoom } from '@/lib/plot/useZoom';
 import { buildSamplingView } from '@/modules/sampling-quantization/model';
 import { QuantPanel, ErrorPanel } from '@/modules/sampling-quantization/panels';
 import { LloydMaxPanel } from './lloydmax-panel';
@@ -65,6 +66,16 @@ export function ScalarQuantSection() {
 
   const lm = useMemo(() => lloydMaxDesign(pdf, nLevels), [pdf, nLevels]);
   const uniDist = useMemo(() => uniformDistortion(pdf, nLevels, 4), [pdf, nLevels]);
+
+  // Shared zoom/pan over the (static) time window — one instance drives both the
+  // staircase and the error panel so they stay axis-aligned.
+  const [tLo, tHi, onWheelT, , onPanT] = useZoom(0, WINDOW_SEC, {
+    minSpan: 0.1,
+    maxSpan: WINDOW_SEC,
+    clampMin: 0,
+    clampMax: WINDOW_SEC,
+  });
+  const timeDomain: [number, number] = [tLo, tHi];
 
   return (
     <div className="module-layout">
@@ -165,10 +176,24 @@ export function ScalarQuantSection() {
             </div>
             <div className="sampling__panels">
               <Panel title={t('sampling.panel.quant')}>
-                <QuantPanel view={view} mMax={mMax} bits={bits} type={type} />
+                <QuantPanel
+                  view={view}
+                  mMax={mMax}
+                  bits={bits}
+                  type={type}
+                  domain={timeDomain}
+                  onWheel={onWheelT}
+                  onPan={onPanT}
+                />
               </Panel>
               <Panel title={t('sampling.panel.error')}>
-                <ErrorPanel view={view} delta={view.delta} />
+                <ErrorPanel
+                  view={view}
+                  delta={view.delta}
+                  domain={timeDomain}
+                  onWheel={onWheelT}
+                  onPan={onPanT}
+                />
               </Panel>
             </div>
           </>
@@ -180,7 +205,7 @@ export function ScalarQuantSection() {
               <Readout label={t('adc.lm.sqnrOpt')} value={lm.sqnrDb.toFixed(2)} unit="dB" />
             </div>
             <Panel title={t('adc.lm.panel')}>
-              <LloydMaxPanel pdf={pdf} levels={nLevels} />
+              <LloydMaxPanel key={`${pdf}-${nLevels}`} pdf={pdf} levels={nLevels} />
             </Panel>
           </>
         )}

@@ -16,6 +16,7 @@ import { PRESETS, signalPeak, type Tone } from '@/lib/dsp/signals';
 import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import { aliasFrequency } from '@/lib/dsp/sampling';
 import { audioSupported, playSampledTone } from '@/lib/audio/sampling-audio';
+import { useZoom } from '@/lib/plot/useZoom';
 import { buildSamplingView } from '@/modules/sampling-quantization/model';
 import { TimePanel, SpectrumPanel } from '@/modules/sampling-quantization/panels';
 import '@/modules/sampling-quantization/sampling-quantization.css';
@@ -78,6 +79,16 @@ export function SamplingSection() {
 
   const cursorT = view.samples.t.length ? view.samples.t[view.samples.t.length - 1] : undefined;
   const aliasPitch = aliasFrequency(audioToneHz, audioFs);
+
+  // Zoom/pan over the time window. Stored as offsets within [0, WINDOW_SEC] so the
+  // zoomed sub-window scrolls together with the live left edge t0 during playback.
+  const [zLo, zHi, onWheelT, , onPanT] = useZoom(0, WINDOW_SEC, {
+    minSpan: 0.1,
+    maxSpan: WINDOW_SEC,
+    clampMin: 0,
+    clampMax: WINDOW_SEC,
+  });
+  const timeDomain: [number, number] = [t0 + zLo, t0 + zHi];
 
   return (
     <div className="module-layout">
@@ -171,10 +182,13 @@ export function SamplingSection() {
               mMax={mMax}
               showReconstruction={showRecon}
               cursorT={loop.running ? cursorT : undefined}
+              domain={timeDomain}
+              onWheel={onWheelT}
+              onPan={onPanT}
             />
           </Panel>
           <Panel title={t('sampling.panel.spectrum')}>
-            <SpectrumPanel tones={tones} fs={fs} />
+            <SpectrumPanel key={`${preset}-${fs}`} tones={tones} fs={fs} />
           </Panel>
         </div>
 
