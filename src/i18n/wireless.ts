@@ -188,6 +188,52 @@ export const wireless: Record<string, string> = {
   'wl.mimo.readout.divAlamouti': 'Alamouti 2×N_r order',
   'wl.mimo.readout.capAt': 'Capacity (N_t×N_r) @ 10 dB',
 
+  // MIMO sub-tabs (§14.4)
+  'wl.mimo.subtab.ariaLabel': 'MIMO sub-topic',
+  'wl.mimo.subtab.mux': 'Spatial multiplexing',
+  'wl.mimo.subtab.stc': 'Space-Time (Alamouti)',
+  'wl.mimo.subtab.err': 'Error rate',
+  'wl.mimo.theory.title': 'Multiple antennas, two gains',
+  'wl.mimo.theory.body':
+    'Receive antennas add array gain (a shift). Multiple antennas at BOTH ends add a slope: at high SNR the ergodic capacity grows like min(N_t,N_r)·log₂(ρ), the spatial-multiplexing gain — several independent data streams sharing the same band.',
+  'wl.mimo.card.mux.title': 'Spatial multiplexing',
+  'wl.mimo.card.mux.body':
+    'A rich scattering channel lets $\\min(N_t,N_r)$ independent streams be separated at the receiver, multiplying the data rate without extra bandwidth.',
+  'wl.mimo.card.cap.title': 'Ergodic capacity',
+  'wl.mimo.card.cap.body':
+    'Averaged over fading, $C=\\log_2\\det(I+\\tfrac{\\rho}{N_t}HH^{\\mathsf H})$ — the mutual information a random MIMO channel supports.',
+  // Space-Time / Alamouti
+  'wl.mimo.stc.title': 'Space-Time coding',
+  'wl.mimo.stc.ebN0Max': 'E_b/N₀ axis max (dB)',
+  'wl.mimo.stc.matrix.title': 'Alamouti 2×1 space-time block',
+  'wl.mimo.stc.matrix.note':
+    'Over two symbol periods the two antennas send (s₁,s₂) then (−s₂*,s₁*). The orthogonal structure lets a 1-antenna receiver recover both symbols with simple linear combining.',
+  'wl.mimo.stc.ber.title': 'BER vs E_b/N₀ — transmit diversity',
+  'wl.mimo.stc.theory.title': 'Diversity without a receive array',
+  'wl.mimo.stc.theory.body':
+    'Alamouti 2×1 achieves the same diversity order (2) as 1×2 MRC but pays a 3 dB penalty because the transmit power is split across two antennas. It gives transmit diversity to devices that cannot fit multiple receive antennas.',
+  'wl.mimo.card.txdiv.title': 'Transmit diversity',
+  'wl.mimo.card.txdiv.body': 'Diversity created at the transmitter, so a small handset with one antenna still benefits.',
+  'wl.mimo.card.alamouti.title': 'Alamouti scheme',
+  'wl.mimo.card.alamouti.body':
+    'A rate-1 orthogonal space-time block code for two transmit antennas with a simple linear-combining decoder.',
+  'wl.mimo.card.divorder.title': 'Diversity order',
+  'wl.mimo.card.divorder.body':
+    'The high-SNR BER slope on a log-log plot; order $L$ means $P_b\\propto \\gamma^{-L}$. Alamouti 2×1 reaches order 2.',
+  // Spatial-multiplexing error rate
+  'wl.mimo.err.title': 'Spatial-mux detection',
+  'wl.mimo.err.plot.title': 'BER vs SNR — ZF vs MMSE',
+  'wl.mimo.err.readout.config': 'Antenna config (N_t×N_r)',
+  'wl.mimo.err.theory.title': 'Linear MIMO detection',
+  'wl.mimo.err.theory.body':
+    'Zero-forcing inverts the channel and enhances noise on weak eigenmodes; MMSE balances noise against interference and is always at least as good. With N_r ≥ N_t the streams are separable; extra receive antennas steepen the BER curve.',
+  'wl.mimo.card.zfmmse.title': 'ZF vs MMSE',
+  'wl.mimo.card.zfmmse.body':
+    'ZF: $\\mathbf{W}=(\\mathbf{H}^{\\mathsf H}\\mathbf{H})^{-1}\\mathbf{H}^{\\mathsf H}$ removes interference but amplifies noise. MMSE adds $N_0\\mathbf{I}$ to trade a little residual interference for much less noise.',
+  'wl.mimo.card.dmt.title': 'Diversity–multiplexing',
+  'wl.mimo.card.dmt.body':
+    'A fixed antenna array can be used for more streams (multiplexing) or more reliability (diversity), but not both at once — a fundamental tradeoff.',
+
   // Doppler / time-selective fading section
   'wl.tab.doppler': 'Doppler',
   'wl.doppler.title': 'Doppler & mobility',
