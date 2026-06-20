@@ -35,6 +35,7 @@ import { NoncoherentFskSection } from './NoncoherentFskSection';
 import { MultidimSection } from './MultidimSection';
 import { RepeaterSection } from './RepeaterSection';
 import { SyncSection } from './SyncSection';
+import { WaveformsSection } from './WaveformsSection';
 import './modulation.css';
 
 const M_OPTIONS: Record<Scheme, number[]> = {
@@ -56,6 +57,7 @@ export function ModulationModule() {
   const tab =
     (slug as
       | 'detection'
+      | 'waveforms'
       | 'optrx'
       | 'dpsk'
       | 'noncoh'
@@ -199,12 +201,13 @@ export function ModulationModule() {
 
   return (
     <div className="modulation__tabwrap">
-      <Segmented<'detection' | 'optrx' | 'dpsk' | 'noncoh' | 'multidim' | 'repeater' | 'sync'>
+      <Segmented<'detection' | 'waveforms' | 'optrx' | 'dpsk' | 'noncoh' | 'multidim' | 'repeater' | 'sync'>
         ariaLabel={t('modulation.optrx.tabs')}
         value={tab}
         onChange={handleTabChange}
         options={[
           { value: 'detection', label: t('modulation.optrx.tab.detection') },
+          { value: 'waveforms', label: 'Waveforms' },
           { value: 'optrx', label: t('modulation.optrx.tab.optrx') },
           { value: 'dpsk', label: t('modulation.dpsk.tab') },
           { value: 'noncoh', label: t('modulation.noncoh.tab') },
@@ -213,6 +216,7 @@ export function ModulationModule() {
           { value: 'sync', label: t('modulation.sync.tab') },
         ]}
       />
+      {tab === 'waveforms' && <WaveformsSection />}
       {tab === 'optrx' && <OptimumReceiverSection />}
       {tab === 'dpsk' && <DpskSection />}
       {tab === 'noncoh' && <NoncoherentFskSection />}
