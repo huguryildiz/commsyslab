@@ -62,3 +62,92 @@ export function gramSchmidt(signals: number[][], tol = 1e-9): GramSchmidtResult 
 
   return { basis, coeffs, dim, energies, dependent };
 }
+
+/** One projection of sₘ onto a prior orthonormal basis vector φⱼ (Eq. 7.1.6). */
+export interface GramSchmidtStepProjection {
+  /** Index j of the prior basis vector φⱼ. */
+  basisIndex: number;
+  /** Projection coefficient ⟨sₘ, φⱼ⟩. */
+  coeff: number;
+  /** The removed component ⟨sₘ, φⱼ⟩·φⱼ(t). */
+  component: number[];
+}
+
+/** The Gram-Schmidt step for one input signal sₘ. */
+export interface GramSchmidtStep {
+  /** Index m of the signal. */
+  signalIndex: number;
+  /** The original signal sₘ(t). */
+  source: number[];
+  /** Projections onto each prior basis vector, in order. */
+  projections: GramSchmidtStepProjection[];
+  /** Residual gₘ(t) = sₘ − Σ projections (Eq. 7.1.7). */
+  residual: number[];
+  /** ‖gₘ‖. */
+  residualNorm: number;
+  /** true ⇒ residual ≈ 0, signal adds no new dimension. */
+  dependent: boolean;
+  /** New basis vector φₖ = gₘ/‖gₘ‖, or null when dependent. */
+  basis: number[] | null;
+}
+
+/** Full step-by-step Gram-Schmidt trace for animation (Proakis §7.1). */
+export interface GramSchmidtTrace {
+  steps: GramSchmidtStep[];
+  /** Final orthonormal basis (equals `gramSchmidt(signals).basis`). */
+  basis: number[][];
+  /** Final M×N signal-space coefficients (equals `gramSchmidt(signals).coeffs`). */
+  coeffs: number[][];
+  dim: number;
+}
+
+/**
+ * Like `gramSchmidt`, but records every intermediate projection/residual so the UI
+ * can animate the orthonormalization. Same inner-product and tolerance conventions,
+ * so the final `basis`/`coeffs`/`dim` are identical to `gramSchmidt`.
+ */
+export function gramSchmidtTrace(signals: number[][], tol = 1e-9): GramSchmidtTrace {
+  const M = signals.length;
+  const len = M > 0 ? signals[0].length : 0;
+  if (signals.some((s) => s.length !== len)) {
+    throw new Error('gramSchmidtTrace: all signals must have equal length');
+  }
+  const basis: number[][] = [];
+  const steps: GramSchmidtStep[] = [];
+
+  for (let m = 0; m < M; m++) {
+    const s = signals[m];
+    const energy = dot(s, s);
+    const residual = s.slice();
+    const projections: GramSchmidtStepProjection[] = [];
+    for (let j = 0; j < basis.length; j++) {
+      const phi = basis[j];
+      const coeff = dot(s, phi); // basis is orthonormal ⇒ ⟨sₘ,φⱼ⟩ is the projection coeff
+      const component = phi.map((v) => coeff * v);
+      for (let i = 0; i < len; i++) residual[i] -= component[i];
+      projections.push({ basisIndex: j, coeff, component });
+    }
+    const dResidual = dot(residual, residual);
+    const residualNorm = Math.sqrt(dResidual);
+    // Same relative-tolerance test as gramSchmidt().
+    const dependent = !(dResidual > tol * Math.max(energy, 1e-12));
+    let basisVec: number[] | null = null;
+    if (!dependent) {
+      basisVec = residual.map((v) => v / residualNorm);
+      basis.push(basisVec);
+    }
+    steps.push({
+      signalIndex: m,
+      source: s.slice(),
+      projections,
+      residual: residual.slice(),
+      residualNorm,
+      dependent,
+      basis: basisVec ? basisVec.slice() : null,
+    });
+  }
+
+  const dim = basis.length;
+  const coeffs = signals.map((s) => basis.map((phi) => dot(s, phi)));
+  return { steps, basis, coeffs, dim };
+}
