@@ -9,10 +9,21 @@ import { CyclicCodesSection } from './CyclicCodesSection';
 import { GfBchSection } from './GfBchSection';
 import { ReedSolomonSection } from './ReedSolomonSection';
 import { CodesVsShannonSection } from './CodesVsShannonSection';
+import { ProductCodesSection } from './ProductCodesSection';
 import { ConcatenatedSection } from './ConcatenatedSection';
 import './channel-coding.css';
 
-type Tab = 'channels' | 'shannon' | 'block' | 'conv' | 'cyclic' | 'gfbch' | 'rs' | 'compare' | 'concat';
+type Tab =
+  | 'channels'
+  | 'shannon'
+  | 'block'
+  | 'conv'
+  | 'cyclic'
+  | 'gfbch'
+  | 'rs'
+  | 'compare'
+  | 'product'
+  | 'concat';
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'channels', label: t('cc.tab.channels') },
@@ -23,6 +34,7 @@ const TABS: { value: Tab; label: string }[] = [
   { value: 'gfbch', label: t('cc.tab.gfbch') },
   { value: 'rs', label: t('cc.tab.rs') },
   { value: 'compare', label: t('cc.tab.compare') },
+  { value: 'product', label: t('cc.tab.product') },
   { value: 'concat', label: t('cc.tab.concat') },
 ];
 
@@ -51,6 +63,7 @@ export function ChannelCodingModule() {
       {tab === 'gfbch' && <GfBchSection />}
       {tab === 'rs' && <ReedSolomonSection />}
       {tab === 'compare' && <CodesVsShannonSection />}
+      {tab === 'product' && <ProductCodesSection />}
       {tab === 'concat' && <ConcatenatedSection />}
     </div>
   );

@@ -234,3 +234,11 @@
 .cc-cc-verdict { font-family: var(--mono); font-size: 13px; margin: 8px 0 0; }
 .cc-cc-verdict.ok { color: var(--ok); }
 .cc-cc-verdict.bad { color: var(--err); }
+
+/* Product-codes editable data grid */
+.cc-pc-edit {
+  display: grid;
+  gap: 4px;
+  justify-content: start;
+  margin: 6px 0;
+}

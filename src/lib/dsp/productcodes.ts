@@ -27,7 +27,6 @@ const xor = (bits: number[]): number => bits.reduce((a, b) => a ^ (b & 1), 0);
  * (m+1)×(n+1) product codeword grid.
  */
 export function spcProductEncode(data: number[][]): number[][] {
-  const m = data.length;
   const n = data[0]?.length ?? 0;
   const grid: number[][] = data.map((row) => {
     const r = row.slice();

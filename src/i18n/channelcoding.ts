@@ -161,6 +161,31 @@ export const channelcoding: Record<string, string> = {
   'cc.cv.card.otherBody':
     'Feedback decoding and majority-logic decoding are simpler suboptimal schemes used where decoder hardware must stay minimal.',
 
+  // Product codes (§13.4.1)
+  'cc.tab.product': 'Product',
+  'cc.pc.data': 'Data block',
+  'cc.pc.dataHint': 'Click a data bit to toggle it; SPC parities update automatically.',
+  'cc.pc.extra': 'Add a 2nd error (uncorrectable)',
+  'cc.pc.params': 'Product-code parameters',
+  'cc.pc.decodeTitle': 'Crossword decoding (row × column syndromes)',
+  'cc.pc.status': 'Decode status',
+  'cc.pc.located': 'Located error',
+  'cc.pc.clean': '✓ no error',
+  'cc.pc.corrected': '✓ corrected',
+  'cc.pc.uncorrectable': '✗ uncorrectable (≥2 errors)',
+  'cc.pc.card.product': 'Product code',
+  'cc.pc.card.productBody':
+    'Two block codes arranged as a matrix: every row is a codeword of one code, every column a codeword of the other. Size (n₁n₂, k₁k₂).',
+  'cc.pc.card.dmin': 'Multiplied distance',
+  'cc.pc.card.dminBody':
+    'The minimum distance is the product d_min = d₁·d₂, so a weak pair of codes combines into a much stronger one.',
+  'cc.pc.card.iter': 'Crossword decoding',
+  'cc.pc.card.iterBody':
+    'Decode rows, then columns, iterating like solving a crossword. For SPC components a single error sits at the intersection of the one failing row and column.',
+  'cc.pc.card.turbo': 'Toward turbo codes',
+  'cc.pc.card.turboBody':
+    'Iterating with soft (probabilistic) row/column guesses instead of hard flips is exactly the idea behind turbo codes (next tab).',
+
   // Tab 5 — Cyclic / CRC
   'cc.cy.code': 'Generator polynomial',
   'cc.cy.sel': 'Code / CRC preset',
