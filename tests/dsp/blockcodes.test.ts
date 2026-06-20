@@ -7,6 +7,8 @@ import {
   allCodewords,
   minDistance,
   errorCorrectionT,
+  errorDetectionD,
+  correctDetectPairs,
   CODES,
   makeHamming,
   syndromeTable,
@@ -147,5 +149,30 @@ describe('coding-gain BER', () => {
   });
   it('soft reference beats hard-decision at high Eb/N0', () => {
     expect(codedBerSoftRef(ham, 10)).toBeLessThan(codedBerHard(ham, 10));
+  });
+});
+
+describe('detection vs correction (§13.2.3)', () => {
+  it('detection capability is d_min − 1', () => {
+    expect(errorDetectionD(3)).toBe(2);
+    expect(errorDetectionD(7)).toBe(6);
+  });
+
+  it('correct/detect trade-off boundary, e_d = d_min−1−e_c with e_d ≥ e_c', () => {
+    expect(correctDetectPairs(7)).toEqual([
+      { ec: 0, ed: 6 },
+      { ec: 1, ed: 5 },
+      { ec: 2, ed: 4 },
+      { ec: 3, ed: 3 },
+    ]);
+    expect(correctDetectPairs(3)).toEqual([
+      { ec: 0, ed: 2 },
+      { ec: 1, ed: 1 },
+    ]);
+  });
+
+  it('max e_c in the trade-off equals errorCorrectionT', () => {
+    const pairs = correctDetectPairs(7);
+    expect(Math.max(...pairs.map((p) => p.ec))).toBe(errorCorrectionT(7));
   });
 });

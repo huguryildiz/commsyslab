@@ -72,6 +72,26 @@ export function errorCorrectionT(dmin: number): number {
   return Math.floor((dmin - 1) / 2);
 }
 
+/** Error-detection capability e_d = d_min − 1 (no correction). Book §13.2.3 Eq. 13.2.40. */
+export function errorDetectionD(dmin: number): number {
+  return dmin - 1;
+}
+
+/**
+ * Correct/detect trade-off boundary (Book §13.2.3 Fig. 13.6): for each correctable count
+ * e_c = 0…⌊(d_min−1)/2⌋, the max simultaneously-detectable e_d = d_min − 1 − e_c, kept while
+ * e_d ≥ e_c. Decoding can correct ≤ e_c and detect ≤ e_d errors when e_c + e_d ≤ d_min − 1.
+ */
+export function correctDetectPairs(dmin: number): { ec: number; ed: number }[] {
+  const tMax = errorCorrectionT(dmin);
+  const pairs: { ec: number; ed: number }[] = [];
+  for (let ec = 0; ec <= tMax; ec++) {
+    const ed = dmin - 1 - ec;
+    if (ed >= ec) pairs.push({ ec, ed });
+  }
+  return pairs;
+}
+
 /**
  * Build a systematic (2^m−1, 2^m−m−1) Hamming code: H=[Pᵀ|I_m], G=[I_k|P]. §9.5 Eq. 9.5.15.
  * Pᵀ columns are the weight≥2 nonzero m-vectors (in value order); the last m columns are I_m.
