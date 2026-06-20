@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Panel, Select, Slider, Readout, Formula, TheoryBox } from '@/components';
+import {
+  Panel,
+  Select,
+  Slider,
+  Segmented,
+  Readout,
+  Formula,
+  TheoryBox,
+  InfoCard,
+  TransportControls,
+} from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, logScale, drawLine, drawVLine, drawText } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
+import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import {
   makeConvCode,
   buildTrellis,
@@ -12,6 +23,10 @@ import {
   viterbiDecode,
   convBerHardBound,
   convBerSoftBound,
+  distanceSpectrum,
+  convBerSoftBoundFull,
+  convBerHardBoundFull,
+  trellisStateCount,
   type ConvCode,
 } from '@/lib/dsp/convcodes';
 import { uncodedBerBpsk } from '@/lib/dsp/blockcodes';
@@ -277,9 +292,32 @@ export function ConvCodesSection() {
           />
         </Panel>
 
+        <SpectrumBoundSim code={code} />
+
+        <div className="info-cards">
+          <InfoCard title={t('cc.cv.card.spec')} accent="green">
+            <p>{t('cc.cv.card.specBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('cc.cv.card.union')} accent="orange">
+            <p>{t('cc.cv.card.unionBody')}</p>
+            <Formula tex="P_b\le\sum_{d\ge d_{\text{free}}}\beta_d\,P_2(d)" block />
+          </InfoCard>
+          <InfoCard title={t('cc.cv.card.complexity')} accent="blue">
+            <p>{t('cc.cv.card.complexityBody')}</p>
+            <Formula tex={`\\#\\text{states}=2^{(L-1)k}=${trellisStateCount(code)}\\ (L=${code.L})`} block />
+          </InfoCard>
+          <InfoCard title={t('cc.cv.card.sequential')} accent="green">
+            <p>{t('cc.cv.card.sequentialBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('cc.cv.card.other')} accent="blue">
+            <p>{t('cc.cv.card.otherBody')}</p>
+          </InfoCard>
+        </div>
+
         <TheoryBox title={t('cc.theory')}>
           <Formula tex="c_j(t)=\sum_{i} g_j[i]\,u_{t-i}\ (\mathrm{mod}\,2),\qquad R_c=\tfrac{k}{n}=\tfrac12" block />
           <Formula tex="\text{Viterbi: ML path } = \arg\min_{\text{trellis paths}} d_H(c,y),\qquad G_a\approx 10\log_{10}(R_c\,d_{\text{free}})\,\text{dB (soft)}" block />
+          <Formula tex="P_e\le\sum_{d\ge d_{\text{free}}} a_d\,P_2(d),\qquad P_b\le\sum_{d\ge d_{\text{free}}}\beta_d\,P_2(d)" block />
         </TheoryBox>
       </div>
     </div>
@@ -381,4 +419,147 @@ function drawCodingGain(ctx: CanvasRenderingContext2D, w: number, h: number, cod
   drawText(ctx, ax, 0.3, clampY(uncodedBerBpsk(0.3)), 'uncoded', CHART.green, 4, -4);
   drawText(ctx, ax, XMAX, clampY(convBerHardBound(code, XMAX)), 'hard', CHART.orange, -26, -4);
   drawText(ctx, ax, XMAX, clampY(convBerSoftBound(code, XMAX)), 'soft', CHART.blue, -26, 10);
+}
+
+type Decision = 'soft' | 'hard';
+const SPEC_TERMS = 6; // distance-spectrum depth shown / max union-bound terms
+
+/** §13.3.4 — live distance-spectrum bars + union bound that tightens as terms accumulate. */
+function SpectrumBoundSim({ code }: { code: ConvCode }) {
+  const [ebN0Db, setEbN0Db] = useState(4);
+  const [decision, setDecision] = useState<Decision>('soft');
+  const [terms, setTerms] = useState(1);
+
+  const dFree = freeDistance(code);
+  const spec = useMemo(
+    () => distanceSpectrum(code, isFinite(dFree) ? dFree + SPEC_TERMS - 1 : 0),
+    [code, dFree],
+  );
+  const boundFull = decision === 'soft' ? convBerSoftBoundFull : convBerHardBoundFull;
+  const curBound = isFinite(dFree) ? boundFull(code, ebN0Db, terms) : NaN;
+
+  const loop = useSimulationLoop({
+    ticksPerSecond: 1.2,
+    onTick: () => setTerms((n) => (n >= SPEC_TERMS ? 1 : n + 1)),
+    onReset: () => setTerms(1),
+  });
+
+  return (
+    <Panel title={t('cc.cv.specTitle')}>
+      <div className="cc-readouts">
+        <Slider label="Eb/N₀" value={ebN0Db} min={0} max={10} step={0.5} unit="dB" onChange={setEbN0Db} />
+        <Readout label={t('cc.cv.dfree')} value={isFinite(dFree) ? dFree : '∞'} tone="ok" />
+        <Readout label={t('cc.cv.terms')} value={terms} />
+      </div>
+      <Segmented<Decision>
+        ariaLabel={t('cc.cv.decision')}
+        value={decision}
+        options={[
+          { value: 'soft', label: t('cc.cv.soft') },
+          { value: 'hard', label: t('cc.cv.hard') },
+        ]}
+        onChange={setDecision}
+      />
+      <TransportControls loop={loop} />
+      <Canvas
+        height={170}
+        ariaLabel="Convolutional code distance spectrum bars"
+        deps={[code, terms]}
+        draw={(ctx, w, h) => drawSpectrumBars(ctx, w, h, spec, dFree, terms)}
+      />
+      <Canvas
+        height={240}
+        ariaLabel="Convolutional code union bound accumulating distance-spectrum terms"
+        deps={[code, decision, terms, ebN0Db]}
+        draw={(ctx, w, h) => drawUnionBound(ctx, w, h, code, decision, terms, ebN0Db, curBound)}
+      />
+    </Panel>
+  );
+}
+
+/** Grouped bars of a_d (paths) and β_d (bit errors) per distance d; included terms highlighted. */
+function drawSpectrumBars(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  spec: Map<number, { paths: number; infoErrors: number }>,
+  dFree: number,
+  terms: number,
+): void {
+  if (!isFinite(dFree)) return;
+  const ds: number[] = [];
+  for (let d = dFree; d < dFree + SPEC_TERMS; d++) ds.push(d);
+  const maxV = Math.max(1, ...ds.flatMap((d) => [spec.get(d)?.paths ?? 0, spec.get(d)?.infoErrors ?? 0]));
+  const ax = { x: linScale([0, ds.length], [36, w - 10]), y: linScale([0, maxV * 1.1], [h - 22, 10]) };
+  const y0 = ax.y(0);
+  const slot = (ax.x(1) - ax.x(0)) * 0.5;
+  ds.forEach((d, i) => {
+    const included = d < dFree + terms;
+    const a = spec.get(d)?.paths ?? 0;
+    const b = spec.get(d)?.infoErrors ?? 0;
+    const xa = ax.x(i + 0.2);
+    const xb = ax.x(i + 0.55);
+    ctx.fillStyle = alpha(CHART.green, included ? 0.85 : 0.25);
+    ctx.fillRect(xa, ax.y(a), slot * 0.6, y0 - ax.y(a));
+    ctx.fillStyle = alpha(CHART.orange, included ? 0.85 : 0.25);
+    ctx.fillRect(xb, ax.y(b), slot * 0.6, y0 - ax.y(b));
+    ctx.fillStyle = included ? CHART.text : CHART.dim;
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`d=${d}`, ax.x(i + 0.5), y0 + 14);
+  });
+  ctx.textAlign = 'start';
+  ctx.fillStyle = CHART.green;
+  ctx.fillText('a_d', ax.x(0), 12);
+  ctx.fillStyle = CHART.orange;
+  ctx.fillText('β_d', ax.x(0) + 28, 12);
+}
+
+/** BER union bound vs Eb/N0: uncoded, leading-term (1), and full (terms) bound curves. */
+function drawUnionBound(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  code: ConvCode,
+  decision: Decision,
+  terms: number,
+  ebCur: number,
+  curBound: number,
+): void {
+  const XMIN = 0;
+  const XMAX = 10;
+  const YMIN = 1e-8;
+  const YMAX = 0.5;
+  const ax = { x: linScale([XMIN, XMAX], [44, w - 10]), y: logScale([YMIN, YMAX], [h - 24, 10]) };
+  const clampY = (v: number) => Math.min(YMAX, Math.max(YMIN, v));
+  const boundFull = decision === 'soft' ? convBerSoftBoundFull : convBerHardBoundFull;
+  const xs: number[] = [];
+  const unc: number[] = [];
+  const lead: number[] = [];
+  const full: number[] = [];
+  for (let db = XMIN; db <= XMAX + 1e-9; db += 0.25) {
+    xs.push(db);
+    unc.push(clampY(uncodedBerBpsk(db)));
+    lead.push(clampY(boundFull(code, db, 1)));
+    full.push(clampY(boundFull(code, db, terms)));
+  }
+  drawLine(ctx, ax, xs, unc, CHART.green, 2);
+  drawLine(ctx, ax, xs, lead, alpha(CHART.dim, 0.8), 1.5, true);
+  drawLine(ctx, ax, xs, full, decision === 'soft' ? CHART.blue : CHART.orange, 2);
+  drawVLine(ctx, ax, ebCur, YMIN, YMAX, alpha(CHART.pink, 0.8), true, 1.5);
+  drawText(ctx, ax, 0.3, clampY(uncodedBerBpsk(0.3)), 'uncoded', CHART.green, 4, -4);
+  drawText(ctx, ax, XMAX, clampY(boundFull(code, XMAX, 1)), 'd_free only', CHART.dim, -52, -4);
+  drawText(
+    ctx,
+    ax,
+    XMAX,
+    clampY(boundFull(code, XMAX, terms)),
+    `${terms} terms`,
+    decision === 'soft' ? CHART.blue : CHART.orange,
+    -44,
+    10,
+  );
+  if (isFinite(curBound)) {
+    drawText(ctx, ax, ebCur, clampY(curBound), `P_b≈${curBound.toExponential(1)}`, CHART.pink, 6, -6);
+  }
 }

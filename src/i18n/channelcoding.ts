@@ -135,6 +135,31 @@ export const channelcoding: Record<string, string> = {
   'cc.cv.fail': '✗ decoding failed (errors beyond capability)',
   'cc.cv.tail': 'tail',
   'cc.cv.metric': 'path metric',
+  // §13.3.4 distance spectrum & union bound (live)
+  'cc.cv.specTitle': 'Distance spectrum & union bound',
+  'cc.cv.specBars': 'Distance spectrum (paths a_d, bit errors β_d)',
+  'cc.cv.boundCurve': 'Union bound vs Eb/N₀ (terms accumulate)',
+  'cc.cv.decision': 'Decision',
+  'cc.cv.soft': 'Soft',
+  'cc.cv.hard': 'Hard',
+  'cc.cv.terms': 'Terms included',
+  'cc.cv.dfree': 'd_free',
+  // §13.3.3 / §13.3.4 info cards
+  'cc.cv.card.spec': 'Distance spectrum',
+  'cc.cv.card.specBody':
+    'a_d counts trellis paths at distance d from the all-zero path; β_d adds their input-bit errors. The spectrum starts at d_free and drives the error bound.',
+  'cc.cv.card.union': 'Union bound',
+  'cc.cv.card.unionBody':
+    'Bit-error probability is bounded by summing every distance term: P_b ≤ Σ β_d·P₂(d). The d_free term dominates at high Eb/N₀; more terms tighten the bound.',
+  'cc.cv.card.complexity': 'Viterbi complexity',
+  'cc.cv.card.complexityBody':
+    'The trellis has 2^(L−1) states, so Viterbi cost grows exponentially with constraint length L — practical only for small L.',
+  'cc.cv.card.sequential': 'Sequential decoding',
+  'cc.cv.card.sequentialBody':
+    'Fano and stack algorithms explore only the most promising paths, trading optimality for cost that barely grows with L — good for long constraint lengths.',
+  'cc.cv.card.other': 'Feedback & majority-logic',
+  'cc.cv.card.otherBody':
+    'Feedback decoding and majority-logic decoding are simpler suboptimal schemes used where decoder hardware must stay minimal.',
 
   // Tab 5 — Cyclic / CRC
   'cc.cy.code': 'Generator polynomial',
