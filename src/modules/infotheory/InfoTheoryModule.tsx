@@ -3,16 +3,18 @@ import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { EntropySection } from './EntropySection';
 import { JointInfoSection } from './JointInfoSection';
+import { DifferentialEntropySection } from './DifferentialEntropySection';
 import { PrefixKraftSection } from './PrefixKraftSection';
 import { HuffmanSection } from './HuffmanSection';
 import { LempelZivSection } from './LempelZivSection';
 import './infotheory.css';
 
-type Tab = 'entropy' | 'joint' | 'prefix' | 'huffman' | 'lz';
+type Tab = 'entropy' | 'joint' | 'diff' | 'prefix' | 'huffman' | 'lz';
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'entropy', label: t('it.tab.entropy') },
   { value: 'joint', label: t('it.tab.joint') },
+  { value: 'diff', label: t('it.tab.diff') },
   { value: 'prefix', label: t('it.tab.prefix') },
   { value: 'huffman', label: t('it.tab.huffman') },
   { value: 'lz', label: t('it.tab.lz') },
@@ -39,6 +41,7 @@ export function InfoTheoryModule() {
       />
       {tab === 'entropy' && <EntropySection />}
       {tab === 'joint' && <JointInfoSection />}
+      {tab === 'diff' && <DifferentialEntropySection />}
       {tab === 'prefix' && <PrefixKraftSection />}
       {tab === 'huffman' && <HuffmanSection />}
       {tab === 'lz' && <LempelZivSection />}

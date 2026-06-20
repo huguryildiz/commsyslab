@@ -20,7 +20,8 @@ describe('InfoTheoryModule', () => {
   it('renders tabs and shows the entropy section by default', () => {
     renderModule();
     // Tabs render via the shared <Segmented> control (role="tab"), not plain buttons.
-    expect(screen.getByRole('tab', { name: /Entropy/i })).toBeTruthy();
+    // Exact name match: a loose /Entropy/i would also hit the "Differential Entropy" tab.
+    expect(screen.getByRole('tab', { name: 'Entropy' })).toBeTruthy();
     expect(screen.getByLabelText(/Binary entropy function/i)).toBeTruthy();
   });
 
@@ -28,6 +29,12 @@ describe('InfoTheoryModule', () => {
     renderModule();
     fireEvent.click(screen.getByRole('tab', { name: /Mutual Info/i }));
     expect(screen.getByLabelText(/Entropy Venn diagram/i)).toBeTruthy();
+  });
+
+  it('switches to the Differential Entropy tab and shows the PDF plot', () => {
+    renderModule();
+    fireEvent.click(screen.getByRole('tab', { name: /Differential Entropy/i }));
+    expect(screen.getByLabelText(/Probability density function/i)).toBeTruthy();
   });
 
   it('switches to the Lempel-Ziv tab and shows the dictionary', () => {
