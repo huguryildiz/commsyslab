@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -121,9 +121,16 @@ export function ThresholdSection() {
               onPan={onPan}
             />
             <Legend entries={BETAS.map((b, i) => ({ color: COLORS[i], label: `β=${b}` }))} />
-            <Formula tex="\left(\tfrac{S}{N}\right)_{b,\mathrm{th}}=20(\beta+1)" block />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.thr.c1.t')} accent="green">
+              <HintText text={t('an.thr.c1.b')} />
+              <Formula tex="\gamma_{th}=20(\beta+1)" block />
+            </InfoCard>
+            <InfoCard title={t('an.thr.c2.t')} accent="orange">
+              <HintText text={t('an.thr.c2.b')} />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

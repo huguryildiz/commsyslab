@@ -32,16 +32,12 @@ export const analognoise: Record<string, string> = {
   'an.psd.title': 'Noise spectrum & SNR',
   'an.psd.scheme': 'FM / PM',
   'an.psd.plot': 'Output noise PSD (normalized)',
-  'an.psd.theory':
-    'In FM the output-noise PSD is parabolic ($N_0 f^2/A_c^2$): high-frequency message components suffer far more noise — this motivates pre-emphasis. PM has a flat noise PSD. FM gains $3\\beta^2 P_{M_n}$ over baseband and PM gains $\\beta^2 P_{M_n}$ (FM is 3× better, ≈ +4.8 dB). SNR rises as $\\beta^2$ — about +6 dB per doubling of $\\beta$ — at the cost of bandwidth $2(\\beta+1)W$.',
 
   // §6.2.1 Threshold
   'an.thr.title': 'FM threshold effect',
   'an.thr.betaSel': 'Highlight $\\beta$',
   'an.thr.gain': 'Above-threshold gain',
   'an.thr.plot': 'Output SNR vs baseband SNR',
-  'an.thr.theory':
-    'Above threshold FM SNR follows the straight high-SNR line; below the threshold $\\gamma_{th}=20(\\beta+1)$ the demodulator produces clicks and the SNR collapses. Larger $\\beta$ gives more gain but a higher threshold — design rule: pick the largest $\\beta$ with $\\gamma\\ge 20(\\beta+1)$.',
 
   // §6.2.2 Pre/De-emphasis
   'an.emph.title': 'Pre/de-emphasis',
@@ -54,15 +50,11 @@ export const analognoise: Record<string, string> = {
   'an.emph.trace.de': 'De-emphasis $|H_d|$',
   'an.emph.trace.before': 'No de-emphasis',
   'an.emph.trace.after': 'With de-emphasis',
-  'an.emph.theory':
-    'Pre-emphasis boosts high frequencies at the transmitter; de-emphasis $H_d(f)=1/(1+jf/f_1)$ cuts them at the receiver, restoring the message while suppressing the parabolic FM noise. With $\\tau=75\\,\\mu s$ ($f_1\\approx2122$ Hz) and $W=15$ kHz the pair adds roughly +13 dB (Eq. 6.2.42).',
 
   // §6.3 Comparison
   'an.cmp.title': 'Parameters',
   'an.cmp.plot': 'Output SNR vs baseband SNR',
   'an.cmp.tableTitle': 'Scheme comparison',
-  'an.cmp.theory':
-    'SSB and DSB-SC match the baseline SNR; SSB does it in half the bandwidth. Conventional AM stays below the baseline ($\\eta<1$) but uses the simplest receiver. FM/PM climb as $\\beta^2$ above threshold, trading the wide Carson bandwidth $2(\\beta+1)W$ for noise immunity — FM is 3× PM at equal $\\beta$.',
 
   // §6.4 Transmission & link tab
   'an.link.sub.ariaLabel': 'Transmission & link sub-tabs',
@@ -76,15 +68,11 @@ export const analognoise: Record<string, string> = {
   'an.thermal.temp': 'Temperature $T$',
   'an.thermal.bw': 'Bandwidth $B$',
   'an.thermal.plot': 'Noise PSD $N_0=kT$ vs temperature',
-  'an.thermal.theory':
-    'Every resistor at temperature $T$ delivers white thermal noise with one-sided PSD $N_0=kT$, so the available noise power in bandwidth $B$ is $P_n=kTB$. At the standard $T_0=290$ K this gives the $N_0\\approx4\\times10^{-21}$ W/Hz (−174 dBm/Hz) noise floor (§6.4.1).',
 
   // §6.4.2 Noise figure & Friis
   'an.figure.title': 'Amplifier cascade (3 stages)',
   'an.figure.stage': 'Stage',
   'an.figure.diagram': 'Friis cascade',
-  'an.figure.theory':
-    'A noise figure $F=1+T_e/T_0$ measures how much an amplifier degrades SNR. In a cascade the total figure $F=F_1+(F_2-1)/G_1+(F_3-1)/(G_1 G_2)+\\dots$ is dominated by the first stage, so the receiver front end should be a low-noise, high-gain amplifier (§6.4.2).',
 
   // §6.4.3 Path loss
   'an.pathloss.title': 'Transmission loss',
@@ -96,30 +84,21 @@ export const analognoise: Record<string, string> = {
   'an.pathloss.dbkm': 'Loss rate',
   'an.pathloss.pt': 'Transmit power $P_T$',
   'an.pathloss.plot': 'Loss $L$ vs distance',
-  'an.pathloss.theory':
-    'Free-space loss grows as the square of distance, $L=(4\\pi d/\\lambda)^2$ — about +6 dB per doubling of $d$ (and with frequency). A wireline cable instead loses a fixed dB per km, so its loss is linear in length. The received power is $P_R=P_T-L$ (§6.4.3).',
 
   // §6.4.4 Repeaters
   'an.rep.title': 'Repeater chain',
   'an.rep.loss': 'Loss per segment $L$',
   'an.rep.fa': 'Repeater NF $F_a$',
   'an.rep.diagram': 'K-segment cascade',
-  'an.rep.theory':
-    'Repeaters every segment offset the loss so long links stay feasible, but in an analog chain the noise accumulates: $(S/N)_o=P_T/(K L F_a N_0 B)$, degrading as $-10\\log_{10}K$ (about −3 dB per doubling of $K$). Digital regenerative repeaters detect and retransmit, so noise does not accumulate (§6.4.4).',
 
   // §6.1.1 Baseband
   'an.bb.title': 'Baseband reference',
-  'an.bb.note': 'Every AM scheme is compared to this system: ideal LPF, noise power $N_0 W$.',
   'an.bb.signal': 'Message and noisy output',
   'an.bb.trace.msg': 'Message $m(t)$',
   'an.bb.trace.noisy': 'Noisy output',
-  'an.bb.theory':
-    'In a baseband system the output SNR is simply $\\gamma=P_R/(N_0 W)$. DSB-SC and SSB deliver exactly this; conventional AM falls below it ($\\eta<1$), while FM above threshold is $3\\beta^2 P_{M_n}$ times it.',
 
   // §6.1.2 DSB-SC
   'an.dsb.title': 'DSB-SC demodulation',
-  'an.dsb.note':
-    'Coherent demod: multiply $r(t)$ by $\\cos\\omega_c t$ and lowpass-filter; the quadrature noise $n_s$ is rejected.',
   'an.dsb.passband': 'Received signal $r(t)=u(t)+n(t)$',
   'an.dsb.output': 'Demodulated output $y(t)$ and message $m(t)$',
   'an.dsb.gain': 'Demod gain',
@@ -128,30 +107,124 @@ export const analognoise: Record<string, string> = {
   'an.dsb.trace.u': 'Modulated $u(t)$',
   'an.dsb.trace.y': 'Output $y(t)$',
   'an.dsb.trace.m': 'Message $m(t)$',
-  'an.dsb.theory':
-    'For DSB-SC, coherent demodulation gives an output SNR equal to baseband: $(S/N)_o=(S/N)_b$ (0 dB gain). The quadrature noise component $n_s$ is rejected; the cost is $2W$ bandwidth.',
 
   // §6.1.3 SSB
   'an.ssb.title': 'SSB demodulation',
-  'an.ssb.note':
-    'Single sideband: $u(t)=A_c[m\\cos\\omega_c t \\mp \\hat m\\sin\\omega_c t]$. Coherent demod recovers $m(t)$.',
-  'an.ssb.theory':
-    'SSB output SNR also equals baseband ($(S/N)_o=(S/N)_b$), but it uses only $W$ bandwidth — half of DSB-SC. Same SNR, half the band: preferred on bandwidth-critical links.',
 
   // §6.1.4 Conventional AM
   'an.cam.title': 'Conventional AM',
   'an.cam.aIndex': 'Modulation index $a$',
-  'an.cam.note':
-    'Envelope detector: diode + RC. At high SNR the output matches synchronous demod, $(S/N)_o=\\eta\\,(S/N)_b$.',
   'an.cam.envPanel': 'Received signal and envelope detector',
   'an.cam.msgPanel': 'Recovered message after DC block',
-  'an.cam.threshold':
-    '⚠ Threshold effect: when $\\gamma$ is low the envelope detector intermixes signal and noise, so the output breaks down.',
   'an.cam.trace.refEnv': 'True envelope $A_c[1+a m_n]$',
   'an.cam.trace.detEnv': 'Detector output',
   'an.cam.trace.r': 'Received $r(t)$',
   'an.cam.trace.refMsg': 'Message $a\\,m_n(t)$',
   'an.cam.trace.recovered': 'Recovered',
-  'an.cam.theory':
-    'Conventional-AM efficiency $\\eta=a^2 P_{M_n}/(1+a^2 P_{M_n})<1$, so the output SNR is always below baseband (carrier power is wasted). The simple envelope detector works only at high SNR; below threshold ($\\gamma$ small) the signal is buried in noise (§6.1.4).',
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // Info cards (interactive-surface explainers; deep math stays in the book)
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // §6.1.1 Baseband
+  'an.bb.c1.t': 'Baseband reference',
+  'an.bb.c1.b':
+    'An ideal lowpass receiver of bandwidth $W$ passes the message and a noise power $N_0 W$. Its output SNR is the baseline every AM scheme is measured against.',
+  'an.bb.c2.t': 'Reading the plot',
+  'an.bb.c2.b':
+    'The green trace is the clean message $m(t)$; the orange trace adds bandlimited noise. Lower the channel SNR $\\gamma$ and the message is buried.',
+
+  // §6.1.2 DSB-SC
+  'an.dsb.c1.t': 'Coherent demodulation',
+  'an.dsb.c1.b':
+    'Multiplying $r(t)$ by $\\cos\\omega_c t$ and lowpass filtering recovers $\\tfrac12 A_c m(t)$ and rejects the quadrature noise $n_s(t)$.',
+  'an.dsb.c2.t': 'No SNR penalty',
+  'an.dsb.c2.b':
+    'DSB-SC delivers exactly the baseline SNR (0 dB demod gain), at the cost of $2W$ channel bandwidth.',
+
+  // §6.1.3 SSB
+  'an.ssb.c1.t': 'Single sideband',
+  'an.ssb.c1.b':
+    'SSB sends one sideband, $u(t)=A_c[m\\cos\\omega_c t\\mp\\hat m\\sin\\omega_c t]$. Coherent demodulation recovers $m(t)$.',
+  'an.ssb.c2.t': 'Same SNR, half the band',
+  'an.ssb.c2.b':
+    'Output SNR equals the baseline just like DSB-SC, but SSB needs only $W$ — half the bandwidth. Preferred on bandwidth-critical links.',
+
+  // §6.1.4 Conventional AM
+  'an.cam.c1.t': 'Envelope detection',
+  'an.cam.c1.b':
+    'A diode-and-RC envelope detector recovers the message without a coherent carrier — the cheap receiver that made broadcast AM possible.',
+  'an.cam.c2.t': 'Power efficiency $\\eta<1$',
+  'an.cam.c2.b':
+    'The transmitted carrier carries no message, so power is wasted and the output SNR is always below baseline by the efficiency $\\eta$.',
+  'an.cam.c3.t': 'Threshold effect',
+  'an.cam.c3.b':
+    'At low $\\gamma$ the envelope detector mixes signal and noise non-linearly and the output collapses — it only works well above threshold.',
+
+  // §6.2 Noise PSD & SNR
+  'an.psd.c1.t': 'Why FM beats baseband',
+  'an.psd.c1.b':
+    'FM output-noise PSD is parabolic, $N_0 f^2/A_c^2$ — high audio frequencies suffer most; PM noise is flat. FM gains $3\\beta^2 P_{M_n}$, PM gains $\\beta^2 P_{M_n}$ (FM is 3×, ≈ +4.8 dB).',
+  'an.psd.c2.t': 'Wideband trade',
+  'an.psd.c2.b':
+    'SNR climbs as $\\beta^2$ — about +6 dB per doubling of $\\beta$ — bought with the Carson bandwidth $2(\\beta+1)W$.',
+
+  // §6.2.1 Threshold
+  'an.thr.c1.t': 'The threshold knee',
+  'an.thr.c1.b':
+    'Above $\\gamma_{th}=20(\\beta+1)$ the FM SNR rides the straight high-SNR line; below it the discriminator produces clicks and the SNR collapses.',
+  'an.thr.c2.t': 'Design rule',
+  'an.thr.c2.b':
+    'Larger $\\beta$ gives more gain but a higher threshold. Pick the largest $\\beta$ that still satisfies $\\gamma\\ge 20(\\beta+1)$.',
+
+  // §6.2.2 Pre/De-emphasis
+  'an.emph.c1.t': 'Pre/de-emphasis pair',
+  'an.emph.c1.b':
+    'Pre-emphasis boosts high frequencies at the transmitter; de-emphasis $H_d(f)=1/(1+jf/f_1)$ cuts them at the receiver, restoring the message while attenuating the parabolic FM noise.',
+  'an.emph.c2.t': 'Roughly +13 dB',
+  'an.emph.c2.b':
+    'With $\\tau=75\\,\\mu s$ ($f_1\\approx2122$ Hz) and $W=15$ kHz the pair adds about +13 dB of SNR (Eq. 6.2.42).',
+
+  // §6.3 Comparison
+  'an.cmp.c1.t': 'Linear schemes',
+  'an.cmp.c1.b':
+    'SSB and DSB-SC match the baseline SNR; SSB does it in half the band. Conventional AM stays below baseline ($\\eta<1$) but uses the simplest receiver.',
+  'an.cmp.c2.t': 'Angle schemes',
+  'an.cmp.c2.b':
+    'FM and PM climb as $\\beta^2$ above threshold, trading the wide Carson band $2(\\beta+1)W$ for noise immunity — FM is 3× PM at equal $\\beta$.',
+
+  // §6.4.1 Thermal noise
+  'an.thermal.c1.t': 'Thermal noise floor',
+  'an.thermal.c1.b':
+    'Every resistor at temperature $T$ emits white noise of one-sided PSD $N_0=kT$; in bandwidth $B$ the available power is $P_n=kTB$.',
+  'an.thermal.c2.t': 'The −174 dBm/Hz floor',
+  'an.thermal.c2.b':
+    'At the reference $T_0=290$ K, $N_0\\approx4\\times10^{-21}$ W/Hz (−174 dBm/Hz) — the noise floor every receiver fights.',
+
+  // §6.4.2 Noise figure & Friis
+  'an.figure.c1.t': 'Noise figure $F$',
+  'an.figure.c1.b':
+    '$F=1+T_e/T_0$ measures how much a stage degrades SNR; an ideal noiseless amplifier has $F=1$ (0 dB).',
+  'an.figure.c2.t': 'First stage dominates',
+  'an.figure.c2.b':
+    'In a cascade the total figure is set mostly by stage 1, so the front end should be a low-noise, high-gain amplifier.',
+
+  // §6.4.3 Path loss
+  'an.pathloss.c1.t': 'Free-space loss',
+  'an.pathloss.c1.b':
+    'Free-space loss grows as the square of distance and frequency — about +6 dB for every doubling of $d$.',
+  'an.pathloss.c2.t': 'Cable vs radio',
+  'an.pathloss.c2.b':
+    'A wireline cable loses a fixed dB per km, so its loss is linear in length. Received power is $P_R=P_T-L$.',
+
+  // §6.4.4 Repeaters
+  'an.rep.c1.t': 'Repeaters fight loss',
+  'an.rep.c1.b':
+    'An amplifier on every segment offsets the path loss so long links stay feasible.',
+  'an.rep.c2.t': 'Analog noise accumulates',
+  'an.rep.c2.b':
+    'Each analog hop adds its own noise: the end-to-end SNR degrades as $-10\\log_{10}K$ (about −3 dB per doubling of the segment count $K$).',
+  'an.rep.c3.t': 'Digital regeneration',
+  'an.rep.c3.b':
+    'Digital regenerative repeaters detect and retransmit clean bits, so noise does not pile up across hops.',
 };

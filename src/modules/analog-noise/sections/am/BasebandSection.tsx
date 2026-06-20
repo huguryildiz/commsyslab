@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Formula, HintText } from '@/components';
+import { Panel, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -65,9 +65,6 @@ export function BasebandSection({ gammaDb, fm, fs, N, channel }: AmSectionProps)
         <aside className="an__controls">
           {channel}
           <Panel title={t('an.bb.title')}>
-            <p className="an__hint">
-              <HintText text={t('an.bb.note')} />
-            </p>
             <div className="an__reset">
               <button type="button" onClick={reset}>
                 {t('an.gen.reset')}
@@ -95,9 +92,16 @@ export function BasebandSection({ gammaDb, fm, fs, N, channel }: AmSectionProps)
                 { color: CHART.orange, label: t('an.bb.trace.noisy') },
               ]}
             />
-            <Formula tex="\left(\tfrac{S}{N}\right)_b=\dfrac{P_R}{N_0 W}" block />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.bb.c1.t')} accent="green">
+              <HintText text={t('an.bb.c1.b')} />
+              <Formula tex="\left(\tfrac{S}{N}\right)_b=\dfrac{P_R}{N_0 W}" block />
+            </InfoCard>
+            <InfoCard title={t('an.bb.c2.t')} accent="orange">
+              <HintText text={t('an.bb.c2.b')} />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

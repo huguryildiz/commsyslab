@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -60,7 +60,6 @@ export function ConventionalAmSection({ gammaDb, fm, fs, N, W, channel }: AmSect
   const eta = amEfficiency(a, 0.5);
   const snrO = outputSnrDb('am', gammaDb, sp);
   const gain = demodulationGainDb('am', sp);
-  const belowThreshold = gammaDb < 10;
 
   const t1 = (N - 1) / fs;
   const [lo, hi, onWheel, , onPan] = useZoom(0, t1, {
@@ -117,9 +116,6 @@ export function ConventionalAmSection({ gammaDb, fm, fs, N, W, channel }: AmSect
               value={a}
               onChange={setA}
             />
-            <p className="an__hint">
-              <HintText text={t('an.cam.note')} />
-            </p>
             <div className="an__reset">
               <button type="button" onClick={reset}>
                 {t('an.gen.reset')}
@@ -134,11 +130,6 @@ export function ConventionalAmSection({ gammaDb, fm, fs, N, W, channel }: AmSect
             <Metric label={<HintText text="$(S/N)_o$" />} value={snrO.toFixed(1)} unit="dB" />
             <Metric label={t('an.dsb.gain')} value={gain.toFixed(1)} unit="dB" />
           </div>
-          {belowThreshold && (
-            <p className="an__warn">
-              <HintText text={t('an.cam.threshold')} />
-            </p>
-          )}
           <Panel title={t('an.cam.envPanel')}>
             <Canvas
               height={200}
@@ -171,12 +162,22 @@ export function ConventionalAmSection({ gammaDb, fm, fs, N, W, channel }: AmSect
                 { color: CHART.orange, label: t('an.cam.trace.recovered') },
               ]}
             />
-            <Formula
-              tex="\eta=\dfrac{a^2 P_{M_n}}{1+a^2 P_{M_n}},\quad \left(\tfrac{S}{N}\right)_o=\eta\left(\tfrac{S}{N}\right)_b"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.cam.c1.t')} accent="green">
+              <HintText text={t('an.cam.c1.b')} />
+            </InfoCard>
+            <InfoCard title={t('an.cam.c2.t')} accent="orange">
+              <HintText text={t('an.cam.c2.b')} />
+              <Formula
+                tex="\eta=\dfrac{a^2 P_{M_n}}{1+a^2 P_{M_n}},\quad \left(\tfrac{S}{N}\right)_o=\eta\left(\tfrac{S}{N}\right)_b"
+                block
+              />
+            </InfoCard>
+            <InfoCard title={t('an.cam.c3.t')} accent="blue">
+              <HintText text={t('an.cam.c3.b')} />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

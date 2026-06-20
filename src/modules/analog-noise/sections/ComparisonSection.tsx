@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -121,10 +121,6 @@ export function ComparisonSection() {
               onPan={onPan}
             />
             <Legend entries={SCHEMES.map((s) => ({ color: s.color, label: s.label }))} />
-            <Formula
-              tex="B_{\mathrm{FM}}=2(\beta+1)W,\quad \left(\tfrac{S}{N}\right)_{o,\mathrm{FM}}=3\beta^2 P_{M_n}\left(\tfrac{S}{N}\right)_b"
-              block
-            />
           </Panel>
           <Panel title={t('an.cmp.tableTitle')}>
             <div className="an__table-wrap">
@@ -163,7 +159,18 @@ export function ComparisonSection() {
               </table>
             </div>
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.cmp.c1.t')} accent="green">
+              <HintText text={t('an.cmp.c1.b')} />
+            </InfoCard>
+            <InfoCard title={t('an.cmp.c2.t')} accent="orange">
+              <HintText text={t('an.cmp.c2.b')} />
+              <Formula
+                tex="\left(\tfrac{S}{N}\right)_{o,\mathrm{FM}}=3\beta^2 P_{M_n}\left(\tfrac{S}{N}\right)_b,\quad B_{\mathrm{FM}}=2(\beta+1)W"
+                block
+              />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

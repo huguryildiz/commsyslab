@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Panel, Slider, Segmented, Formula, HintText } from '@/components';
+import { Panel, Slider, Segmented, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -142,12 +142,16 @@ export function PathLossSection() {
               onWheel={onWheel}
               onPan={onPan}
             />
-            <Formula
-              tex="L=\left(\dfrac{4\pi d}{\lambda}\right)^2,\quad L_{\mathrm{dB}}=20\log_{10}\dfrac{4\pi d}{\lambda},\quad \lambda=c/f"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.pathloss.c1.t')} accent="green">
+              <HintText text={t('an.pathloss.c1.b')} />
+              <Formula tex="L=\left(\dfrac{4\pi d}{\lambda}\right)^2,\quad \lambda=c/f" block />
+            </InfoCard>
+            <InfoCard title={t('an.pathloss.c2.t')} accent="orange">
+              <HintText text={t('an.pathloss.c2.b')} />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

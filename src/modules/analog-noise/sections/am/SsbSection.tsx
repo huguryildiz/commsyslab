@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Formula, HintText } from '@/components';
+import { Panel, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -99,9 +99,6 @@ export function SsbSection({ gammaDb, fm, fs, N, W, channel }: AmSectionProps) {
         <aside className="an__controls">
           {channel}
           <Panel title={t('an.ssb.title')}>
-            <p className="an__hint">
-              <HintText text={t('an.ssb.note')} />
-            </p>
             <div className="an__reset">
               <button type="button" onClick={reset}>
                 {t('an.gen.reset')}
@@ -147,12 +144,19 @@ export function SsbSection({ gammaDb, fm, fs, N, W, channel }: AmSectionProps) {
                 { color: CHART.orange, label: t('an.dsb.trace.y') },
               ]}
             />
-            <Formula
-              tex="\left(\tfrac{S}{N}\right)_o=\left(\tfrac{S}{N}\right)_b,\quad B_{\mathrm{SSB}}=W=\tfrac12 B_{\mathrm{DSB}}"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.ssb.c1.t')} accent="green">
+              <HintText text={t('an.ssb.c1.b')} />
+            </InfoCard>
+            <InfoCard title={t('an.ssb.c2.t')} accent="blue">
+              <HintText text={t('an.ssb.c2.b')} />
+              <Formula
+                tex="\left(\tfrac{S}{N}\right)_o=\left(\tfrac{S}{N}\right)_b,\quad B_{\mathrm{SSB}}=\tfrac12 B_{\mathrm{DSB}}"
+                block
+              />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

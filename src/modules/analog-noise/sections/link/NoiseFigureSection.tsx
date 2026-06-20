@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Schematic, Block, Wire, Arrowhead, MathLabel } from '@/lib/plot/schematic';
 import { t } from '@/i18n';
 import { friisCascade, type FriisStage } from '@/lib/dsp/linkbudget';
@@ -115,12 +115,20 @@ export function NoiseFigureSection() {
                 />
               ))}
             </div>
-            <Formula
-              tex="F=F_1+\dfrac{F_2-1}{G_1}+\dfrac{F_3-1}{G_1 G_2}+\cdots,\quad T_e=T_0(F-1)"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.figure.c1.t')} accent="green">
+              <HintText text={t('an.figure.c1.b')} />
+              <Formula tex="F=1+\dfrac{T_e}{T_0},\quad T_e=T_0(F-1)" block />
+            </InfoCard>
+            <InfoCard title={t('an.figure.c2.t')} accent="orange">
+              <HintText text={t('an.figure.c2.b')} />
+              <Formula
+                tex="F=F_1+\dfrac{F_2-1}{G_1}+\dfrac{F_3-1}{G_1 G_2}+\cdots"
+                block
+              />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

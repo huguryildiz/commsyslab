@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Segmented, Formula, HintText } from '@/components';
+import { Panel, Slider, Segmented, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -108,16 +108,23 @@ export function NoisePsdSection() {
               onWheel={onWheel}
               onPan={onPan}
             />
-            <Formula
-              tex="S_n(f)=\dfrac{N_0 f^2}{A_c^2}\;(\mathrm{FM}),\qquad \dfrac{N_0}{A_c^2}\;(\mathrm{PM})"
-              block
-            />
-            <Formula
-              tex="\left(\tfrac{S}{N}\right)_o=3\beta^2 P_{M_n}\left(\tfrac{S}{N}\right)_b\;(\mathrm{FM}),\qquad \beta^2 P_{M_n}\left(\tfrac{S}{N}\right)_b\;(\mathrm{PM})"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.psd.c1.t')} accent="green">
+              <HintText text={t('an.psd.c1.b')} />
+              <Formula
+                tex="S_n(f)=\dfrac{N_0 f^2}{A_c^2}\;(\mathrm{FM}),\qquad \dfrac{N_0}{A_c^2}\;(\mathrm{PM})"
+                block
+              />
+            </InfoCard>
+            <InfoCard title={t('an.psd.c2.t')} accent="orange">
+              <HintText text={t('an.psd.c2.b')} />
+              <Formula
+                tex="\left(\tfrac{S}{N}\right)_o=3\beta^2 P_{M_n}\left(\tfrac{S}{N}\right)_b\;(\mathrm{FM})"
+                block
+              />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

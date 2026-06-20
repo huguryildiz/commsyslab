@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -93,9 +93,16 @@ export function ThermalNoiseSection() {
               onWheel={onWheel}
               onPan={onPan}
             />
-            <Formula tex="P_n=kTB,\quad N_0=kT,\quad k=1.38\times10^{-23}\,\mathrm{J/K}" block />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.thermal.c1.t')} accent="blue">
+              <HintText text={t('an.thermal.c1.b')} />
+              <Formula tex="N_0=kT,\quad P_n=kTB,\quad k=1.38\times10^{-23}\,\mathrm{J/K}" block />
+            </InfoCard>
+            <InfoCard title={t('an.thermal.c2.t')} accent="orange">
+              <HintText text={t('an.thermal.c2.b')} />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>

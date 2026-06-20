@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Formula, HintText } from '@/components';
+import { Panel, Slider, Formula, HintText, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawAxes, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART } from '@/lib/plot/colors';
@@ -144,12 +144,20 @@ export function EmphasisSection() {
                 { color: CHART.blue, label: t('an.emph.trace.after') },
               ]}
             />
-            <Formula
-              tex="H_d(f)=\dfrac{1}{1+j f/f_1},\quad \text{gain}=\dfrac{(W/f_1)^3}{3\,[\,W/f_1-\arctan(W/f_1)\,]}"
-              block
-            />
           </Panel>
-
+          <div className="info-cards">
+            <InfoCard title={t('an.emph.c1.t')} accent="green">
+              <HintText text={t('an.emph.c1.b')} />
+              <Formula tex="H_d(f)=\dfrac{1}{1+j f/f_1}" block />
+            </InfoCard>
+            <InfoCard title={t('an.emph.c2.t')} accent="orange">
+              <HintText text={t('an.emph.c2.b')} />
+              <Formula
+                tex="\text{gain}=\dfrac{(W/f_1)^3}{3\,[\,W/f_1-\arctan(W/f_1)\,]}"
+                block
+              />
+            </InfoCard>
+          </div>
         </div>
       </div>
     </div>
