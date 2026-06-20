@@ -201,14 +201,14 @@ sub-tab) · **DSP:** `src/lib/dsp/sampling.ts`, `quantize.ts`, `lloydmax.ts`, `v
 
 ### Chapter 8 — Digital Modulation Methods in an AWGN Channel (pp. 347–484) ✅
 
-**Module:** `src/modules/modulation/` (7 tabs: Constellation & Detection · Optimum Receiver · DPSK ·
-Noncoherent FSK · Multidim Signals · Repeaters · Synchronization) ·
+**Module:** `src/modules/modulation/` (9 tabs: Constellation & Detection · Waveforms · Signal Space ·
+Optimum Receiver · DPSK · Noncoherent FSK · Multidim Signals · Repeaters · Synchronization) ·
 **DSP:** `src/lib/dsp/modulation.ts`, `detector.ts`, `ser.ts`, `awgn.ts`, `gram-schmidt.ts`,
 `matchedfilter.ts`, `carrierbasis.ts`, `dpsk.ts`, `pll.ts`, `timing.ts`, `repeater.ts`
 
 | Subsection                                       | Page | Status | Repo mapping                                     |
 | ------------------------------------------------ | ---- | ------ | ------------------------------------------------ |
-| 8.1 Geometric Representation of Signal Waveforms | 348  | ✅     | `gram-schmidt.ts`, optrx + constellation         |
+| 8.1 Geometric Representation of Signal Waveforms | 348  | ✅     | `gram-schmidt.ts`, `SignalSpaceSection` (G-S)    |
 | 8.2.1 / 8.2.2 Binary Antipodal / Orthogonal      | 352  | ✅     | `modulation.ts` — `bpsk` / `bfsk`                |
 | 8.3.1 Correlation-Type Demodulator               | 362  | ✅     | `OptimumReceiverSection`, `model.ts`             |
 | 8.3.2 Matched-Filter Demodulator                 | 371  | ✅     | `matchedfilter.ts`                               |

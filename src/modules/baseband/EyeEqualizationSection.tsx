@@ -58,6 +58,14 @@ export function EyeEqualizationSection() {
             ]}
             onChange={(v) => setEqualizer(v as EqualizerKind)}
           />
+          <Slider
+            label={t('baseband.eye.noise')}
+            value={noiseVar}
+            min={0}
+            max={0.5}
+            step={0.01}
+            onChange={setNoiseVar}
+          />
           {equalizer !== 'off' && (
             <Slider
               label={t('baseband.eye.taps')}
@@ -66,16 +74,6 @@ export function EyeEqualizationSection() {
               max={12}
               step={1}
               onChange={setNTaps}
-            />
-          )}
-          {equalizer === 'mmse' && (
-            <Slider
-              label={t('baseband.rx.n0')}
-              value={noiseVar}
-              min={0}
-              max={0.5}
-              step={0.01}
-              onChange={setNoiseVar}
             />
           )}
           <button type="button" onClick={reset}>
