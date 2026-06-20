@@ -75,4 +75,21 @@ describe('ModulationModule', () => {
     // carrier-cycles control is hidden for custom (basis comes from Gram-Schmidt)
     expect(screen.queryByLabelText(/Carrier cycles/i)).not.toBeInTheDocument();
   });
+
+  it('opens the Signal space tab and shows the basis + constellation panels', () => {
+    renderModule();
+    const tab = screen.getByRole('tab', { name: 'Signal space' });
+    fireEvent.click(tab);
+    expect(tab).toHaveAttribute('aria-selected', 'true');
+    // Default preset is 1-D antipodal → axis constellation; basis gallery always present.
+    expect(screen.getByLabelText('Orthonormal basis waveforms')).toBeInTheDocument();
+    expect(
+      screen.getByLabelText('One-dimensional signal-space constellation'),
+    ).toBeInTheDocument();
+    // Switching to Result mode hides the walkthrough step panel.
+    fireEvent.click(screen.getByRole('tab', { name: 'Result' }));
+    expect(
+      screen.queryByLabelText('Gram-Schmidt step: source, projection and residual'),
+    ).not.toBeInTheDocument();
+  });
 });

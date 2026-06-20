@@ -30,6 +30,7 @@ import {
   type CloudPt,
 } from './panels';
 import { OptimumReceiverSection } from './OptimumReceiverSection';
+import { SignalSpaceSection } from './SignalSpaceSection';
 import { DpskSection } from './DpskSection';
 import { NoncoherentFskSection } from './NoncoherentFskSection';
 import { MultidimSection } from './MultidimSection';
@@ -59,6 +60,7 @@ export function ModulationModule() {
       | 'detection'
       | 'waveforms'
       | 'optrx'
+      | 'signalspace'
       | 'dpsk'
       | 'noncoh'
       | 'multidim'
@@ -201,7 +203,7 @@ export function ModulationModule() {
 
   return (
     <div className="modulation__tabwrap">
-      <Segmented<'detection' | 'waveforms' | 'optrx' | 'dpsk' | 'noncoh' | 'multidim' | 'repeater' | 'sync'>
+      <Segmented<'detection' | 'waveforms' | 'optrx' | 'signalspace' | 'dpsk' | 'noncoh' | 'multidim' | 'repeater' | 'sync'>
         ariaLabel={t('modulation.optrx.tabs')}
         value={tab}
         onChange={handleTabChange}
@@ -209,6 +211,7 @@ export function ModulationModule() {
           { value: 'detection', label: t('modulation.optrx.tab.detection') },
           { value: 'waveforms', label: 'Waveforms' },
           { value: 'optrx', label: t('modulation.optrx.tab.optrx') },
+          { value: 'signalspace', label: t('modulation.sigspace.tab') },
           { value: 'dpsk', label: t('modulation.dpsk.tab') },
           { value: 'noncoh', label: t('modulation.noncoh.tab') },
           { value: 'multidim', label: t('modulation.multidim.tab') },
@@ -218,6 +221,7 @@ export function ModulationModule() {
       />
       {tab === 'waveforms' && <WaveformsSection />}
       {tab === 'optrx' && <OptimumReceiverSection />}
+      {tab === 'signalspace' && <SignalSpaceSection />}
       {tab === 'dpsk' && <DpskSection />}
       {tab === 'noncoh' && <NoncoherentFskSection />}
       {tab === 'multidim' && <MultidimSection />}
