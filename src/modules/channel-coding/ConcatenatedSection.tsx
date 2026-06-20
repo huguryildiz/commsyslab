@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Panel, Slider, Readout, Formula, TheoryBox } from '@/components';
+import { Panel, Slider, Readout, Formula, TheoryBox, InfoCard } from '@/components';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, logScale, drawLine, drawText } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
@@ -158,6 +158,18 @@ export function ConcatenatedSection() {
           <Canvas height={260} ariaLabel="Concatenated coding gain curve" deps={[]} draw={(ctx, w, h) => drawConcatCurve(ctx, w, h)} />
           <p className="cc-cy-line">{t('cc.cc.curveNote')}</p>
         </Panel>
+
+        <div className="info-cards">
+          <InfoCard title={t('cc.cc.card.concat')} accent="green">
+            <p>{t('cc.cc.card.concatBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('cc.cc.card.interleave')} accent="orange">
+            <p>{t('cc.cc.card.interleaveBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('cc.app.deepspace')} accent="blue">
+            <p>{t('cc.app.deepspaceBody')}</p>
+          </InfoCard>
+        </div>
 
         <TheoryBox>
           <Formula tex={'R_{cc} = R_c r_c \\quad (\\text{Eq. } 9.8.1), \\qquad d_{cc} = d_o d_i'} block />

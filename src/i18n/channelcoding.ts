@@ -253,6 +253,22 @@ export const channelcoding: Record<string, string> = {
   'cc.tc.card.gainBody':
     'The 4-state 8-PSK Ungerboeck scheme buys ≈3 dB over uncoded QPSK at the same rate — even after the ~5.33 dB loss from the denser constellation.',
 
+  // Concatenated info cards
+  'cc.cc.card.concat': 'Concatenated codes',
+  'cc.cc.card.concatBody':
+    'A strong outer code (Reed–Solomon) wraps a simpler inner code (convolutional). The product of their rates and distances gives a powerful code with manageable decoding.',
+  'cc.cc.card.interleave': 'Interleaving',
+  'cc.cc.card.interleaveBody':
+    'The inner Viterbi decoder produces bursts of errors; an interleaver spreads them across many outer codewords so each stays within the Reed–Solomon correction radius.',
+
+  // Practical applications (§13.8)
+  'cc.app.deepspace': 'Deep-space communications',
+  'cc.app.deepspaceBody':
+    'Low-SNR, bandwidth-rich links lean on coding. Voyager (1986) concatenated an inner (2,1) convolutional code (K=7, Viterbi) with an outer (255,223) Reed–Solomon code for ~8 dB total gain; Galileo used a (4,1,14) code.',
+  'cc.app.modems': 'Telephone-line modems',
+  'cc.app.modemsBody':
+    'Bandwidth-limited voiceband channels use trellis-coded modulation: the V.32 and V.34 modem standards rely on TCM to pack more bits/symbol reliably without extra bandwidth.',
+
   // Tab 5 — Cyclic / CRC
   'cc.cy.code': 'Generator polynomial',
   'cc.cy.sel': 'Code / CRC preset',

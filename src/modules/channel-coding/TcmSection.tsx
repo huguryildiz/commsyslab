@@ -77,6 +77,9 @@ export function TcmSection() {
           <InfoCard title={t('cc.tc.card.gain')} accent="green">
             <p>{t('cc.tc.card.gainBody')}</p>
           </InfoCard>
+          <InfoCard title={t('cc.app.modems')} accent="orange">
+            <p>{t('cc.app.modemsBody')}</p>
+          </InfoCard>
         </div>
 
         <TheoryBox title={t('cc.theory')}>
