@@ -96,3 +96,14 @@ export function dsssBer(ebN0Db: number, jsrDb: number, N: number): number {
   const gammaEff = 1 / invGammaEff;
   return qfunc(Math.sqrt(2 * gammaEff));
 }
+
+/**
+ * Probability of error at the correlation detector of a DS-SS BPSK receiver.
+ * After despreading, the jammer power is suppressed by the processing gain N, so
+ * the detector sees an effective SNR γ_eff and decides with P_e = Q(√(2 γ_eff)).
+ * Numerically identical to {@link dsssBer}; named for the detector-output framing
+ * of Proakis & Salehi §15.2.2 (Probability of Error at the Detector), p.831.
+ */
+export function dsssDetectorPe(ebN0Db: number, jsrDb: number, N: number): number {
+  return dsssBer(ebN0Db, jsrDb, N);
+}

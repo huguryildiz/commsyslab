@@ -47,6 +47,30 @@ export function worstCaseBerBfsk(ebN0JDb: number): number {
   return g >= 2 ? Math.exp(-1) / g : fullBandBerBfsk(ebN0JDb);
 }
 
+/** Binomial coefficient C(n, k) for small non-negative integers. */
+function binom(n: number, k: number): number {
+  if (k < 0 || k > n) return 0;
+  let c = 1;
+  for (let i = 0; i < k; i++) c = (c * (n - i)) / (i + 1);
+  return c;
+}
+
+/**
+ * Fast frequency hopping: L hops per bit give L-order diversity, so a partial-band
+ * jammer can corrupt at most a fraction of the L hops carrying each bit. Modeled as
+ * the L-order diversity bound for noncoherent BFSK,
+ *   P_e ≈ C(2L−1, L) · q^L,   q = partialBandBerBfsk(E_b/N_J, β),
+ * i.e. the single-hop partial-band error raised to the diversity order L (an
+ * instructional bound; energy-split loss is neglected to isolate the diversity
+ * gain). hopsPerBit = 1 reduces to the slow-FH single-hop case. Proakis §15.5.2.
+ */
+export function fastFhBerBfsk(ebN0JDb: number, hopsPerBit: number, beta: number): number {
+  const L = Math.max(1, Math.round(hopsPerBit));
+  const q = partialBandBerBfsk(ebN0JDb, beta);
+  if (L === 1) return q;
+  return Math.min(0.5, binom(2 * L - 1, L) * q ** L);
+}
+
 /**
  * Seeded random hop pattern: a frequency-slot index in [0, nHopChannels) for
  * each of nHops hops. Deterministic for a fixed seed (for the time-frequency plot).
