@@ -1,13 +1,56 @@
 // Canvas panels for the Waveforms tab. §8.1–8.4 Proakis & Salehi.
+import { type PointerEvent as ReactPointerEvent } from 'react';
 import { Canvas } from '@/lib/plot/Canvas';
 import { linScale, drawLine, drawVLine, type Axes } from '@/lib/plot/draw';
 import { CHART, alpha } from '@/lib/plot/colors';
-import type { WaveformData } from './waveforms-model';
+import type { WaveformData, SymbolInfo } from './waveforms-model';
 
 // [lo, hi] axis range returned by useZoom
 export type ZoomState = [number, number];
 
 const PAD = { l: 42, r: 12, t: 12, b: 28 };
+
+// Draw the per-symbol bit-group label centered in each symbol slot, skipping
+// when symbols are too dense at the current zoom to keep labels legible.
+function drawSymbolLabels(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  symbols: SymbolInfo[],
+  lo: number,
+  hi: number,
+  yPx: number,
+) {
+  const spacingPx = ax.x(lo + 1) - ax.x(lo); // pixels per symbol period
+  if (spacingPx < 14) return; // too dense — would overlap
+  ctx.save();
+  ctx.font = '11px IBM Plex Mono, monospace';
+  ctx.fillStyle = alpha(CHART.text, 0.72);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (const s of symbols) {
+    if (s.midT < lo || s.midT > hi) continue;
+    ctx.fillText(s.bitStr, ax.x(s.midT), yPx);
+  }
+  ctx.restore();
+}
+
+// Map a pointer event to the symbol under it (or null), using the same axis
+// padding/zoom the canvas was drawn with.
+function symbolAtPointer(
+  e: ReactPointerEvent<HTMLDivElement>,
+  symbols: SymbolInfo[],
+  lo: number,
+  hi: number,
+): SymbolInfo | null {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const px = e.clientX - rect.left;
+  const usable = Math.max(1, rect.width - PAD.l - PAD.r);
+  const frac = (px - PAD.l) / usable;
+  if (frac < 0 || frac > 1) return null;
+  const tData = lo + frac * (hi - lo);
+  const idx = Math.floor(tData);
+  return idx >= 0 && idx < symbols.length ? symbols[idx] : null;
+}
 
 function axesFor(w: number, h: number, dx: [number, number], dy: [number, number]): Axes {
   return {
@@ -155,53 +198,68 @@ function formatTick(v: number): string {
   return v.toPrecision(2);
 }
 
-// IQ baseband panel: I(t) green, Q(t) orange, noisy dims overlay
+// IQ baseband panel: I(t) green, Q(t) orange, noisy dims overlay.
+// Prints bit-group labels along the top and reports the hovered symbol.
 export function IQPanel({
   data,
   zoom,
   onWheel,
   onPan,
+  onHoverSymbol,
 }: {
   data: WaveformData;
   zoom: ZoomState;
   onWheel: (xFrac: number, deltaY: number) => void;
   onPan: (deltaFrac: number) => void;
+  onHoverSymbol?: (s: SymbolInfo | null) => void;
 }) {
   const [lo, hi] = zoom;
   return (
-    <Canvas
-      height={160}
-      ariaLabel="I(t) and Q(t) baseband waveforms"
-      onWheel={onWheel}
-      onPan={onPan}
-      draw={(ctx, w, h) => {
-        ctx.clearRect(0, 0, w, h);
-        const domainX: [number, number] = [lo, hi];
-        const domainY: [number, number] = [-1.6, 1.6];
-        const ax = axesFor(w, h, domainX, domainY);
-        drawGrid(ctx, ax, domainX, domainY);
-
-        const { t, I, Q, Inoisy, Qnoisy, symbolBoundaries } = data;
-
-        // Symbol boundary dashed verticals
-        for (const sb of symbolBoundaries) {
-          const tx = t[sb];
-          if (tx >= lo && tx <= hi) {
-            drawVLine(ctx, ax, tx, domainY[0], domainY[1], alpha(CHART.dim, 0.25), true, 1);
-          }
-        }
-
-        // Noisy dim overlays
-        drawLine(ctx, ax, t, Inoisy, alpha(CHART.green, 0.28), 1);
-        drawLine(ctx, ax, t, Qnoisy, alpha(CHART.orange, 0.28), 1);
-
-        // Clean I and Q
-        drawLine(ctx, ax, t, I, CHART.green, 1.5);
-        drawLine(ctx, ax, t, Q, CHART.orange, 1.5);
-
-        drawAxisLines(ctx, ax, domainX, domainY, 't (sym)', 'Amplitude', h);
+    <div
+      onPointerMove={(e) => {
+        // Only report on hover (no button held) so panning isn't disturbed.
+        if (onHoverSymbol && e.buttons === 0) onHoverSymbol(symbolAtPointer(e, data.symbols, lo, hi));
       }}
-    />
+      onPointerLeave={() => onHoverSymbol?.(null)}
+    >
+      <Canvas
+        height={160}
+        ariaLabel="I(t) and Q(t) baseband waveforms"
+        onWheel={onWheel}
+        onPan={onPan}
+        deps={[data, lo, hi]}
+        draw={(ctx, w, h) => {
+          ctx.clearRect(0, 0, w, h);
+          const domainX: [number, number] = [lo, hi];
+          const domainY: [number, number] = [-1.6, 1.6];
+          const ax = axesFor(w, h, domainX, domainY);
+          drawGrid(ctx, ax, domainX, domainY);
+
+          const { t, I, Q, Inoisy, Qnoisy, symbolBoundaries, symbols } = data;
+
+          // Symbol boundary dashed verticals
+          for (const sb of symbolBoundaries) {
+            const tx = t[sb];
+            if (tx >= lo && tx <= hi) {
+              drawVLine(ctx, ax, tx, domainY[0], domainY[1], alpha(CHART.dim, 0.25), true, 1);
+            }
+          }
+
+          // Noisy dim overlays
+          drawLine(ctx, ax, t, Inoisy, alpha(CHART.green, 0.28), 1);
+          drawLine(ctx, ax, t, Qnoisy, alpha(CHART.orange, 0.28), 1);
+
+          // Clean I and Q
+          drawLine(ctx, ax, t, I, CHART.green, 1.5);
+          drawLine(ctx, ax, t, Q, CHART.orange, 1.5);
+
+          // Bit-group labels along the top
+          drawSymbolLabels(ctx, ax, symbols, lo, hi, PAD.t + 7);
+
+          drawAxisLines(ctx, ax, domainX, domainY, 't (sym)', 'Amplitude', h);
+        }}
+      />
+    </div>
   );
 }
 
@@ -224,6 +282,7 @@ export function RFPanel({
       ariaLabel="RF bandpass waveform s(t)"
       onWheel={onWheel}
       onPan={onPan}
+      deps={[data, lo, hi]}
       draw={(ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
         const domainX: [number, number] = [lo, hi];
@@ -231,7 +290,7 @@ export function RFPanel({
         const ax = axesFor(w, h, domainX, domainY);
         drawGrid(ctx, ax, domainX, domainY);
 
-        const { t, rf, symbolBoundaries } = data;
+        const { t, rf, symbolBoundaries, symbols } = data;
 
         for (const sb of symbolBoundaries) {
           const tx = t[sb];
@@ -241,6 +300,10 @@ export function RFPanel({
         }
 
         drawLine(ctx, ax, t, rf, CHART.blue, 1.5);
+
+        // Bit-group labels beneath the carrier (matches the textbook BPSK figure)
+        drawSymbolLabels(ctx, ax, symbols, lo, hi, h - PAD.b - 9);
+
         drawAxisLines(ctx, ax, domainX, domainY, 't (sym)', 's(t)', h);
       }}
     />
@@ -266,6 +329,7 @@ export function PhasePanel({
       ariaLabel="Phase, frequency or amplitude trajectory"
       onWheel={onWheel}
       onPan={onPan}
+      deps={[data, lo, hi]}
       draw={(ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
         const domainX: [number, number] = [lo, hi];
@@ -303,6 +367,7 @@ export function EyePanel({ eyeFolds, sps }: { eyeFolds: number[][]; sps: number 
     <Canvas
       height={160}
       ariaLabel="Eye diagram — I(t) folds over 2-symbol windows"
+      deps={[eyeFolds]}
       draw={(ctx, w, h) => {
         ctx.clearRect(0, 0, w, h);
         if (eyeFolds.length === 0) return;
