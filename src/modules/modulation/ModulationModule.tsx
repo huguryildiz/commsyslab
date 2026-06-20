@@ -28,6 +28,7 @@ import {
   type CloudPt,
 } from './panels';
 import { OptimumReceiverSection } from './OptimumReceiverSection';
+import { DpskSection } from './DpskSection';
 import './modulation.css';
 
 const M_OPTIONS: Record<Scheme, number[]> = {
@@ -46,7 +47,7 @@ const BATCH = 40;
 export function ModulationModule() {
   const { tab: slug = '' } = useParams<{ tab?: string }>();
   const navigate = useNavigate();
-  const tab = (slug as 'detection' | 'optrx') || 'detection';
+  const tab = (slug as 'detection' | 'optrx' | 'dpsk') || 'detection';
 
   const handleTabChange = (v: string) => {
     navigate(v === 'detection' ? '/modulation' : `/modulation/${v}`, { replace: true });
@@ -184,16 +185,18 @@ export function ModulationModule() {
 
   return (
     <div className="modulation__tabwrap">
-      <Segmented<'detection' | 'optrx'>
+      <Segmented<'detection' | 'optrx' | 'dpsk'>
         ariaLabel={t('modulation.optrx.tabs')}
         value={tab}
         onChange={handleTabChange}
         options={[
           { value: 'detection', label: t('modulation.optrx.tab.detection') },
           { value: 'optrx', label: t('modulation.optrx.tab.optrx') },
+          { value: 'dpsk', label: t('modulation.dpsk.tab') },
         ]}
       />
       {tab === 'optrx' && <OptimumReceiverSection />}
+      {tab === 'dpsk' && <DpskSection />}
       <div className="module-layout" hidden={tab !== 'detection'}>
         <aside className="modulation__controls">
           <Panel title={t('nav.modulation')}>
