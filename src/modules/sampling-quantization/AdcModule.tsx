@@ -4,7 +4,7 @@ import { t } from '@/i18n';
 import { SamplingSection } from './sections/sampling/SamplingSection';
 import { QuantizationTab } from './sections/quantization/QuantizationTab';
 import { WaveformTab } from './sections/waveform/WaveformTab';
-import { PlaceholderSection } from './sections/PlaceholderSection';
+import MediaTab from './sections/media/MediaTab';
 import './sampling-quantization.css';
 
 type Tab = 'sampling' | 'quantization' | 'waveform' | 'media';
@@ -41,7 +41,7 @@ export function AdcModule() {
       {tab === 'sampling' && <SamplingSection />}
       {tab === 'quantization' && <QuantizationTab />}
       {tab === 'waveform' && <WaveformTab />}
-      {tab === 'media' && <PlaceholderSection bodyKey="adc.placeholder.media" />}
+      {tab === 'media' && <MediaTab />}
     </div>
   );
 }

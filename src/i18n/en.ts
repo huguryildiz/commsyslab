@@ -131,6 +131,44 @@ export const en: Record<string, string> = {
   'adc.card.adm.title': 'Adaptive step',
   'adc.card.adm.body':
     'When the staircase keeps climbing (slope overload) the step grows by $K$; when it hunts on a flat input the step shrinks — one knob fixes both DM failure modes.',
+  // LPC vocoder (§7.5)
+  'adc.sub.lpc': 'LPC Vocoder',
+  'adc.sub.audio': 'Digital Audio',
+  'adc.sub.jpeg': 'JPEG (DCT)',
+  'adc.placeholder.audio': 'Digital audio / TDM & Σ-Δ noise shaping (§7.6) — planned for Phase 3.',
+  'adc.placeholder.jpeg': 'JPEG 8×8 DCT image coding (§7.7) — planned for Phase 3.',
+  // controls / readouts
+  'adc.lpc.vowel': 'Vowel preset',
+  'adc.lpc.excitation': 'Excitation',
+  'adc.lpc.voiced': 'Voiced',
+  'adc.lpc.unvoiced': 'Unvoiced',
+  'adc.lpc.pitch': 'Pitch f₀ (Hz)',
+  'adc.lpc.order': 'LPC order p',
+  'adc.lpc.gain': 'Gain G',
+  'adc.lpc.detPitch': 'Detected pitch',
+  'adc.lpc.predGain': 'Prediction gain',
+  'adc.lpc.bitRate': 'LPC bit rate',
+  'adc.lpc.pcmRate': 'PCM bit rate',
+  'adc.lpc.compression': 'Compression',
+  'adc.lpc.unvoicedLabel': 'Unvoiced',
+  // panel titles
+  'adc.lpc.panel.model': 'Source-Filter Model (Fig 7.17)',
+  'adc.lpc.panel.waveform': 'Original vs Resynthesized',
+  'adc.lpc.panel.spectrum': 'LPC Spectral Envelope',
+  'adc.lpc.panel.residual': 'Prediction Residual',
+  // info cards
+  'adc.card.lpc.title': 'Source-Filter Model',
+  'adc.card.lpc.body':
+    'Speech is modeled as a $G w_n$ excitation through an all-pole filter $H(z)=1/(1-\\sum a_i z^{-i})$ — separating source (pitch/noise) from vocal-tract shape.',
+  'adc.card.pred.title': 'Linear Prediction',
+  'adc.card.pred.body':
+    'LPC finds $a_1,...,a_p$ that minimize the prediction error energy $\\mathcal{E}=\\sum e_n^2$, solving the Yule-Walker equations $R\\mathbf{a}=\\mathbf{r}$.',
+  'adc.card.excit.title': 'Voiced / Unvoiced',
+  'adc.card.excit.body':
+    'Voiced sounds (vowels) use a periodic impulse train at pitch $f_0$; unvoiced sounds (fricatives) use white noise. The LPC model adapts to both.',
+  'adc.card.bitrate.title': 'LPC Compression',
+  'adc.card.bitrate.body':
+    'LPC transmits $p$ coefficients + gain + pitch per frame (~2 400 bit/s) versus PCM at 64 000 bit/s — roughly 27× compression for telephony.',
   'nav.modulation': 'Digital Modulation & Detection',
   'nav.baseband': 'Baseband & ISI',
   'nav.huffman': 'Huffman & Entropy',
