@@ -41,6 +41,44 @@ export function lfsr(taps: number[], n: number): number[] {
   return out;
 }
 
+// m-sequence feedback polynomials (match `spread.ts` so displayed states and
+// sequence agree), one primitive polynomial per register length.
+const M_TAPS: Record<number, number[]> = {
+  5: [5, 2],
+  6: [6, 1],
+  7: [7, 1],
+};
+
+/**
+ * m-sequence together with the register snapshot taken just before each output
+ * chip — used to animate the LFSR. `states[i]` is the n-bit register at step i.
+ */
+export function mSequenceStates(n: number): { seq: number[]; states: number[][] } {
+  const taps = M_TAPS[n];
+  if (!taps) throw new Error(`mSequenceStates: unsupported n=${n} (use 5..7)`);
+  const N = (1 << n) - 1;
+  const reg = new Array<number>(n).fill(0);
+  reg[0] = 1;
+  const seq: number[] = [];
+  const states: number[][] = [];
+  for (let i = 0; i < N; i++) {
+    states.push([...reg]);
+    seq.push(reg[n - 1] === 1 ? 1 : -1);
+    let fb = 0;
+    for (const tp of taps) fb ^= reg[tp - 1];
+    for (let j = n - 1; j > 0; j--) reg[j] = reg[j - 1];
+    reg[0] = fb;
+  }
+  return { seq, states };
+}
+
+/** The m-sequence feedback taps used for register length n (for display). */
+export function mSequenceTaps(n: number): number[] {
+  const taps = M_TAPS[n];
+  if (!taps) throw new Error(`mSequenceTaps: unsupported n=${n} (use 5..7)`);
+  return [...taps];
+}
+
 /** Count of +1 vs −1 chips. An m-sequence has exactly one more +1 than −1. */
 export function balance(seq: number[]): { ones: number; zeros: number } {
   let ones = 0;

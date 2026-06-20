@@ -6,6 +6,37 @@ export const wireless: Record<string, string> = {
   'wl.subtitle': 'Multipath fading channels: delay spread, frequency selectivity, and Doppler.',
   'wl.reset': 'Reset',
 
+  // PN Codes tab (§15.4)
+  'wl.tab.pn': 'PN Codes',
+  'wl.pn.title': 'PN-sequence generation',
+  'wl.pn.n': 'Register length n',
+  'wl.pn.goldShift': 'Gold code shift',
+  'wl.pn.lfsr.title': 'Linear feedback shift register',
+  'wl.pn.wave.title': 'm-sequence waveform',
+  'wl.pn.autocorr.title': 'Autocorrelation (thumbtack)',
+  'wl.pn.cross.title': 'Gold-code cross-correlation',
+  'wl.pn.readout.taps': 'Feedback taps',
+  'wl.pn.readout.period': 'Period (2ⁿ−1)',
+  'wl.pn.readout.balance': 'Balance (+1 / −1)',
+  'wl.pn.readout.gp': 'Processing gain',
+  'wl.pn.readout.crossPeak': 'Peak |cross-corr|',
+  'wl.pn.readout.threeValued': 'Allowed values',
+  'wl.pn.theory.title': 'Why spreading codes matter',
+  'wl.pn.theory.body':
+    'A maximal-length (m-)sequence from an n-stage LFSR has period 2ⁿ−1, near-equal numbers of ±1, and a two-valued "thumbtack" autocorrelation — ideal for synchronization and despreading. But only a few m-sequences exist per length and their mutual cross-correlation can be large. Gold codes combine a preferred pair of m-sequences to give a large family whose cross-correlation is bounded to three small values — the property that lets many CDMA users share one band.',
+  'wl.pn.card.lfsr.title': 'LFSR',
+  'wl.pn.card.lfsr.body':
+    'A shift register whose input is the XOR of selected (tapped) stages. A primitive feedback polynomial makes it cycle through all $2^n-1$ nonzero states.',
+  'wl.pn.card.mseq.title': 'm-sequence',
+  'wl.pn.card.mseq.body':
+    'The maximal-length output: period $2^n-1$, balanced, with the run-length and shift-and-add properties of pseudo-random noise.',
+  'wl.pn.card.thumbtack.title': 'Thumbtack autocorrelation',
+  'wl.pn.card.thumbtack.body':
+    'Periodic autocorrelation is $N$ at zero lag and $-1$ everywhere else — a sharp peak the receiver uses to lock onto the code.',
+  'wl.pn.card.gold.title': 'Gold codes',
+  'wl.pn.card.gold.body':
+    'XOR a preferred pair of m-sequences (with relative shifts) to build $2^n+1$ codes whose cross-correlation stays within $\\{-1,-t(n),t(n)-2\\}$.',
+
   // OFDM sub-tabs (Ch 11)
   'wl.ofdm.subtab.ariaLabel': 'OFDM sub-topic',
   'wl.ofdm.subtab.eq': 'Equalization',

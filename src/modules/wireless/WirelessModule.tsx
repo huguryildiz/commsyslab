@@ -12,9 +12,22 @@ import { LinkBudgetSection } from './sections/LinkBudgetSection';
 import { RakeSection } from './sections/RakeSection';
 import { MimoSection } from './sections/MimoSection';
 import { CpmSection } from './sections/CpmSection';
+import { PnCodesSection } from './sections/PnCodesSection';
 import './wireless.css';
 
-type Tab = 'fading' | 'doppler' | 'ber' | 'spread' | 'fhss' | 'cdma' | 'ofdm' | 'linkbudget' | 'rake' | 'mimo' | 'cpm';
+type Tab =
+  | 'fading'
+  | 'doppler'
+  | 'ber'
+  | 'spread'
+  | 'fhss'
+  | 'cdma'
+  | 'ofdm'
+  | 'linkbudget'
+  | 'rake'
+  | 'mimo'
+  | 'cpm'
+  | 'pn';
 
 export function WirelessModule() {
   const { tab: slug = '' } = useParams<{ tab?: string }>();
@@ -42,6 +55,7 @@ export function WirelessModule() {
           { value: 'rake', label: t('wl.tab.rake') },
           { value: 'mimo', label: t('wl.tab.mimo') },
           { value: 'cpm', label: t('wl.tab.cpm') },
+          { value: 'pn', label: t('wl.tab.pn') },
         ]}
         onChange={handleTabChange}
       />
@@ -57,6 +71,7 @@ export function WirelessModule() {
         {tab === 'rake' && <RakeSection />}
         {tab === 'mimo' && <MimoSection />}
         {tab === 'cpm' && <CpmSection />}
+        {tab === 'pn' && <PnCodesSection />}
       </div>
     </div>
   );
