@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eyeTraces, eyeMetrics } from '@/lib/dsp/eye';
+import { eyeTraces, eyeMetrics, isiEyePatterns } from '@/lib/dsp/eye';
 import { convolve } from '@/lib/dsp/matchedfilter';
 
 // A clean 2-PAM signal: symbols ±1 held for sps samples each.
@@ -31,5 +31,27 @@ describe('eyeMetrics', () => {
     const isi = convolve(sig, [1, 0.6]);
     const isiHeight = eyeMetrics(eyeTraces(isi, 4, 2), 4).eyeHeight;
     expect(isiHeight).toBeLessThan(clean);
+  });
+});
+
+describe('isiEyePatterns', () => {
+  it('enumerates every symbol sequence of length 2K+1', () => {
+    expect(isiEyePatterns(16, 2, 2, 0).length).toBe(2 ** 5); // binary, K=2 → 32
+    expect(isiEyePatterns(16, 4, 1, 0).length).toBe(4 ** 3); // 4-PAM, K=1 → 64
+  });
+
+  it('produces a 2-symbol display window per trace and a pattern label', () => {
+    const traces = isiEyePatterns(16, 2, 2, 0);
+    expect(traces[0].samples.length).toBe(2 * 16);
+    expect(traces[0].label).toMatch(/^[01]( [01]){4}$/); // e.g. "0 0 0 0 0"
+  });
+
+  it('opens the eye at isiGain=0 and closes it as ISI grows', () => {
+    const open = eyeMetrics(isiEyePatterns(16, 2, 2, 0), 16).eyeHeight;
+    const mid = eyeMetrics(isiEyePatterns(16, 2, 2, 0.4), 16).eyeHeight;
+    const heavy = eyeMetrics(isiEyePatterns(16, 2, 2, 0.8), 16).eyeHeight;
+    expect(open).toBeGreaterThan(0);
+    expect(mid).toBeLessThan(open);
+    expect(heavy).toBeLessThan(mid);
   });
 });
