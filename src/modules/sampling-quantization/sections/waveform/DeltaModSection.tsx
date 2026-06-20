@@ -8,10 +8,13 @@ import {
   Formula,
   HintText,
   TransportControls,
+  Segmented,
 } from '@/components';
 import { t } from '@/i18n';
+import { adaptiveDeltaModulate } from '@/lib/dsp/deltamod';
 import { buildDeltaModView } from './deltamod-model';
 import { SignalStaircasePanel, ErrorPanel } from './deltamod-panels';
+import { StepTrackingPanel } from './adm-panel';
 import { useSimulationLoop } from '@/lib/sim/useSimulationLoop';
 import { playDeltaDemo } from '@/lib/audio/deltamod-audio';
 import { audioSupported } from '@/lib/audio/sampling-audio';
@@ -30,6 +33,8 @@ export function DeltaModSection() {
   const [bitLog, setBitLog] = useState<string>('');
   const [audioToneHz, setAudioToneHz] = useState(400);
   const [audioFs, setAudioFs] = useState(4000);
+  const [mode, setMode] = useState<'linear' | 'adaptive'>('linear');
+  const [adaptK, setAdaptK] = useState(1.5);
   const xhatRef = useRef(0);
   const lastIdxRef = useRef(-1);
 
@@ -64,6 +69,18 @@ export function DeltaModSection() {
     [toneFreq, toneAmp, fs, step, t0],
   );
 
+  const admView = useMemo(() => {
+    const adm = adaptiveDeltaModulate(view.sampleValues, step, adaptK, 0);
+    return {
+      ...view,
+      staircase: adm.staircase,
+      bits: adm.bits,
+      overload: view.sampleValues.map(() => false),
+      error: view.sampleValues.map((v, i) => v - adm.staircase[i]),
+      steps: adm.steps,
+    };
+  }, [view, step, adaptK]);
+
   const yMax = toneAmp * 1.3;
   const cursorT = view.sampleTimes.length ? view.sampleTimes[view.sampleTimes.length - 1] : undefined;
   const windowBits = view.bits.slice(0, 64).join('');
@@ -77,6 +94,9 @@ export function DeltaModSection() {
           <Slider label={t('deltamod.toneAmp')} value={toneAmp} min={0.2} max={2} step={0.1} onChange={setToneAmp} />
           <Slider label={t('deltamod.fs')} value={fs} min={10} max={120} step={5} unit="Hz" onChange={setFs} />
           <Slider label={t('deltamod.step')} value={step} min={0.02} max={1} step={0.02} onChange={setStep} />
+          {mode === 'adaptive' && (
+            <Slider label={t('adc.dm.k')} value={adaptK} min={1.1} max={2.5} step={0.1} onChange={setAdaptK} />
+          )}
           <TransportControls loop={loop} />
         </Panel>
         <Panel title={t('deltamod.bitstream.title')}>
@@ -94,6 +114,17 @@ export function DeltaModSection() {
         </Panel>
       </aside>
       <div className="deltamod__content">
+        <div className="adc__subtabbar">
+          <Segmented<'linear' | 'adaptive'>
+            ariaLabel={t('adc.dm.mode')}
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: 'linear', label: t('adc.dm.linear') },
+              { value: 'adaptive', label: t('adc.dm.adaptive') },
+            ]}
+          />
+        </div>
         <div className="deltamod__readouts">
           <Readout label={t('deltamod.readout.slopeLimit')} value={view.slopeLimit.toFixed(2)} />
           <Readout label={t('deltamod.readout.maxSlope')} value={view.maxSignalSlope.toFixed(2)} />
@@ -101,8 +132,17 @@ export function DeltaModSection() {
           <Readout label={t('deltamod.readout.snr')} value={Number.isFinite(view.snrDb) ? view.snrDb.toFixed(1) : '∞'} unit="dB" />
         </div>
         <div className="deltamod__panels">
-          <Panel title={t('deltamod.panel.signal')}><SignalStaircasePanel view={view} yMax={yMax} cursorT={loop.running ? cursorT : undefined} /></Panel>
-          <Panel title={t('deltamod.panel.error')}><ErrorPanel view={view} step={step} /></Panel>
+          {mode === 'linear' ? (
+            <>
+              <Panel title={t('deltamod.panel.signal')}><SignalStaircasePanel view={view} yMax={yMax} cursorT={loop.running ? cursorT : undefined} /></Panel>
+              <Panel title={t('deltamod.panel.error')}><ErrorPanel view={view} step={step} /></Panel>
+            </>
+          ) : (
+            <>
+              <Panel title={t('deltamod.panel.signal')}><SignalStaircasePanel view={admView} yMax={yMax} cursorT={loop.running ? cursorT : undefined} /></Panel>
+              <Panel title={t('adc.dm.steps')}><StepTrackingPanel steps={admView.steps} times={view.sampleTimes} /></Panel>
+            </>
+          )}
         </div>
         <div className="info-cards">
           <InfoCard title={t('adc.card.dm.title')} accent="green">
@@ -110,6 +150,9 @@ export function DeltaModSection() {
           </InfoCard>
           <InfoCard title={t('adc.card.slope.title')} accent="orange">
             <p><HintText text={t('adc.card.slope.body')} /></p>
+          </InfoCard>
+          <InfoCard title={t('adc.card.adm.title')} accent="blue">
+            <p><HintText text={t('adc.card.adm.body')} /></p>
           </InfoCard>
         </div>
         <TheoryBox title={t('deltamod.theory.title')}>
