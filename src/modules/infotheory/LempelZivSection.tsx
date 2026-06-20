@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Readout, TheoryBox } from '@/components';
+import { Panel, Readout, TheoryBox, InfoCard } from '@/components';
 import { lzParse, lzDecode } from '@/lib/dsp/lz78';
 import { t } from '@/i18n';
 
@@ -15,7 +15,7 @@ export function LempelZivSection() {
   const visible = r.phrases.slice(0, shown);
 
   return (
-    <div className="it-section">
+    <div className="module-layout">
       <aside className="it-controls">
         <Panel title={t('it.lz.input')}>
           <textarea
@@ -97,6 +97,20 @@ export function LempelZivSection() {
         <Panel title={t('it.lz.encoded')}>
           <div className="it-mono it-break">{visible.map((p) => p.codeword).join(' ') || '—'}</div>
         </Panel>
+        <div className="info-cards">
+          <InfoCard title={t('it.lz.card.dict')} accent="green">
+            <p>{t('it.lz.card.dictBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('it.lz.card.universal')} accent="orange">
+            <p>{t('it.lz.card.universalBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('it.lz.card.vtf')} accent="blue">
+            <p>{t('it.lz.card.vtfBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('it.lz.card.opt')} accent="green">
+            <p>{t('it.lz.card.optBody')}</p>
+          </InfoCard>
+        </div>
         <TheoryBox title={t('it.theory.title')}>
           <p>
             LZ78 is a universal, variable-to-fixed dictionary code: each new phrase = a previous
