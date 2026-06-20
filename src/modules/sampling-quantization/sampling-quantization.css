@@ -64,3 +64,19 @@
 .adc__tabbar {
   margin-bottom: var(--space-3);
 }
+
+/* Quantization Effects section */
+.qe__canvas-label {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  text-align: center;
+  font-family: var(--mono);
+}
+
+.qe__play-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}

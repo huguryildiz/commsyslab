@@ -785,4 +785,83 @@ export const en: Record<string, string> = {
   'baseband.card.mmse.title': 'MMSE equalizer',
   'baseband.card.mmse.body':
     'The MMSE filter minimizes $E|w*r-a|^2$, balancing ISI removal against noise enhancement — it keeps the eye open better than zero-forcing at low SNR.',
+  // Partial Response (§10.3.2)
+  'baseband.tab.pr': 'Partial Response',
+  'baseband.pr.kind': 'Pulse type',
+  'baseband.pr.duo': 'Duobinary (1+D)',
+  'baseband.pr.mod': 'Modified duobinary (1−D²)',
+  'baseband.pr.span': 'Span (symbols)',
+  'baseband.pr.panel.pulse': 'Partial-response pulse vs raised cosine',
+  'baseband.pr.panel.spectrum': 'Magnitude spectrum |X(f)|',
+  'baseband.pr.theory': 'Controlled ISI — partial-response signaling',
+  'baseband.pr.card.rate.title': 'Signaling at the Nyquist rate',
+  'baseband.pr.card.rate.body':
+    'Allowing one controlled (known) ISI tap lets the system transmit $2W$ symbols/s — the full Nyquist rate — with a physically realizable, smoothly decaying spectrum.',
+  'baseband.pr.card.duo.title': 'Duobinary $1+D$',
+  'baseband.pr.card.duo.body':
+    'Adding the previous symbol, $b_m=a_m+a_{m-1}$, concentrates energy near DC and gives the cosine spectrum $|X(f)|=\\tfrac1W\\cos(\\pi f/2W)$.',
+  'baseband.pr.card.mod.title': 'Modified duobinary $1-D^2$',
+  'baseband.pr.card.mod.body':
+    'Subtracting the symbol two intervals back, $b_m=a_m-a_{m-2}$, puts a null at $f=0$ — ideal for AC-coupled channels that cannot pass DC.',
+  // PR Detection (§10.4)
+  'baseband.tab.prdet': 'PR Detection',
+  'baseband.prdet.precoding': 'Precoding',
+  'baseband.prdet.flip': 'Inject error at symbol',
+  'baseband.prdet.resample': 'Resample data',
+  'baseband.prdet.readout.errors': 'Decoded errors',
+  'baseband.prdet.panel.table': 'Precoding table  (dₙ → pₙ → aₙ → bₙ → d̂ₙ)',
+  'baseband.prdet.panel.eye': 'Three-level duobinary eye',
+  'baseband.prdet.panel.trellis': '2-state trellis & Viterbi survivor',
+  'baseband.prdet.panel.ber': 'Error probability vs Eb/N0',
+  'baseband.prdet.theory': 'Symbol-by-symbol & ML sequence detection',
+  'baseband.prdet.card.levels.title': 'Three-level signaling',
+  'baseband.prdet.card.levels.body':
+    'Adding the controlled ISI tap turns binary symbols into a three-level received signal $b_m=a_m+a_{m-1}\\in\\{-2,0,2\\}$, so the duobinary eye has two openings instead of one.',
+  'baseband.prdet.card.precode.title': 'Precoding stops error propagation',
+  'baseband.prdet.card.precode.body':
+    'Precoding ties the received level directly to the current data bit, $\\hat d_m=(b_m/2+1)\\bmod 2$, so a detection error affects only that symbol — toggle precoding off to watch one error cascade.',
+  'baseband.prdet.card.sbs.title': 'Symbol-by-symbol vs MLSD',
+  'baseband.prdet.card.sbs.body':
+    'The simple three-level slicer decides each symbol independently; the Viterbi detector instead finds the most likely whole sequence through the trellis, lowering the error rate.',
+  'baseband.prdet.card.penalty.title': 'The SNR penalty',
+  'baseband.prdet.card.penalty.body':
+    'Symbol-by-symbol detection of duobinary costs about $2.1$ dB versus ideal binary PAM; ML sequence detection wins back $\\approx 1.76$ dB, leaving only $\\approx 0.34$ dB.',
+  // Power Spectrum (§10.2)
+  'baseband.tab.psd': 'Power Spectrum',
+  'baseband.psd.gt': 'Transmit filter Gₜ(f)',
+  'baseband.psd.nrz': 'Rectangular NRZ',
+  'baseband.psd.rc': 'Raised cosine',
+  'baseband.psd.symbols': 'Symbol sequence',
+  'baseband.psd.iid': 'Uncorrelated (i.i.d.)',
+  'baseband.psd.corr': 'Correlated (aₙ = bₙ + bₙ₋₁)',
+  'baseband.psd.zeroMean': 'Zero-mean symbols',
+  'baseband.psd.panel.sv': 'Signal power spectrum Sᵥ(f)',
+  'baseband.psd.panel.sa': 'Sequence power spectrum Sₐ(f)',
+  'baseband.psd.theory': 'Power spectrum of digitally modulated signals',
+  'baseband.psd.card.parts.title': 'Two kinds of spectrum',
+  'baseband.psd.card.parts.body':
+    'The transmitted spectrum splits into a continuous part shaped by the pulse $|G_T(f)|^2$ and discrete spectral lines spaced $1/T$ apart.',
+  'baseband.psd.card.shape.title': 'The pulse shapes the spectrum',
+  'baseband.psd.card.shape.body':
+    'Choosing $G_T(f)$ sets the continuous shape: a rectangular NRZ pulse gives a $\\operatorname{sinc}^2$ spectrum with nulls at $m/T$; raised cosine is far more compact.',
+  'baseband.psd.card.lines.title': 'Zero mean removes the lines',
+  'baseband.psd.card.lines.body':
+    'The discrete lines come from a non-zero symbol mean $m_a$. Symmetric, zero-mean constellations ($m_a=0$) erase them — usually desired. Correlating the symbols instead reshapes the continuous part (e.g. $S_a=4\\cos^2\\pi fT$).',
+  // Channel Distortion (§10.5)
+  'baseband.tab.distortion': 'Channel Distortion',
+  'baseband.dist.amp': 'Amplitude distortion',
+  'baseband.dist.phase': 'Phase distortion',
+  'baseband.dist.panel.channel': 'Channel |C(f)|, phase θ_c(f) & designed |Gₜ(f)|',
+  'baseband.dist.panel.delay': 'Envelope (group) delay τ(f)',
+  'baseband.dist.panel.pulse': 'Zero-ISI pulse before vs after the channel',
+  'baseband.dist.theory': 'Channel distortion & filter design',
+  'baseband.dist.card.types.title': 'Amplitude vs phase distortion',
+  'baseband.dist.card.types.body':
+    'A non-flat $|C(f)|$ is amplitude distortion; a nonlinear phase $\\theta_c(f)$ is phase distortion. Both smear the pulse and create intersymbol interference.',
+  'baseband.dist.card.delay.title': 'Envelope delay makes ISI',
+  'baseband.dist.card.delay.body':
+    'Nonlinear phase means a frequency-dependent delay $\\tau(f)=-\\tfrac{1}{2\\pi}\\,d\\theta_c/df$. Different frequencies arrive at different times, shifting the zero-crossings of an otherwise ISI-free pulse.',
+  'baseband.dist.card.design.title': 'Designing Tx/Rx filters',
+  'baseband.dist.card.design.body':
+    'When $C(f)$ is known, split the target raised-cosine response between transmit and receive filters and pre-compensate the channel: $|G_T||C||G_R|=X_{rc}(f)$ restores zero ISI with maximum SNR.',
 };

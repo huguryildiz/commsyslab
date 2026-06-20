@@ -4,55 +4,58 @@
   flex-direction: column;
   gap: 16px;
 }
-.bb-tabs {
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap;
-}
-.bb-tab {
-  background: transparent;
-  border: none;
-  color: var(--text-dim);
-  font-family: var(--font);
-  font-size: 0.95rem;
-  padding: 8px 14px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition:
-    color var(--transition),
-    border-color var(--transition);
-}
-.bb-tab:hover {
-  color: var(--text);
-}
-.bb-tab--active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-.bb-section {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-.bb-controls {
+
+/* Two-column module layout shells (see CLAUDE.md "Module layout"). */
+.baseband__controls {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
-.bb-content {
+.baseband__content {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
-.bb-readouts {
+.baseband__readouts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
   gap: 8px;
 }
-@media (max-width: 720px) {
-  .bb-section {
-    grid-template-columns: 1fr;
-  }
+
+/* Precoding table (PR Detection tab, Table 10.1 layout). */
+.baseband__pr-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  overflow-x: auto;
+}
+.baseband__pr-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 6px;
+  align-items: center;
+}
+.baseband__pr-values {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(18px, 1fr);
+  gap: 2px;
+}
+.baseband__pr-cell {
+  text-align: center;
+  padding: 3px 0;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.baseband__pr-head {
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.baseband__pr-cell--err {
+  background: rgba(255, 90, 90, 0.22);
+  color: var(--err);
 }

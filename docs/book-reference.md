@@ -259,21 +259,26 @@ Noncoherent FSK · Multidim Signals · Repeaters · Synchronization) ·
 
 ### Chapter 10 — Digital Transmission through Bandlimited Channels (pp. 543–620) ✅
 
-**Module:** `src/modules/baseband/` · **DSP:** `src/lib/dsp/pulse.ts`, `eye.ts`, `equalizer.ts`
+**Module:** `src/modules/baseband/` (7 tabs) · **DSP:** `src/lib/dsp/pulse.ts`, `eye.ts`,
+`equalizer.ts`, `matchedfilter.ts`, `psd.ts`, `partialresponse.ts`, `channeldistortion.ts`
 
-| Subsection                                        | Page | Status | Repo mapping                                 |
-| ------------------------------------------------- | ---- | ------ | -------------------------------------------- |
-| 10.1 Characterization of Bandlimited Channels     | 543  | ✅     | `BasebandModule.tsx`                         |
-| 10.1.1 Intersymbol Interference (ISI)             | 547  | ✅     | `eye.ts` — eye diagram                       |
-| 10.1.2 Digital Transmission — Bandpass            | 549  | 🔶     | Partial                                      |
-| 10.2 Power Spectrum of Digitally Mod. Signals     | 552  | ⬜     | —                                            |
-| 10.3 Signal Design for Bandlimited Channels       | 556  | ✅     | `pulse.ts` — pulse shaping                   |
-| 10.3.1 Nyquist Criterion, Zero ISI, Raised Cosine | 558  | ✅     | `pulse.ts` — raised cosine                   |
-| 10.3.2 Controlled ISI — Partial Response          | 564  | ⬜     | —                                            |
-| 10.4 Detection of Partial-Response Signals        | 566  | ⬜     | —                                            |
-| 10.5 System Design — Channel Distortion           | 577  | 🔶     | `equalizer.ts`                               |
-| 10.5.1 Transmitting/Receiving Filter Design       | 578  | 🔶     | `PulseShapingSection.tsx`                    |
-| 10.5.2 Channel Equalization                       | 582  | ✅     | `equalizer.ts`, `EyeEqualizationSection.tsx` |
+| Subsection                                        | Page | Status | Repo mapping                                                    |
+| ------------------------------------------------- | ---- | ------ | --------------------------------------------------------------- |
+| 10.1 Characterization of Bandlimited Channels     | 543  | ✅     | `BasebandModule.tsx`                                            |
+| 10.1.1 Intersymbol Interference (ISI)             | 547  | ✅     | `eye.ts` — eye diagram                                          |
+| 10.1.2 Digital Transmission — Bandpass            | 549  | 🔶     | Partial (matched filter; no constellation explorer)             |
+| 10.2 Power Spectrum of Digitally Mod. Signals     | 552  | ✅     | `psd.ts` — Power Spectrum tab (`pamPsd`/`symbolPsd`)            |
+| 10.3 Signal Design for Bandlimited Channels       | 556  | ✅     | `pulse.ts` — pulse shaping                                      |
+| 10.3.1 Nyquist Criterion, Zero ISI, Raised Cosine | 558  | ✅     | `pulse.ts` — raised cosine                                      |
+| 10.3.2 Controlled ISI — Partial Response          | 564  | ✅     | `partialresponse.ts` — Partial Response tab (duo/mod-duo)       |
+| 10.4 Detection of Partial-Response Signals        | 566  | ✅     | `partialresponse.ts` — PR Detection tab                         |
+| 10.4.1 Symbol-by-Symbol Detection + Precoding     | 567  | ✅     | `precode`, `symbolBySymbolDetect`, error-propagation demo       |
+| 10.4.2 Error Probability (Symbol-by-Symbol)       | 570  | ✅     | `prBerCurves` — ≈2.1 dB penalty                                 |
+| 10.4.3 ML Sequence Detection (PR trellis)         | 573  | ✅     | `viterbiPR` — 2-state Viterbi survivor                          |
+| 10.4.4 Error Probability of MLSD                  | 576  | ✅     | `prBerCurves` — ≈0.34 dB penalty (Eq. 10.4.41)                  |
+| 10.5 System Design — Channel Distortion           | 577  | ✅     | `channeldistortion.ts` — Channel Distortion tab; `equalizer.ts` |
+| 10.5.1 Transmitting/Receiving Filter Design       | 578  | ✅     | `channeldistortion.ts` `designFilters` (Eq. 10.5.1)             |
+| 10.5.2 Channel Equalization                       | 582  | ✅     | `equalizer.ts`, `EyeEqualizationSection.tsx`                    |
 
 ---
 

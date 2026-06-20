@@ -1,17 +1,18 @@
-// Source & Media Coding tab (Proakis §7.5–7.7)
-// Three sub-tabs: LPC Vocoder · Digital Audio · JPEG (DCT)
+// Source & Media Coding tab (Proakis §7.2 / §7.5–7.7)
+// Four sub-tabs: Quantization Effects · LPC Vocoder · Digital Audio · JPEG (DCT)
 import { useState } from 'react';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
+import { QuantizationEffectsSection } from './QuantizationEffectsSection';
 import { LpcSection } from './LpcSection';
 import { DigitalAudioSection } from './DigitalAudioSection';
 import { JpegSection } from './JpegSection';
 
-type Sub = 'lpc' | 'audio' | 'jpeg';
+type Sub = 'quant' | 'lpc' | 'audio' | 'jpeg';
 
-/** §7.5–7.7 Source & Media Coding — LPC Vocoder, Digital Audio, JPEG sub-tabs. */
+/** §7.2 / §7.5–7.7 Source & Media Coding — Quantization Effects, LPC Vocoder, Digital Audio, JPEG sub-tabs. */
 export default function MediaTab() {
-  const [sub, setSub] = useState<Sub>('lpc');
+  const [sub, setSub] = useState<Sub>('quant');
   return (
     <div className="adc__section">
       <div className="adc__subtabbar">
@@ -20,15 +21,17 @@ export default function MediaTab() {
           value={sub}
           onChange={setSub}
           options={[
-            { value: 'lpc', label: t('adc.sub.lpc') },
+            { value: 'quant', label: t('adc.sub.quant') },
+            { value: 'lpc',   label: t('adc.sub.lpc') },
             { value: 'audio', label: t('adc.sub.audio') },
-            { value: 'jpeg', label: t('adc.sub.jpeg') },
+            { value: 'jpeg',  label: t('adc.sub.jpeg') },
           ]}
         />
       </div>
-      {sub === 'lpc' && <LpcSection />}
+      {sub === 'quant' && <QuantizationEffectsSection />}
+      {sub === 'lpc'   && <LpcSection />}
       {sub === 'audio' && <DigitalAudioSection />}
-      {sub === 'jpeg' && <JpegSection />}
+      {sub === 'jpeg'  && <JpegSection />}
     </div>
   );
 }

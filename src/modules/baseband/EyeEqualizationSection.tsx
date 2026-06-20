@@ -1,5 +1,6 @@
+// src/modules/baseband/EyeEqualizationSection.tsx
 import { useState, useMemo } from 'react';
-import { Panel, Select, Slider, Readout, TheoryBox, Formula } from '@/components';
+import { Panel, Select, Slider, Readout, InfoCard, HintText, TheoryBox, Formula } from '@/components';
 import { t } from '@/i18n';
 import { buildEyeView, type EyeParams, type EqualizerKind } from './model';
 import { EyePanel, TapStemPanel, CombinedPanel } from './panels';
@@ -10,14 +11,25 @@ export function EyeEqualizationSection() {
   const [equalizer, setEqualizer] = useState<EqualizerKind>('off');
   const [nTaps, setNTaps] = useState(6);
   const [noiseVar, setNoiseVar] = useState(0.05);
+  const [resetKey, setResetKey] = useState(0);
+
   const view = useMemo(() => {
     const params: EyeParams = { M, channel: [1, c1], equalizer, nTaps, noiseVar, sps: 16 };
     return buildEyeView(params);
   }, [M, c1, equalizer, nTaps, noiseVar]);
 
+  const reset = () => {
+    setM(2);
+    setC1(0.5);
+    setEqualizer('off');
+    setNTaps(6);
+    setNoiseVar(0.05);
+    setResetKey((k) => k + 1);
+  };
+
   return (
-    <div className="bb-section">
-      <aside className="bb-controls">
+    <div className="module-layout">
+      <aside className="baseband__controls">
         <Panel title={t('baseband.tab.eye')}>
           <Select
             label={t('baseband.eye.M')}
@@ -66,14 +78,15 @@ export function EyeEqualizationSection() {
               onChange={setNoiseVar}
             />
           )}
+          <button type="button" onClick={reset}>
+            {t('baseband.reset')}
+          </button>
         </Panel>
       </aside>
-      <div className="bb-content">
-        <div className="bb-readouts">
-          <Readout
-            label={t('baseband.readout.eyeHeight')}
-            value={view.eyeHeightBefore.toFixed(2)}
-          />
+
+      <div className="baseband__content">
+        <div className="baseband__readouts">
+          <Readout label={t('baseband.readout.eyeHeight')} value={view.eyeHeightBefore.toFixed(2)} />
           <Readout
             label={`${t('baseband.readout.eyeHeight')} (eq)`}
             value={view.eyeHeightAfter.toFixed(2)}
@@ -82,27 +95,38 @@ export function EyeEqualizationSection() {
           <Readout label={t('baseband.readout.residualIsi')} value={view.residualIsi.toFixed(4)} />
         </div>
         <Panel title={t('baseband.panel.eye')}>
-          <EyePanel
-            traces={view.tracesBefore}
-            sps={view.sps}
-            label="Eye diagram before equalization"
-          />
+          <EyePanel key={resetKey} traces={view.tracesBefore} sps={view.sps} label="Eye diagram before equalization" />
         </Panel>
         {equalizer !== 'off' && (
           <Panel title={t('baseband.panel.eyeAfter')}>
-            <EyePanel
-              traces={view.tracesAfter}
-              sps={view.sps}
-              label="Eye diagram after equalization"
-            />
+            <EyePanel key={`${resetKey}-eq`} traces={view.tracesAfter} sps={view.sps} label="Eye diagram after equalization" />
           </Panel>
         )}
         <Panel title={t('baseband.panel.eqTaps')}>
-          <TapStemPanel view={view} />
+          <TapStemPanel key={resetKey} view={view} />
         </Panel>
         <Panel title={t('baseband.panel.combined')}>
-          <CombinedPanel view={view} />
+          <CombinedPanel key={resetKey} view={view} />
         </Panel>
+
+        <div className="info-cards">
+          <InfoCard title={t('baseband.card.isi.title')} accent="green">
+            <p>
+              <HintText text={t('baseband.card.isi.body')} />
+            </p>
+          </InfoCard>
+          <InfoCard title={t('baseband.card.zf.title')} accent="orange">
+            <p>
+              <HintText text={t('baseband.card.zf.body')} />
+            </p>
+          </InfoCard>
+          <InfoCard title={t('baseband.card.mmse.title')} accent="blue">
+            <p>
+              <HintText text={t('baseband.card.mmse.body')} />
+            </p>
+          </InfoCard>
+        </div>
+
         <TheoryBox title={t('baseband.theory.eye')}>
           <p>
             <Formula tex="y_m=x_0 a_m+\sum_{n\neq m} a_n x_{m-n}+\nu_m\quad(\text{ISI})" block />

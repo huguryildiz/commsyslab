@@ -1,6 +1,6 @@
 // src/modules/baseband/PulseShapingSection.tsx
 import { useState, useMemo } from 'react';
-import { Panel, Select, Slider, Readout, TheoryBox, Formula } from '@/components';
+import { Panel, Select, Slider, Readout, InfoCard, HintText, TheoryBox, Formula } from '@/components';
 import { t } from '@/i18n';
 import { buildPulseView, type PulseParams } from './model';
 import { PulseTimePanel, SpectrumPanel } from './panels';
@@ -10,14 +10,23 @@ export function PulseShapingSection() {
   const [kind, setKind] = useState<PulseKind>('rc');
   const [alpha, setAlpha] = useState(0.35);
   const [sps, setSps] = useState(16);
+  const [resetKey, setResetKey] = useState(0);
+
   const view = useMemo(() => {
     const params: PulseParams = { kind, alpha, sps, span: 5 };
     return buildPulseView(params);
   }, [kind, alpha, sps]);
 
+  const reset = () => {
+    setKind('rc');
+    setAlpha(0.35);
+    setSps(16);
+    setResetKey((k) => k + 1);
+  };
+
   return (
-    <div className="bb-section">
-      <aside className="bb-controls">
+    <div className="module-layout">
+      <aside className="baseband__controls">
         <Panel title={t('baseband.pulse.kind')}>
           <Select
             label={t('baseband.pulse.kind')}
@@ -47,29 +56,43 @@ export function PulseShapingSection() {
             step={4}
             onChange={setSps}
           />
+          <button type="button" onClick={reset}>
+            {t('baseband.reset')}
+          </button>
         </Panel>
       </aside>
 
-      <div className="bb-content">
-        <div className="bb-readouts">
-          <Readout
-            label={t('baseband.readout.bandwidth')}
-            value={view.bandwidth.toFixed(3)}
-            unit="1/T"
-          />
+      <div className="baseband__content">
+        <div className="baseband__readouts">
+          <Readout label={t('baseband.readout.bandwidth')} value={view.bandwidth.toFixed(3)} unit="1/T" />
           <Readout label={t('baseband.readout.excess')} value={view.excess.toFixed(2)} />
-          <Readout
-            label={t('baseband.readout.nyquist')}
-            value={view.nyquist.toFixed(3)}
-            unit="1/T"
-          />
+          <Readout label={t('baseband.readout.nyquist')} value={view.nyquist.toFixed(3)} unit="1/T" />
         </div>
         <Panel title={t('baseband.panel.pulseTime')}>
-          <PulseTimePanel view={view} />
+          <PulseTimePanel key={resetKey} view={view} />
         </Panel>
         <Panel title={t('baseband.panel.spectrum')}>
-          <SpectrumPanel view={view} />
+          <SpectrumPanel key={resetKey} view={view} />
         </Panel>
+
+        <div className="info-cards">
+          <InfoCard title={t('baseband.card.nyquist.title')} accent="green">
+            <p>
+              <HintText text={t('baseband.card.nyquist.body')} />
+            </p>
+          </InfoCard>
+          <InfoCard title={t('baseband.card.excess.title')} accent="orange">
+            <p>
+              <HintText text={t('baseband.card.excess.body')} />
+            </p>
+          </InfoCard>
+          <InfoCard title={t('baseband.card.rrc.title')} accent="blue">
+            <p>
+              <HintText text={t('baseband.card.rrc.body')} />
+            </p>
+          </InfoCard>
+        </div>
+
         <TheoryBox title={t('baseband.theory.pulse')}>
           <p>
             <Formula
