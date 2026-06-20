@@ -59,6 +59,47 @@ export const channelcoding: Record<string, string> = {
   'cc.bc.errBits': 'error bit(s)',
   'cc.bc.curve': 'Coding gain: BER vs Eb/N₀',
   'cc.bc.cube': 'Hamming cube (n = 3)',
+  // §13.2.3 detection vs correction (live Hamming-sphere sim)
+  'cc.bc.dcTitle': 'Detection vs correction (Hamming spheres)',
+  'cc.bc.dcDmin': 'Minimum distance d_min',
+  'cc.bc.dcMode': 'Decoder mode',
+  'cc.bc.modeCorrect': 'Correct',
+  'cc.bc.modeDetect': 'Detect',
+  'cc.bc.modeCombined': 'Correct + detect',
+  'cc.bc.dcEcSel': 'Correct up to e_c',
+  'cc.bc.dcErrors': 'Errors injected',
+  'cc.bc.dcVerdict': 'Outcome',
+  'cc.bc.vNone': 'no error',
+  'cc.bc.vCorrected': '✓ corrected',
+  'cc.bc.vDetected': '⚠ detected, not corrected',
+  'cc.bc.vUndetected': '✗ undetected / miscorrected',
+  // §13.2.4 burst errors & interleaving (live grid sim)
+  'cc.bc.biTitle': 'Burst errors & block interleaving',
+  'cc.bc.biDepth': 'Interleaver depth m',
+  'cc.bc.biBurst': 'Burst length',
+  'cc.bc.biInterleave': 'Interleave',
+  'cc.bc.biMaxPer': 'Max errors / codeword',
+  'cc.bc.biCorrupted': 'Codewords hit',
+  'cc.bc.biUncorrectable': 'Uncorrectable codewords',
+  // info cards
+  'cc.bc.card.lbc': 'Linear block code',
+  'cc.bc.card.lbcBody':
+    'k message bits map to an n-bit codeword c = xG; the n−k parity bits add the redundancy that makes errors recoverable.',
+  'cc.bc.card.dist': 'Hamming distance & d_min',
+  'cc.bc.card.distBody':
+    'd_min is the smallest distance between any two codewords; it alone sets how many errors a code can detect or correct.',
+  'cc.bc.card.cd': 'Correction vs detection',
+  'cc.bc.card.cdBody':
+    'Bounded-distance decoding corrects e_c = ⌊(d_min−1)/2⌋ errors, or detects up to e_d = d_min−1 if it only flags errors instead of fixing them.',
+  'cc.bc.card.arq': 'ARQ (feedback retransmission)',
+  'cc.bc.card.arqBody':
+    'When a feedback link exists, detect-only mode is cheaper: a flagged block is simply re-requested from the transmitter instead of corrected.',
+  'cc.bc.card.burst': 'Random vs burst errors',
+  'cc.bc.card.burstBody':
+    'AWGN gives independent (random) errors; fading channels and disc scratches give bursts — many errors clustered together.',
+  'cc.bc.card.inter': 'Interleaving',
+  'cc.bc.card.interBody':
+    'Writing m codewords into an m×n block and transmitting by columns spreads a length-≤m burst to ≤1 error per codeword, so a simple code can fix it.',
 
   // Tab 4 — Convolutional
   'cc.cv.params': 'Code parameters',
