@@ -16,13 +16,14 @@ import type {
   PulseView,
   ReceiverView,
   EyeView,
+  IsiEyeView,
   PartialResponseView,
   PrDetectionView,
   PsdView,
   DistortionView,
   DetectionView,
 } from './model';
-import type { EyeTrace } from '@/lib/dsp/eye';
+import type { EyeTrace, EyeAnnotations } from '@/lib/dsp/eye';
 
 const COL_P = CHART.green; // p(t) / input
 const COL_H = CHART.orange; // system / matched filter
@@ -183,6 +184,112 @@ export function RrcSplitPanel({ view }: { view: ReceiverView }) {
   );
 }
 
+/**
+ * Shared eye-diagram body: per-column gap analysis → green opening fill + dashed envelope,
+ * neon glow traces, and symbol-boundary ticks. The caller draws the axes and any
+ * cursors/annotations. Reused by EyePanel, IsiFormationPanel and AnnotatedEyePanel.
+ */
+function drawEyeBase(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  traces: EyeTrace[],
+  sps: number,
+  lo: number,
+  hi: number,
+  peak: number,
+  yRange: [number, number],
+): void {
+  if (traces.length === 0) return;
+  const cols = traces[0].samples.length;
+  const tMax = (cols - 1) / sps;
+  const xs = Array.from({ length: cols }, (_, i) => i / sps);
+
+  const colVals: number[][] = Array.from({ length: cols }, (_, ci) =>
+    traces.map((tr) => tr.samples[ci]).sort((a, b) => a - b),
+  );
+  const MIN_GAP = peak * 0.15;
+  const colGaps: { lo: number; hi: number }[][] = colVals.map((vals) => {
+    const gaps: { lo: number; hi: number }[] = [];
+    for (let j = 1; j < vals.length; j++) {
+      if (vals[j] - vals[j - 1] > MIN_GAP) gaps.push({ lo: vals[j - 1], hi: vals[j] });
+    }
+    return gaps;
+  });
+  const maxEyes = Math.max(0, ...colGaps.map((g) => g.length));
+
+  // Eye-opening fill + dashed envelope.
+  for (let eyeIdx = 0; eyeIdx < maxEyes; eyeIdx++) {
+    ctx.save();
+    ctx.beginPath();
+    let moved = false;
+    for (let ci = 0; ci < cols; ci++) {
+      const x = xs[ci];
+      if (x < lo - 0.05 || x > hi + 0.05) continue;
+      const gaps = colGaps[ci];
+      if (eyeIdx >= gaps.length) continue;
+      const px = ax.x(x);
+      const py = ax.y(gaps[eyeIdx].hi);
+      if (!moved) { ctx.moveTo(px, py); moved = true; } else ctx.lineTo(px, py);
+    }
+    for (let ci = cols - 1; ci >= 0; ci--) {
+      const x = xs[ci];
+      if (x < lo - 0.05 || x > hi + 0.05) continue;
+      const gaps = colGaps[ci];
+      if (eyeIdx >= gaps.length) continue;
+      ctx.lineTo(ax.x(x), ax.y(gaps[eyeIdx].lo));
+    }
+    if (moved) { ctx.closePath(); ctx.fillStyle = alpha(COL_P, 0.13); ctx.fill(); }
+    ctx.restore();
+
+    for (const edge of ['hi', 'lo'] as const) {
+      ctx.save();
+      ctx.strokeStyle = alpha(COL_P, 0.45);
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 6]);
+      ctx.beginPath();
+      let pen = false;
+      for (let ci = 0; ci < cols; ci++) {
+        const x = xs[ci];
+        if (x < lo - 0.05 || x > hi + 0.05) continue;
+        const gaps = colGaps[ci];
+        if (eyeIdx >= gaps.length) { pen = false; continue; }
+        const px = ax.x(x);
+        const py = ax.y(gaps[eyeIdx][edge]);
+        if (!pen) { ctx.moveTo(px, py); pen = true; } else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  // Glow traces.
+  ctx.save();
+  ctx.globalAlpha = 0.38;
+  ctx.strokeStyle = COL_P;
+  ctx.lineWidth = 1.1;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = COL_P;
+  ctx.shadowBlur = 5;
+  for (const tr of traces) {
+    ctx.beginPath();
+    for (let ci = 0; ci < cols; ci++) {
+      const px = ax.x(xs[ci]);
+      const py = ax.y(tr.samples[ci]);
+      if (ci === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Symbol-boundary ticks.
+  for (let b = 1; b < Math.ceil(tMax); b++) {
+    if (b < lo || b > hi) continue;
+    drawVLine(ctx, ax, b, yRange[0], yRange[1], alpha(CHART.dim, 0.28), false, 1);
+  }
+}
+
 export function EyePanel({ traces, sps, label }: { traces: EyeTrace[]; sps: number; label: string }) {
   const cols = traces[0]?.samples.length ?? 2 * sps;
   const tMax = (cols - 1) / sps;
@@ -213,106 +320,22 @@ export function EyePanel({ traces, sps, label }: { traces: EyeTrace[]; sps: numb
         const ax = axesFor(w, h, [lo, hi], yRange);
         drawAxes(ctx, ax, [lo, hi], { xLabel: '$t/T$', yLabel: '$y(t)$' });
 
-        const xs = Array.from({ length: cols }, (_, i) => i / sps);
+        drawEyeBase(ctx, ax, traces, sps, lo, hi, peak, yRange);
+
         const midCol = Math.floor(cols / 2);
         const midX = midCol / sps;
-
-        // Per-column sorted values for gap analysis
-        const colVals: number[][] = Array.from({ length: cols }, (_, ci) =>
-          traces.map(tr => tr.samples[ci]).sort((a, b) => a - b),
-        );
-
-        // Eye openings = gaps > MIN_GAP in the per-column distribution
-        const MIN_GAP = peak * 0.15;
-        const colGaps: { lo: number; hi: number }[][] = colVals.map(vals => {
-          const gaps: { lo: number; hi: number }[] = [];
-          for (let j = 1; j < vals.length; j++) {
-            if (vals[j] - vals[j - 1] > MIN_GAP) gaps.push({ lo: vals[j - 1], hi: vals[j] });
-          }
-          return gaps;
-        });
-        const maxEyes = Math.max(0, ...colGaps.map(g => g.length));
-
         const plotTop = PAD.t;
         const plotH = h - PAD.t - PAD.b;
 
-        // ── 1. Eye-opening fill + dashed envelope lines ────────────────────────
-        for (let eyeIdx = 0; eyeIdx < maxEyes; eyeIdx++) {
-          // Green fill for the open region
-          ctx.save();
-          ctx.beginPath();
-          let moved = false;
-          for (let ci = 0; ci < cols; ci++) {
-            const x = xs[ci];
-            if (x < lo - 0.05 || x > hi + 0.05) continue;
-            const gaps = colGaps[ci];
-            if (eyeIdx >= gaps.length) continue;
-            const px = ax.x(x);
-            const py = ax.y(gaps[eyeIdx].hi);
-            if (!moved) { ctx.moveTo(px, py); moved = true; }
-            else ctx.lineTo(px, py);
-          }
-          for (let ci = cols - 1; ci >= 0; ci--) {
-            const x = xs[ci];
-            if (x < lo - 0.05 || x > hi + 0.05) continue;
-            const gaps = colGaps[ci];
-            if (eyeIdx >= gaps.length) continue;
-            ctx.lineTo(ax.x(x), ax.y(gaps[eyeIdx].lo));
-          }
-          if (moved) { ctx.closePath(); ctx.fillStyle = alpha(COL_P, 0.13); ctx.fill(); }
-          ctx.restore();
-
-          // Dashed envelope outlines — upper and lower
-          for (const edge of ['hi', 'lo'] as const) {
-            ctx.save();
-            ctx.strokeStyle = alpha(COL_P, 0.45);
-            ctx.lineWidth = 1;
-            ctx.setLineDash([3, 6]);
-            ctx.beginPath();
-            let pen = false;
-            for (let ci = 0; ci < cols; ci++) {
-              const x = xs[ci];
-              if (x < lo - 0.05 || x > hi + 0.05) continue;
-              const gaps = colGaps[ci];
-              if (eyeIdx >= gaps.length) { pen = false; continue; }
-              const px = ax.x(x);
-              const py = ax.y(gaps[eyeIdx][edge]);
-              if (!pen) { ctx.moveTo(px, py); pen = true; }
-              else ctx.lineTo(px, py);
-            }
-            ctx.stroke();
-            ctx.restore();
-          }
+        // Eye-opening edges at the sampling instant (for the pink dots).
+        const MIN_GAP = peak * 0.15;
+        const midVals = traces.map((tr) => tr.samples[midCol]).sort((a, b) => a - b);
+        const midGaps: { lo: number; hi: number }[] = [];
+        for (let j = 1; j < midVals.length; j++) {
+          if (midVals[j] - midVals[j - 1] > MIN_GAP) midGaps.push({ lo: midVals[j - 1], hi: midVals[j] });
         }
 
-        // ── 2. Traces — neon green with global-alpha so dense rails glow brighter ─
-        ctx.save();
-        ctx.globalAlpha = 0.38;
-        ctx.strokeStyle = COL_P;
-        ctx.lineWidth = 1.1;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.shadowColor = COL_P;
-        ctx.shadowBlur = 5;
-        for (const tr of traces) {
-          ctx.beginPath();
-          for (let ci = 0; ci < cols; ci++) {
-            const px = ax.x(xs[ci]);
-            const py = ax.y(tr.samples[ci]);
-            if (ci === 0) ctx.moveTo(px, py);
-            else ctx.lineTo(px, py);
-          }
-          ctx.stroke();
-        }
-        ctx.restore();
-
-        // ── 3. Symbol-boundary tick lines ─────────────────────────────────────
-        for (let b = 1; b < Math.ceil(tMax); b++) {
-          if (b < lo || b > hi) continue;
-          drawVLine(ctx, ax, b, yRange[0], yRange[1], alpha(CHART.dim, 0.28), false, 1);
-        }
-
-        // ── 4. Sampling-instant cursor — neon pink glow ────────────────────────
+        // ── Sampling-instant cursor — neon pink glow ───────────────────────────
         if (midX >= lo && midX <= hi) {
           const px = ax.x(midX);
           ctx.save();
@@ -336,24 +359,218 @@ export function EyePanel({ traces, sps, label }: { traces: EyeTrace[]; sps: numb
           ctx.restore();
 
           // Pink dots at the eye-opening edges (like landing page markers)
-          for (const gaps of [colGaps[midCol]]) {
-            for (const g of gaps) {
-              for (const y of [g.lo, g.hi]) {
-                ctx.save();
-                ctx.fillStyle = CHART.pink;
-                ctx.shadowColor = CHART.pink;
-                ctx.shadowBlur = 8;
-                ctx.beginPath();
-                ctx.arc(px, ax.y(y), 3, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.restore();
-              }
+          for (const g of midGaps) {
+            for (const y of [g.lo, g.hi]) {
+              ctx.save();
+              ctx.fillStyle = CHART.pink;
+              ctx.shadowColor = CHART.pink;
+              ctx.shadowBlur = 8;
+              ctx.beginPath();
+              ctx.arc(px, ax.y(y), 3, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.restore();
             }
           }
         }
       }}
     />
   );
+}
+
+/** Animated eye-pattern formation: superimposes the first `visibleCount` realizations. */
+export function IsiFormationPanel({
+  view,
+  visibleCount,
+}: {
+  view: IsiEyeView;
+  visibleCount: number;
+}) {
+  const { traces, sps } = view;
+  const cols = traces[0]?.samples.length ?? 2 * sps;
+  const tMax = (cols - 1) / sps;
+  const [lo, hi, onWheel, , onPan] = useZoom(0, tMax, {
+    minSpan: 0.25,
+    maxSpan: tMax,
+    clampMin: 0,
+    clampMax: tMax,
+  });
+  const shown = traces.slice(0, Math.max(1, Math.min(visibleCount, traces.length)));
+  const current = shown[shown.length - 1]?.label ?? '';
+
+  return (
+    <Canvas
+      height={300}
+      ariaLabel="Eye pattern forming as the superposition of symbol-sequence realizations"
+      deps={[view, visibleCount, lo, hi]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        if (traces.length === 0) return;
+        let peak = 2;
+        for (const tr of traces) for (const v of tr.samples) if (Math.abs(v) > peak) peak = Math.abs(v);
+        const yPad = peak * 0.18;
+        const yRange: [number, number] = [-(peak + yPad), peak + yPad];
+        const ax = axesFor(w, h, [lo, hi], yRange);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t/T$', yLabel: '$y(t)$' });
+        drawEyeBase(ctx, ax, shown, sps, lo, hi, peak, yRange);
+
+        // Sampling-instant marker at the centre symbol (t/T = 1).
+        if (1 >= lo && 1 <= hi) {
+          drawVLine(ctx, ax, 1, yRange[0], yRange[1], alpha(CHART.pink, 0.6), true, 1.5);
+        }
+
+        // Current pattern label + progress.
+        ctx.save();
+        ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+        ctx.fillStyle = CHART.text;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(`pattern: … ${current} …`, PAD.l + 4, PAD.t + 2);
+        ctx.fillStyle = CHART.dim;
+        ctx.fillText(`${shown.length} / ${traces.length}`, PAD.l + 4, PAD.t + 18);
+        ctx.restore();
+      }}
+    />
+  );
+}
+
+/** Fully-formed eye with the optional Fig. 10.8(b) interpretation overlay. */
+export function AnnotatedEyePanel({
+  view,
+  showAnnotations,
+}: {
+  view: IsiEyeView;
+  showAnnotations: boolean;
+}) {
+  const { traces, sps, annotations } = view;
+  const cols = traces[0]?.samples.length ?? 2 * sps;
+  const tMax = (cols - 1) / sps;
+  const [lo, hi, onWheel, , onPan] = useZoom(0, tMax, {
+    minSpan: 0.25,
+    maxSpan: tMax,
+    clampMin: 0,
+    clampMax: tMax,
+  });
+
+  return (
+    <Canvas
+      height={320}
+      ariaLabel="Annotated eye diagram with sampling time, noise margin, jitter and slope"
+      deps={[view, showAnnotations, lo, hi]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        if (traces.length === 0) return;
+        let peak = 2;
+        for (const tr of traces) for (const v of tr.samples) if (Math.abs(v) > peak) peak = Math.abs(v);
+        const yPad = peak * 0.18;
+        const yRange: [number, number] = [-(peak + yPad), peak + yPad];
+        const ax = axesFor(w, h, [lo, hi], yRange);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t/T$', yLabel: '$y(t)$' });
+        drawEyeBase(ctx, ax, traces, sps, lo, hi, peak, yRange);
+
+        if (showAnnotations) drawEyeOverlay(ctx, ax, annotations, yRange);
+      }}
+    />
+  );
+}
+
+/** Draws the eye-diagram interpretation markers (Proakis Fig. 10.8b). */
+function drawEyeOverlay(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  a: EyeAnnotations,
+  yRange: [number, number],
+): void {
+  const label = (x: number, y: number, text: string, align: CanvasTextAlign = 'left') => {
+    ctx.save();
+    ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    ctx.fillStyle = CHART.dim;
+    ctx.textAlign = align;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  };
+  const vArrow = (px: number, y0: number, y1: number) => {
+    ctx.beginPath();
+    ctx.moveTo(px, y0);
+    ctx.lineTo(px, y1);
+    ctx.stroke();
+    for (const [yy, dir] of [[y0, 1], [y1, -1]] as const) {
+      ctx.beginPath();
+      ctx.moveTo(px, yy);
+      ctx.lineTo(px - 3, yy + 5 * dir);
+      ctx.moveTo(px, yy);
+      ctx.lineTo(px + 3, yy + 5 * dir);
+      ctx.stroke();
+    }
+  };
+  const hArrow = (py: number, x0: number, x1: number) => {
+    ctx.beginPath();
+    ctx.moveTo(x0, py);
+    ctx.lineTo(x1, py);
+    ctx.stroke();
+    for (const [xx, dir] of [[x0, 1], [x1, -1]] as const) {
+      ctx.beginPath();
+      ctx.moveTo(xx, py);
+      ctx.lineTo(xx + 5 * dir, py - 3);
+      ctx.moveTo(xx, py);
+      ctx.lineTo(xx + 5 * dir, py + 3);
+      ctx.stroke();
+    }
+  };
+
+  const sx = ax.x(a.samplingT);
+
+  // Best sampling time — vertical line spanning the plot.
+  ctx.save();
+  ctx.strokeStyle = alpha(CHART.pink, 0.8);
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(sx, ax.y(yRange[1]));
+  ctx.lineTo(sx, ax.y(yRange[0]));
+  ctx.stroke();
+  ctx.restore();
+  label(sx + 4, ax.y(a.idealHi) - 14, 'best sampling time');
+
+  // Noise margin — vertical double arrow across the opening.
+  ctx.save();
+  ctx.strokeStyle = CHART.pink;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([]);
+  vArrow(sx - 16, ax.y(a.eyeHi), ax.y(a.eyeLo));
+  ctx.restore();
+  label(sx - 20, (ax.y(a.eyeHi) + ax.y(a.eyeLo)) / 2, 'margin over noise', 'right');
+
+  // Peak distortion — bracket from ideal level down to inner rail.
+  ctx.save();
+  ctx.strokeStyle = alpha(CHART.orange, 0.95);
+  ctx.lineWidth = 1.5;
+  vArrow(sx + 16, ax.y(a.idealHi), ax.y(a.eyeHi));
+  ctx.restore();
+  label(sx + 20, (ax.y(a.idealHi) + ax.y(a.eyeHi)) / 2, 'peak distortion');
+
+  // Jitter — horizontal double arrow at y=0 across the left crossing region.
+  ctx.save();
+  ctx.strokeStyle = alpha(CHART.blue, 0.95);
+  ctx.lineWidth = 1.5;
+  const jLeft = ax.x(a.crossLeftT);
+  const jMid = ax.x(a.samplingT);
+  hArrow(ax.y(0), jLeft, jMid);
+  ctx.restore();
+  label((jLeft + jMid) / 2, ax.y(0) + 12, 'jitter / zero-crossings', 'center');
+
+  // Slope = timing sensitivity — tangent along the rising eye side.
+  ctx.save();
+  ctx.strokeStyle = alpha(CHART.green, 0.95);
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(ax.x(a.crossLeftT), ax.y(0));
+  ctx.lineTo(ax.x(a.samplingT), ax.y(a.eyeHi));
+  ctx.stroke();
+  ctx.restore();
+  label(ax.x((a.crossLeftT + a.samplingT) / 2) - 4, ax.y(a.eyeHi / 2) - 10, 'slope = timing sensitivity', 'right');
 }
 
 export function TapStemPanel({ view }: { view: EyeView }) {
