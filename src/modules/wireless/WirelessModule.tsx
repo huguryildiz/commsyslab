@@ -13,6 +13,7 @@ import { RakeSection } from './sections/RakeSection';
 import { MimoSection } from './sections/MimoSection';
 import { CpmSection } from './sections/CpmSection';
 import { PnCodesSection } from './sections/PnCodesSection';
+import { SyncSection } from './sections/SyncSection';
 import './wireless.css';
 
 type Tab =
@@ -27,7 +28,8 @@ type Tab =
   | 'rake'
   | 'mimo'
   | 'cpm'
-  | 'pn';
+  | 'pn'
+  | 'sync';
 
 export function WirelessModule() {
   const { tab: slug = '' } = useParams<{ tab?: string }>();
@@ -44,18 +46,23 @@ export function WirelessModule() {
         ariaLabel={t('wl.title')}
         value={tab}
         options={[
+          // Ch 11 — Multicarrier
+          { value: 'ofdm', label: t('wl.tab.ofdm') },
+          // Ch 14 — Fading & MIMO
           { value: 'fading', label: t('wl.tab.fading') },
           { value: 'doppler', label: t('wl.tab.doppler') },
           { value: 'ber', label: t('wl.tab.ber') },
-          { value: 'spread', label: t('wl.tab.spread') },
-          { value: 'fhss', label: t('wl.tab.fhss') },
-          { value: 'cdma', label: t('wl.tab.cdma') },
-          { value: 'ofdm', label: t('wl.tab.ofdm') },
-          { value: 'linkbudget', label: t('wl.tab.linkbudget') },
           { value: 'rake', label: t('wl.tab.rake') },
           { value: 'mimo', label: t('wl.tab.mimo') },
-          { value: 'cpm', label: t('wl.tab.cpm') },
+          { value: 'linkbudget', label: t('wl.tab.linkbudget') },
+          // Ch 15 — Spread-Spectrum
+          { value: 'spread', label: t('wl.tab.spread') },
           { value: 'pn', label: t('wl.tab.pn') },
+          { value: 'cdma', label: t('wl.tab.cdma') },
+          { value: 'fhss', label: t('wl.tab.fhss') },
+          { value: 'sync', label: t('wl.tab.sync') },
+          // Ch 9 cross-reference
+          { value: 'cpm', label: t('wl.tab.cpm') },
         ]}
         onChange={handleTabChange}
       />
@@ -72,6 +79,7 @@ export function WirelessModule() {
         {tab === 'mimo' && <MimoSection />}
         {tab === 'cpm' && <CpmSection />}
         {tab === 'pn' && <PnCodesSection />}
+        {tab === 'sync' && <SyncSection />}
       </div>
     </div>
   );

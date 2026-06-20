@@ -6,6 +6,35 @@ export const wireless: Record<string, string> = {
   'wl.subtitle': 'Multipath fading channels: delay spread, frequency selectivity, and Doppler.',
   'wl.reset': 'Reset',
 
+  // SS Synchronization tab (§15.6)
+  'wl.tab.sync': 'SS Sync',
+  'wl.sync.title': 'Spread-spectrum synchronization',
+  'wl.sync.subtab.ariaLabel': 'Synchronization stage',
+  'wl.sync.subtab.acq': 'Acquisition',
+  'wl.sync.subtab.track': 'Tracking',
+  'wl.sync.pd': 'Detection probability P_d',
+  'wl.sync.pfa': 'False-alarm probability P_fa',
+  'wl.sync.delta': 'Early–late spacing δ (chips)',
+  'wl.sync.acq.title': 'Serial search — correlation vs offset',
+  'wl.sync.track.title': 'Delay-locked loop — S-curve',
+  'wl.sync.readout.offset': 'Peak offset (true delay)',
+  'wl.sync.readout.acqTime': 'Mean acquisition time',
+  'wl.sync.readout.delta': 'Gate spacing δ',
+  'wl.sync.theory.title': 'Acquire, then track',
+  'wl.sync.theory.body':
+    'Synchronization happens in two stages. Acquisition slides the local PN replica past the incoming code one cell at a time until the correlation crosses a threshold — coarse alignment to within a chip. The mean acquisition time grows with the code length. Tracking then uses a delay-locked loop with an early–late gate: its discriminator S-curve crosses zero at perfect alignment with a restoring slope, so the loop holds the replica to a fraction of a chip against drift and Doppler.',
+  'wl.sync.card.phases.title': 'Acquisition vs tracking',
+  'wl.sync.card.phases.body': 'Coarse search to get within one chip, then a fine loop to stay locked.',
+  'wl.sync.card.search.title': 'Serial search',
+  'wl.sync.card.search.body':
+    'Test each code phase in turn against a threshold; the expected time scales with the number of cells $N$ and worsens as $P_d$ falls.',
+  'wl.sync.card.dll.title': 'Delay-locked loop',
+  'wl.sync.card.dll.body':
+    'A feedback loop whose discriminator output drives the timing error to zero — the stable lock point of the S-curve.',
+  'wl.sync.card.earlylate.title': 'Early–late gate',
+  'wl.sync.card.earlylate.body':
+    'Correlate with replicas advanced and delayed by $\\delta/2$; their difference $S(\\tau)$ is positive for early error and negative for late, pulling the replica back.',
+
   // PN Codes tab (§15.4)
   'wl.tab.pn': 'PN Codes',
   'wl.pn.title': 'PN-sequence generation',
