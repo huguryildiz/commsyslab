@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Segmented } from '@/components';
 import { t } from '@/i18n';
 import { PcmSection } from './PcmSection';
+import { DpcmSection } from './DpcmSection';
 import { DeltaModSection } from './DeltaModSection';
-import { PlaceholderSection } from '../PlaceholderSection';
 
 type Sub = 'pcm' | 'dpcm' | 'dm';
 
@@ -25,7 +25,7 @@ export function WaveformTab() {
         />
       </div>
       {sub === 'pcm' && <PcmSection />}
-      {sub === 'dpcm' && <PlaceholderSection bodyKey="adc.placeholder.dpcm" />}
+      {sub === 'dpcm' && <DpcmSection />}
       {sub === 'dm' && <DeltaModSection />}
     </div>
   );
