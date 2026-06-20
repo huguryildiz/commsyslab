@@ -843,7 +843,8 @@ export const en: Record<string, string> = {
   'baseband.detect.readout.pb': 'Theoretical $P_b$',
   'baseband.detect.panel.signal': 'Transmitted waveform $g(t)$',
   'baseband.detect.panel.received': 'Received $x(t)=g(t)+n$',
-  'baseband.detect.panel.correlator': 'Detector output $g_0(t)$',
+  'baseband.detect.panel.correlator': 'Correlator output $g_0(t)=\\tfrac1E\\int x\\,p\\,dt$',
+  'baseband.detect.panel.mfout': 'Matched-filter output $g_0(t)=(x*h)/E$',
   'baseband.detect.panel.decision': 'Decisions $y(t)$',
   'baseband.detect.card.correlator.title': 'Correlator (integrate-and-dump)',
   'baseband.detect.card.correlator.body':

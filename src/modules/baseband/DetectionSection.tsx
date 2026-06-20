@@ -162,7 +162,13 @@ export function DetectionSection() {
         <Panel title={t('baseband.detect.panel.received')}>
           <LcReceivedPanel key={`r${resetKey}`} view={view} progress={progress} />
         </Panel>
-        <Panel title={t('baseband.detect.panel.correlator')}>
+        <Panel
+          title={
+            useMatchedFilter
+              ? t('baseband.detect.panel.mfout')
+              : t('baseband.detect.panel.correlator')
+          }
+        >
           <LcCorrelatorPanel key={`c${resetKey}`} view={view} progress={progress} />
         </Panel>
         <Panel title={t('baseband.detect.panel.decision')}>
