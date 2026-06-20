@@ -360,6 +360,34 @@ export const wireless: Record<string, string> = {
   'wl.cdma.readout.ber': 'BER at operating point',
   'wl.cdma.readout.capacity': 'User capacity @ BER 1e-3',
 
+  // ── Retrofit: Link budget cards/theory ──
+  'wl.lb.theory.title': 'Will the link close?',
+  'wl.lb.theory.body':
+    'A link budget stacks every gain and loss from transmitter to receiver. Received power $P_r=P_t+G_t+G_r-L-L_{\\text{other}}$ must exceed the receiver sensitivity (the noise floor plus the required $E_b/N_0$) by enough margin to survive shadowing fades. The received power falls with distance as the path loss grows; the maximum range is where the curve just meets the sensitivity-plus-fade-margin band.',
+  'wl.lb.card.friis.title': 'Friis & path loss',
+  'wl.lb.card.friis.body':
+    'Free-space loss grows as $20\\log_{10}(d)+20\\log_{10}(f)$; log-distance and Hata models add an exponent/clutter term for real environments.',
+  'wl.lb.card.noise.title': 'Noise floor',
+  'wl.lb.card.noise.body':
+    'Thermal noise $kTB$ plus the receiver noise figure sets the sensitivity floor; a wider bandwidth $B$ raises the floor and demands more received power.',
+  'wl.lb.card.margin.title': 'Link margin',
+  'wl.lb.card.margin.body':
+    'The dB by which the received $E_b/N_0$ exceeds the requirement after subtracting the shadowing fade margin. Positive margin ⇒ the link closes.',
+
+  // ── Retrofit: CDMA cards/theory ──
+  'wl.cdma.theory.title': 'Interference-limited multiple access',
+  'wl.cdma.theory.body':
+    'In CDMA every user shares the band, separated only by their spreading codes. Each extra user adds interference, so the BER climbs with the user count until it crosses the target — that point is the user capacity, set by the processing gain $L_c$, not by bandwidth. The system also depends on tight power control: a single strong (near) user can swamp distant ones, the near-far problem, flooring the BER no matter how much $E_b/N_0$ is added.',
+  'wl.cdma.card.access.title': 'Multiple access',
+  'wl.cdma.card.access.body':
+    'Users overlap in time and frequency and are distinguished by near-orthogonal codes; capacity is interference-limited, $\\mathrm{SIR}=3L_c/((N_u-1)\\Gamma)$.',
+  'wl.cdma.card.nearfar.title': 'Near–far problem',
+  'wl.cdma.card.nearfar.body':
+    'A nearby transmitter ($\\Gamma>0$ dB) overwhelms far ones, flooring the BER — the defining vulnerability of CDMA.',
+  'wl.cdma.card.power.title': 'Power control',
+  'wl.cdma.card.power.body':
+    'Fast closed-loop power control equalises every user’s received power ($\\Gamma=1$), restoring capacity and removing the BER floor.',
+
   // ── Retrofit: Fading channel cards/theory ──
   'wl.fading.theory.title': 'Multipath fading channels',
   'wl.fading.theory.body':

@@ -6,6 +6,7 @@ import type { LinkBudgetParams, PathLossModel } from './linkbudget-model';
 interface Props {
   params: LinkBudgetParams;
   set: (patch: Partial<LinkBudgetParams>) => void;
+  reset: () => void;
 }
 
 // Modulation presets → (scheme, M). Key is a stable string for the Select.
@@ -24,7 +25,7 @@ function presetKey(p: LinkBudgetParams): string {
   return 'qpsk';
 }
 
-export function LinkBudgetControls({ params, set }: Props) {
+export function LinkBudgetControls({ params, set, reset }: Props) {
   return (
     <Panel title={t('wl.lb.title')}>
       <Slider label={t('wl.lb.txPower')} min={0} max={60} step={1} value={params.txPowerDbm} onChange={(v) => set({ txPowerDbm: v })} />
@@ -63,6 +64,9 @@ export function LinkBudgetControls({ params, set }: Props) {
       )}
       <Slider label={t('wl.lb.sigma')} min={0} max={12} step={1} value={params.shadowSigmaDb} onChange={(v) => set({ shadowSigmaDb: v })} />
       <Slider label={t('wl.lb.outage')} min={0.01} max={0.5} step={0.01} value={params.targetOutage} onChange={(v) => set({ targetOutage: v })} />
+      <button type="button" onClick={reset}>
+        {t('wl.reset')}
+      </button>
     </Panel>
   );
 }
