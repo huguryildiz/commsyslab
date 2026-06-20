@@ -128,7 +128,7 @@ export const en: Record<string, string> = {
   'adc.card.dpcmloop.title': 'Closed prediction loop',
   'adc.card.dpcmloop.body':
     'The encoder predicts from reconstructed (not original) samples, so the decoder running the same recursion stays perfectly in step.',
-  'adc.card.predgain.title': 'Prediction gain',
+  'adc.card.predgain.title': 'Why prediction helps',
   'adc.card.predgain.body':
     'Removing the predictable part shrinks the error variance; the prediction gain $G_p=\\dfrac{\\sigma_x^2}{\\sigma_e^2}$ measures the saving — about one bit per sample for every 6 dB.',
   'adc.card.dpcmrate.title': 'Bit-rate saving',
@@ -259,7 +259,6 @@ export const en: Record<string, string> = {
   'sampling.readout.noise': 'Noise power Δ²/12',
   'sampling.readout.sqnrTheory': 'SQNR (theory)',
   'sampling.readout.sqnrMeasured': 'SQNR (measured)',
-  'sampling.theory.title': 'Theory — sampling & quantization',
   'sampling.pcm.title': 'PCM bitstream',
   // Delta Modulation (CH 7, §7.4.3 — a tab in the Analog-to-Digital Conversion module)
   'nav.deltamod': 'Delta Modulation',
@@ -277,7 +276,6 @@ export const en: Record<string, string> = {
   'deltamod.regime.ok': 'Tracking OK',
   'deltamod.regime.overload': 'Slope overload',
   'deltamod.bitstream.title': 'DM bitstream',
-  'deltamod.theory.title': 'Theory — delta modulation',
   'deltamod.audio.title': '🔊 Audio (slope overload & granular noise)',
   'deltamod.audio.playOriginal': '▶ Play original',
   'deltamod.audio.playDm': '▶ Play DM',

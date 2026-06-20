@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Select, Readout, InfoCard, TheoryBox, Formula, HintText } from '@/components';
+import { Panel, Slider, Select, Readout, InfoCard, HintText } from '@/components';
 import { t } from '@/i18n';
 import { dpcmEncode, predictionGainDb } from '@/lib/dsp/dpcm';
 import { DpcmTracePanel } from './dpcm-panels';
@@ -81,14 +81,6 @@ export function DpcmSection() {
           </InfoCard>
         </div>
 
-        <TheoryBox title="Theory — DPCM">
-          <p>
-            <Formula
-              tex="y_n = x_n - \hat{x}_{n-1}, \qquad \hat{x}_n = \hat{y}_n + \hat{x}_{n-1}"
-              block
-            />
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

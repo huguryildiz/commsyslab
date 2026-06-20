@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Select, Readout, InfoCard, TheoryBox, Formula, HintText } from '@/components';
+import { Panel, Slider, Select, Readout, InfoCard, HintText } from '@/components';
 import { t } from '@/i18n';
 import { lbgDesign, gaussianClusters, gaussianCloud, vqRateBitsPerSample } from '@/lib/dsp/vq';
 import { ScatterVoronoiPanel, DistortionPanel } from './vq-panels';
@@ -98,11 +98,6 @@ export function VectorQuantSection() {
           </InfoCard>
         </div>
 
-        <TheoryBox title="Theory — vector quantization">
-          <p>
-            <Formula tex="R=\frac{\log_2 K}{n}\;\text{bits/sample}" block />
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

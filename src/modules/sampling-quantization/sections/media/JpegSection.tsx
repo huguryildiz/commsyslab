@@ -8,8 +8,6 @@ import {
   Select,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
 } from '@/components';
 import { t } from '@/i18n';
@@ -220,65 +218,6 @@ export function JpegSection() {
           </InfoCard>
         </div>
 
-        {/* Theory box — deep math, §7.7 formulas */}
-        <TheoryBox title="Theory — JPEG Transform Coding (§7.7)">
-          {/* 2-D DCT (Eq. 7.7.1–7.7.2) */}
-          <p>
-            <strong>2-D DCT-II (forward transform, Eq. 7.7.1–7.7.2)</strong> — the image
-            block <Formula tex="x(k,l)" /> is transformed into coefficient matrix{' '}
-            <Formula tex="X(u,v)" /> by the separable orthonormal DCT:
-          </p>
-          <Formula
-            tex={String.raw`X(u,v)=\frac{2}{N}\,C(u)\,C(v)\sum_{k=0}^{N-1}\sum_{l=0}^{N-1}x(k,l)\cos\frac{(2k+1)u\pi}{2N}\cos\frac{(2l+1)v\pi}{2N}`}
-            block
-          />
-          <p>
-            where <Formula tex="N=8" />,{' '}
-            <Formula tex={String.raw`C(0)=\tfrac{1}{\sqrt{2}}`} />, and{' '}
-            <Formula tex="C(u)=1" /> for <Formula tex="u\ge 1" />. The DC coefficient{' '}
-            <Formula tex="X(0,0)" /> (top-left, pink border) captures the block mean; all
-            other entries are AC coefficients ordered by increasing spatial frequency.
-          </p>
-
-          {/* Quantization (Table 7.5) */}
-          <p>
-            <strong>Perceptual quantization (Table 7.5)</strong> — each coefficient is
-            divided by a perceptually weighted step size <Formula tex="Q(u,v)" /> from
-            the JPEG luminance table, then rounded to an integer level:
-          </p>
-          <Formula
-            tex={String.raw`\hat{X}(u,v)=\operatorname{round}\!\left(\frac{X(u,v)}{Q(u,v)}\right)`}
-            block
-          />
-          <p>
-            The JPEG quality factor scales every entry of the base table: quality 50 leaves
-            it unchanged; quality 100 forces <Formula tex="Q(u,v)=1" /> (lossless
-            quantization step of 1); quality 1 multiplies entries by 50. High-frequency
-            entries are deliberately coarser, matching human visual sensitivity.
-          </p>
-
-          {/* Reconstruction + energy compaction */}
-          <p>
-            <strong>Reconstruction and energy compaction</strong> — the decoder
-            dequantizes (<Formula tex={String.raw`\tilde{X}(u,v)=\hat{X}(u,v)\,Q(u,v)`} />)
-            and applies the inverse 2-D DCT (IDCT-III) to recover{' '}
-            <Formula tex={String.raw`\tilde{x}(k,l)`} />. Because natural images are
-            spatially smooth, the DCT concentrates energy into a few low-frequency
-            coefficients. At quality 50, typically only 10–20 of the 64 levels are
-            non-zero after quantization — the rest compress to a single bit with
-            run-length coding. The energy compaction fraction for the top{' '}
-            <Formula tex="k" /> coefficients is:
-          </p>
-          <Formula
-            tex={String.raw`\rho(k)=\frac{\sum_{i=1}^{k}|X_{\!(i)}|^2}{\sum_{i=1}^{64}|X_{\!(i)}|^2}`}
-            block
-          />
-          <p>
-            where <Formula tex="|X_{(i)}|^2" /> denotes the <Formula tex="i" />-th
-            largest squared coefficient. Smooth blocks achieve{' '}
-            <Formula tex="\rho(8)\gtrsim 0.99" />; checker/edge blocks are closer to 0.7.
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

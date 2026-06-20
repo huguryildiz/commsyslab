@@ -6,8 +6,6 @@ import {
   Toggle,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
   TransportControls,
 } from '@/components';
@@ -210,17 +208,6 @@ export function SamplingSection() {
           </InfoCard>
         </div>
 
-        <TheoryBox title={t('sampling.theory.title')}>
-          <p>
-            <Formula tex="f_s \ge 2W \quad\text{(Nyquist)}" block />
-          </p>
-          <p>
-            <Formula
-              tex="g_R(t)=\sum_n g(nT_s)\,\operatorname{sinc}\!\left(\tfrac{t-nT_s}{T_s}\right)"
-              block
-            />
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

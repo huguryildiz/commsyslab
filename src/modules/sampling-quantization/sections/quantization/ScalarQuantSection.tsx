@@ -5,8 +5,6 @@ import {
   Select,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
   Segmented,
 } from '@/components';
@@ -233,20 +231,6 @@ export function ScalarQuantSection() {
           </InfoCard>
         </div>
 
-        <TheoryBox title="Theory — scalar quantization">
-          <p>
-            <Formula
-              tex="\Delta=\dfrac{2m_{\max}}{L},\quad L=2^{R},\quad E[Q^2]=\dfrac{\Delta^2}{12}"
-              block
-            />
-          </p>
-          <p>
-            <Formula
-              tex="\mathrm{SQNR_{dB}}=10\log_{10}\!\left(\dfrac{3P_M}{m_{\max}^{2}}\right)+6.02\,R"
-              block
-            />
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

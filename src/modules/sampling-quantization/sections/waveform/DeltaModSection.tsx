@@ -4,8 +4,6 @@ import {
   Slider,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
   TransportControls,
   Segmented,
@@ -167,10 +165,6 @@ export function DeltaModSection() {
             <p><HintText text={t('adc.card.adm.body')} /></p>
           </InfoCard>
         </div>
-        <TheoryBox title={t('deltamod.theory.title')}>
-          <p><Formula tex="\hat{x}[n]=\hat{x}[n-1]\pm\Delta,\quad b[n]=\begin{cases}1 & x[n]\ge\hat{x}[n-1]\\0 & \text{otherwise}\end{cases}" block /></p>
-          <p><Formula tex="\text{No slope overload:}\quad \max\left|\tfrac{dx}{dt}\right|\le \Delta\,f_s" block /></p>
-        </TheoryBox>
       </div>
     </div>
   );

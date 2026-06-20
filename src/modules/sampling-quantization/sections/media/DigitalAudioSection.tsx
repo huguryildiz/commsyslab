@@ -8,8 +8,6 @@ import {
   Select,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
 } from '@/components';
 import { t } from '@/i18n';
@@ -206,45 +204,6 @@ export function DigitalAudioSection() {
           </InfoCard>
         </div>
 
-        {/* Theory */}
-        <TheoryBox title="Theory — Σ-Δ Conversion &amp; TDM (§7.6)">
-          <p>
-            <strong>First-order Σ-Δ modulator loop</strong> — the integrator
-            accumulates the error between input and fed-back 1-bit output; the
-            comparator produces the bit stream:
-          </p>
-          <Formula
-            tex="y_n = \operatorname{sign}\!\left(\sum_{k \le n}(x_k - y_{k-1})\right)"
-            block
-          />
-
-          <p>
-            <strong>Noise transfer function</strong> — the quantization error is
-            high-pass shaped by the first-order NTF, pushing noise energy above
-            the signal band where it can be removed by the decimation filter:
-          </p>
-          <Formula tex="\mathrm{NTF}(z) = 1 - z^{-1}" block />
-
-          <p>
-            <strong>SNR vs oversampling ratio</strong> — for a
-            first-order{' '}
-            <Formula tex="B" />-bit modulator, SNR improves by 9 dB per octave
-            of OSR:
-          </p>
-          <Formula
-            tex="\mathrm{SNR} \approx 6.02B + 1.76 - 5.17 + 30\log_{10}(\mathrm{OSR})"
-            block
-          />
-
-          <p>
-            <strong>North American DS-1 (T1) frame rate</strong> — 24 DS-0
-            channels at 64 kbps each, plus framing overhead, yields:
-          </p>
-          <Formula
-            tex="R_{DS\text{-}1} = 24 \times 64\,\mathrm{kbps} + \mathrm{framing} = 1.544\,\mathrm{Mbps}"
-            block
-          />
-        </TheoryBox>
       </div>
     </div>
   );

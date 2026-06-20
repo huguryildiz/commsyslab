@@ -5,8 +5,6 @@ import {
   Select,
   Readout,
   InfoCard,
-  TheoryBox,
-  Formula,
   HintText,
 } from '@/components';
 import { t } from '@/i18n';
@@ -189,11 +187,6 @@ export function PcmSection() {
           </InfoCard>
         </div>
 
-        <TheoryBox title="Theory — PCM encoding">
-          <p>
-            <Formula tex="R_b = R\,f_s \;\text{bits/s}" block />
-          </p>
-        </TheoryBox>
       </div>
     </div>
   );

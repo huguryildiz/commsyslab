@@ -1,7 +1,7 @@
 // LPC Vocoder interactive section (Proakis §7.5)
 // Two-column layout: controls (left) · panels + theory (right)
 import { useMemo, useState } from 'react';
-import { Panel, Slider, Select, Segmented, Readout, InfoCard, TheoryBox, Formula, HintText } from '@/components';
+import { Panel, Slider, Select, Segmented, Readout, InfoCard, HintText } from '@/components';
 import { t } from '@/i18n';
 import {
   synthSpeechFrame,
@@ -256,51 +256,6 @@ export function LpcSection() {
           </InfoCard>
         </div>
 
-        {/* Theory box */}
-        <TheoryBox title="Theory — LPC Vocoder (§7.5)">
-          {/* Synthesis equation (Eq. 7.5.1) */}
-          <p>
-            <strong>Source-filter synthesis model</strong> — speech is produced by an
-            all-pole vocal-tract filter driven by a voiced (impulse-train) or unvoiced
-            (white-noise) excitation:
-          </p>
-          <Formula
-            tex="x_n = \sum_{i=1}^{p} a_i\, x_{n-i} + G\, w_n"
-            block
-          />
-
-          {/* Prediction error (Eq. 7.5.3) */}
-          <p>
-            <strong>Linear prediction error</strong> — the analysis filter subtracts
-            the predicted sample from the actual one; the residual{' '}
-            <Formula tex="e_n" /> carries the excitation information:
-          </p>
-          <Formula
-            tex="e_n = x_n - \sum_{k=1}^{p} a_k\, x_{n-k}"
-            block
-          />
-
-          {/* Yule-Walker (Eq. 7.5.9) */}
-          <p>
-            <strong>Yule-Walker normal equations</strong> — minimising the prediction
-            error energy yields the symmetric Toeplitz system solved by
-            Levinson-Durbin recursion:
-          </p>
-          <Formula
-            tex="R\,\mathbf{a} = \mathbf{r}"
-            block
-          />
-
-          {/* Gain (Eq. 7.5.12–13) */}
-          <p>
-            <strong>Synthesis gain</strong> — chosen so that unit-energy excitation
-            produces the correct output power:
-          </p>
-          <Formula
-            tex="G = \sqrt{\mathcal{E}_{\min}}"
-            block
-          />
-        </TheoryBox>
       </div>
     </div>
   );
