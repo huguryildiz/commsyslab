@@ -20,6 +20,7 @@ import type {
   PrDetectionView,
   PsdView,
   DistortionView,
+  DetectionView,
 } from './model';
 import type { EyeTrace } from '@/lib/dsp/eye';
 
@@ -184,25 +185,172 @@ export function RrcSplitPanel({ view }: { view: ReceiverView }) {
 
 export function EyePanel({ traces, sps, label }: { traces: EyeTrace[]; sps: number; label: string }) {
   const cols = traces[0]?.samples.length ?? 2 * sps;
-  const [lo, hi, onWheel, , onPan] = useZoom(0, cols - 1, {
-    minSpan: sps / 2,
-    maxSpan: cols - 1,
+  const tMax = (cols - 1) / sps;
+
+  const [lo, hi, onWheel, , onPan] = useZoom(0, tMax, {
+    minSpan: 0.25,
+    maxSpan: tMax,
     clampMin: 0,
-    clampMax: cols - 1,
+    clampMax: tMax,
   });
+
   return (
     <Canvas
-      height={220}
+      height={300}
       ariaLabel={label}
       deps={[traces, lo, hi]}
       onWheel={onWheel}
       onPan={onPan}
       draw={(ctx, w, h) => {
-        const ax = axesFor(w, h, [lo, hi], [-4, 4]);
+        if (traces.length === 0) return;
+
+        // Dynamic y-range from data
+        let peak = 2;
+        for (const tr of traces) for (const v of tr.samples) if (Math.abs(v) > peak) peak = Math.abs(v);
+        const yPad = peak * 0.18;
+        const yRange: [number, number] = [-(peak + yPad), peak + yPad];
+
+        const ax = axesFor(w, h, [lo, hi], yRange);
         drawAxes(ctx, ax, [lo, hi], { xLabel: '$t/T$', yLabel: '$y(t)$' });
-        const xs = Array.from({ length: cols }, (_, i) => i);
-        for (const tr of traces) drawLine(ctx, ax, xs, tr.samples, alpha(COL_Y, 0.35), 1);
-        drawVLine(ctx, ax, Math.floor(cols / 2), -4, 4, COL_MARK, true, 1.5);
+
+        const xs = Array.from({ length: cols }, (_, i) => i / sps);
+        const midCol = Math.floor(cols / 2);
+        const midX = midCol / sps;
+
+        // Per-column sorted values for gap analysis
+        const colVals: number[][] = Array.from({ length: cols }, (_, ci) =>
+          traces.map(tr => tr.samples[ci]).sort((a, b) => a - b),
+        );
+
+        // Eye openings = gaps > MIN_GAP in the per-column distribution
+        const MIN_GAP = peak * 0.15;
+        const colGaps: { lo: number; hi: number }[][] = colVals.map(vals => {
+          const gaps: { lo: number; hi: number }[] = [];
+          for (let j = 1; j < vals.length; j++) {
+            if (vals[j] - vals[j - 1] > MIN_GAP) gaps.push({ lo: vals[j - 1], hi: vals[j] });
+          }
+          return gaps;
+        });
+        const maxEyes = Math.max(0, ...colGaps.map(g => g.length));
+
+        const plotTop = PAD.t;
+        const plotH = h - PAD.t - PAD.b;
+
+        // ── 1. Eye-opening fill + dashed envelope lines ────────────────────────
+        for (let eyeIdx = 0; eyeIdx < maxEyes; eyeIdx++) {
+          // Green fill for the open region
+          ctx.save();
+          ctx.beginPath();
+          let moved = false;
+          for (let ci = 0; ci < cols; ci++) {
+            const x = xs[ci];
+            if (x < lo - 0.05 || x > hi + 0.05) continue;
+            const gaps = colGaps[ci];
+            if (eyeIdx >= gaps.length) continue;
+            const px = ax.x(x);
+            const py = ax.y(gaps[eyeIdx].hi);
+            if (!moved) { ctx.moveTo(px, py); moved = true; }
+            else ctx.lineTo(px, py);
+          }
+          for (let ci = cols - 1; ci >= 0; ci--) {
+            const x = xs[ci];
+            if (x < lo - 0.05 || x > hi + 0.05) continue;
+            const gaps = colGaps[ci];
+            if (eyeIdx >= gaps.length) continue;
+            ctx.lineTo(ax.x(x), ax.y(gaps[eyeIdx].lo));
+          }
+          if (moved) { ctx.closePath(); ctx.fillStyle = alpha(COL_P, 0.13); ctx.fill(); }
+          ctx.restore();
+
+          // Dashed envelope outlines — upper and lower
+          for (const edge of ['hi', 'lo'] as const) {
+            ctx.save();
+            ctx.strokeStyle = alpha(COL_P, 0.45);
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 6]);
+            ctx.beginPath();
+            let pen = false;
+            for (let ci = 0; ci < cols; ci++) {
+              const x = xs[ci];
+              if (x < lo - 0.05 || x > hi + 0.05) continue;
+              const gaps = colGaps[ci];
+              if (eyeIdx >= gaps.length) { pen = false; continue; }
+              const px = ax.x(x);
+              const py = ax.y(gaps[eyeIdx][edge]);
+              if (!pen) { ctx.moveTo(px, py); pen = true; }
+              else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        // ── 2. Traces — neon green with global-alpha so dense rails glow brighter ─
+        ctx.save();
+        ctx.globalAlpha = 0.38;
+        ctx.strokeStyle = COL_P;
+        ctx.lineWidth = 1.1;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.shadowColor = COL_P;
+        ctx.shadowBlur = 5;
+        for (const tr of traces) {
+          ctx.beginPath();
+          for (let ci = 0; ci < cols; ci++) {
+            const px = ax.x(xs[ci]);
+            const py = ax.y(tr.samples[ci]);
+            if (ci === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // ── 3. Symbol-boundary tick lines ─────────────────────────────────────
+        for (let b = 1; b < Math.ceil(tMax); b++) {
+          if (b < lo || b > hi) continue;
+          drawVLine(ctx, ax, b, yRange[0], yRange[1], alpha(CHART.dim, 0.28), false, 1);
+        }
+
+        // ── 4. Sampling-instant cursor — neon pink glow ────────────────────────
+        if (midX >= lo && midX <= hi) {
+          const px = ax.x(midX);
+          ctx.save();
+          ctx.strokeStyle = alpha(CHART.pink, 0.75);
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 5]);
+          ctx.shadowColor = CHART.pink;
+          ctx.shadowBlur = 14;
+          ctx.beginPath();
+          ctx.moveTo(px, plotTop);
+          ctx.lineTo(px, plotTop + plotH);
+          ctx.stroke();
+          ctx.restore();
+
+          ctx.save();
+          ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+          ctx.fillStyle = alpha(CHART.pink, 0.85);
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText('Tₛ', px, plotTop + 4);
+          ctx.restore();
+
+          // Pink dots at the eye-opening edges (like landing page markers)
+          for (const gaps of [colGaps[midCol]]) {
+            for (const g of gaps) {
+              for (const y of [g.lo, g.hi]) {
+                ctx.save();
+                ctx.fillStyle = CHART.pink;
+                ctx.shadowColor = CHART.pink;
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(px, ax.y(y), 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+              }
+            }
+          }
+        }
       }}
     />
   );
@@ -529,6 +677,169 @@ export function DistortedPulsePanel({ view }: { view: DistortionView }) {
           { color: alpha(CHART.dim, 0.8), label: 'clean RC' },
           { color: COL_P, label: 'distorted' },
         ]);
+      }}
+    />
+  );
+}
+
+// ── §8.3.2 Matched-filter / correlator detection panels ─────────────────────
+
+const COL_ERR = CHART.red;
+
+/** Clip arrays to t ≤ progress (bit periods) for the sweeping animation. */
+function clipTo(t: number[], y: number[], progress: number): { t: number[]; y: number[] } {
+  if (t.length === 0 || progress >= t[t.length - 1]) return { t, y };
+  const out: { t: number[]; y: number[] } = { t: [], y: [] };
+  for (let i = 0; i < t.length; i++) {
+    if (t[i] > progress) break;
+    out.t.push(t[i]);
+    out.y.push(y[i]);
+  }
+  return out;
+}
+
+/** Vertical dashed bit-boundary grid + optional centered bit labels above each interval. */
+function drawBitBoundaries(
+  ctx: CanvasRenderingContext2D,
+  ax: Axes,
+  nBits: number,
+  yLo: number,
+  yHi: number,
+  bits: number[] | null,
+  labelY: number,
+): void {
+  for (let k = 0; k <= nBits; k++) drawVLine(ctx, ax, k, yLo, yHi, alpha(CHART.dim, 0.4), true, 1);
+  if (bits) {
+    for (let k = 0; k < nBits; k++) {
+      drawText(ctx, ax, k + 0.5, labelY, String(bits[k]), CHART.dim, -3, 0);
+    }
+  }
+}
+
+export function LcSignalPanel({ view, progress }: { view: DetectionView; progress: number }) {
+  const [lo, hi, onWheel, , onPan] = useZoom(0, view.nBits, {
+    minSpan: 1,
+    maxSpan: view.nBits,
+    clampMin: 0,
+    clampMax: view.nBits,
+  });
+  return (
+    <Canvas
+      height={170}
+      ariaLabel="Transmitted line-code waveform with bit labels"
+      deps={[view, lo, hi, progress]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        const ax = axesFor(w, h, [lo, hi], [-1.4, 1.6]);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t\\,(T_b)$', yLabel: '$g(t)$' });
+        drawBitBoundaries(ctx, ax, view.nBits, -1.4, 1.6, view.bitsTx, 1.35);
+        const c = clipTo(view.t, view.g, progress);
+        drawLine(ctx, ax, c.t, c.y, COL_P, 2);
+      }}
+    />
+  );
+}
+
+export function LcReceivedPanel({ view, progress }: { view: DetectionView; progress: number }) {
+  const [lo, hi, onWheel, , onPan] = useZoom(0, view.nBits, {
+    minSpan: 1,
+    maxSpan: view.nBits,
+    clampMin: 0,
+    clampMax: view.nBits,
+  });
+  return (
+    <Canvas
+      height={190}
+      ariaLabel="Received signal with AWGN and the decision threshold"
+      deps={[view, lo, hi, progress]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        let peak = 1.5;
+        for (const v of view.x) if (Math.abs(v) > peak) peak = Math.abs(v);
+        const ax = axesFor(w, h, [lo, hi], [-peak * 1.15, peak * 1.15]);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t\\,(T_b)$', yLabel: '$x(t)=g(t)+n$' });
+        drawBitBoundaries(ctx, ax, view.nBits, -peak * 1.15, peak * 1.15, null, 0);
+        drawLine(ctx, ax, view.t, view.g, alpha(COL_P, 0.4), 1.5);
+        const c = clipTo(view.t, view.x, progress);
+        drawLine(ctx, ax, c.t, c.y, COL_Y, 1.5);
+        drawLegend(ctx, w, [
+          { color: COL_P, label: 'g(t)' },
+          { color: COL_Y, label: 'x(t)' },
+        ]);
+      }}
+    />
+  );
+}
+
+export function LcCorrelatorPanel({ view, progress }: { view: DetectionView; progress: number }) {
+  const tMax = view.g0t[view.g0t.length - 1] || view.nBits;
+  const [lo, hi, onWheel, , onPan] = useZoom(0, view.nBits, {
+    minSpan: 1,
+    maxSpan: tMax,
+    clampMin: 0,
+    clampMax: tMax,
+  });
+  return (
+    <Canvas
+      height={190}
+      ariaLabel="Correlator integrate-and-dump output sampled at the decision instants"
+      deps={[view, lo, hi, progress]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        const ax = axesFor(w, h, [lo, hi], [-1.4, 1.4]);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t\\,(T_b)$', yLabel: '$g_0(t)$' });
+        drawBitBoundaries(ctx, ax, view.nBits, -1.4, 1.4, null, 0);
+        drawLine(ctx, ax, [lo, hi], [view.threshold, view.threshold], alpha(COL_ERR, 0.7), 1.5, true);
+        drawLine(ctx, ax, view.g0t, view.g0Clean, alpha(CHART.dim, 0.5), 1.5);
+        const c = clipTo(view.g0t, view.g0, progress);
+        drawLine(ctx, ax, c.t, c.y, COL_Y, 2);
+        drawLegend(ctx, w, [
+          { color: CHART.dim, label: 'clean' },
+          { color: COL_Y, label: 'noisy' },
+        ]);
+      }}
+    />
+  );
+}
+
+export function LcDecisionPanel({ view, progress }: { view: DetectionView; progress: number }) {
+  const [lo, hi, onWheel, , onPan] = useZoom(0, view.nBits, {
+    minSpan: 1,
+    maxSpan: view.nBits,
+    clampMin: 0,
+    clampMax: view.nBits,
+  });
+  return (
+    <Canvas
+      height={190}
+      ariaLabel="Decision statistic sampled per bit with errors circled"
+      deps={[view, lo, hi, progress]}
+      onWheel={onWheel}
+      onPan={onPan}
+      draw={(ctx, w, h) => {
+        const ax = axesFor(w, h, [lo, hi], [-1.6, 1.8]);
+        drawAxes(ctx, ax, [lo, hi], { xLabel: '$t\\,(T_b)$', yLabel: '$y(t)$' });
+        drawBitBoundaries(ctx, ax, view.nBits, -1.6, 1.8, null, 0);
+        drawLine(ctx, ax, [lo, hi], [view.threshold, view.threshold], alpha(COL_ERR, 0.7), 1.5, true);
+        const c = clipTo(view.g0t, view.g0, progress);
+        drawLine(ctx, ax, c.t, c.y, alpha(COL_Y, 0.7), 1.5);
+        // Decision markers: green = correct, red = error.
+        for (let k = 0; k < view.nBits; k++) {
+          if (view.sampleT[k] > progress) continue;
+          const correct = !view.errorFlags[k];
+          const color = correct ? CHART.green : COL_ERR;
+          const px = ax.x(view.sampleT[k]);
+          const py = ax.y(view.samples[k]);
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(px, py, 6, 0, Math.PI * 2);
+          ctx.stroke();
+          drawText(ctx, ax, view.sampleT[k], 1.55, String(view.bitsRx[k]), color, -3, 0);
+        }
       }}
     />
   );
