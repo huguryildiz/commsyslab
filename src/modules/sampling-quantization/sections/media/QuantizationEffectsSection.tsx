@@ -425,7 +425,8 @@ export function QuantizationEffectsSection() {
                 for (let i = 0; i < WAVEFORM_N; i++) {
                   const x = (i / (WAVEFORM_N - 1)) * w;
                   const y = h / 2 - wave[i] * h * 0.44;
-                  i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                  if (i === 0) ctx.moveTo(x, y);
+                  else ctx.lineTo(x, y);
                 }
                 ctx.stroke();
               };
