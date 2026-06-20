@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Panel, Toggle, Readout, Formula, TheoryBox } from '@/components';
+import { Panel, Toggle, Readout, Formula, TheoryBox, InfoCard } from '@/components';
 import { TreeSvg, layoutBinaryTree, type BinTree } from '@/lib/plot/svg';
 import { buildHuffman, huffmanEncode, type HuffmanNode } from '@/lib/dsp/huffman';
 import { t } from '@/i18n';
@@ -31,7 +31,7 @@ export function HuffmanSection() {
   const ratio = fixedLen > 0 ? (encoded.length / fixedLen).toFixed(2) : '—';
 
   return (
-    <div className="it-section">
+    <div className="module-layout">
       <aside className="it-controls">
         <Panel title={t('it.huffman.title')}>
           <Toggle label={t('it.huffman.minvar')} checked={minVar} onChange={setMinVar} />
@@ -83,6 +83,21 @@ export function HuffmanSection() {
         <Panel title={t('it.huffman.tree')}>
           <TreeSvg layout={layout} ariaLabel="Huffman tree" />
         </Panel>
+        <div className="info-cards">
+          <InfoCard title={t('it.huffman.card.algo')} accent="green">
+            <p>{t('it.huffman.card.algoBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('it.huffman.card.minvar')} accent="blue">
+            <p>{t('it.huffman.card.minvarBody')}</p>
+          </InfoCard>
+          <InfoCard title={t('it.huffman.card.opt')} accent="green">
+            <p>{t('it.huffman.card.optBody')}</p>
+            <Formula tex="H(S)\le \bar L< H(S)+1,\quad \eta=\tfrac{H(S)}{\bar L}" block />
+          </InfoCard>
+          <InfoCard title={t('it.huffman.card.ratio')} accent="orange">
+            <p>{t('it.huffman.card.ratioBody')}</p>
+          </InfoCard>
+        </div>
         <TheoryBox title={t('it.theory.title')}>
           <p>
             <Formula
