@@ -360,6 +360,36 @@ export const wireless: Record<string, string> = {
   'wl.cdma.readout.ber': 'BER at operating point',
   'wl.cdma.readout.capacity': 'User capacity @ BER 1e-3',
 
+  // ── Retrofit: CPM/MSK cards/theory ──
+  'wl.cpm.theory.title': 'Continuous-phase modulation',
+  'wl.cpm.theory.body':
+    'In CPFSK the carrier phase ramps continuously instead of jumping, so the envelope stays constant — ideal for efficient non-linear power amplifiers. Each bit tilts the phase by ±h·180°; at the modulation index h=½ that is ±90°, exactly MSK. MSK has a wider main lobe than QPSK but its sidelobes fall as f⁻⁴ versus QPSK’s f⁻², leaking far less into neighbouring channels — why constant-envelope CPM (e.g. GSM’s GMSK) is favoured where spectral containment matters.',
+  'wl.cpm.card.continuous.title': 'Continuous phase',
+  'wl.cpm.card.continuous.body':
+    'Phase never jumps, so the envelope is constant — no AM for a non-linear amplifier to distort, unlike QPSK.',
+  'wl.cpm.card.index.title': 'Modulation index h',
+  'wl.cpm.card.index.body':
+    'Each bit changes the phase by $\\pm h\\pi$. Larger $h$ fans the phase tree wider (more bandwidth); $h=\\tfrac12$ gives MSK.',
+  'wl.cpm.card.msk.title': 'MSK spectral efficiency',
+  'wl.cpm.card.msk.body':
+    'MSK sidelobes decay as $f^{-4}$ vs QPSK’s $f^{-2}$, so it spills much less power into adjacent channels despite a wider main lobe.',
+
+  // ── Retrofit: FHSS cards/theory + fast-FH (§15.5.2) ──
+  'wl.fhss.hopsPerBit': 'Hops per bit L (fast FH)',
+  'wl.fhss.readout.fastBer': 'Fast-FH BER @ op (L hops)',
+  'wl.fhss.theory.title': 'Hopping away from the jammer',
+  'wl.fhss.theory.body':
+    'The carrier hops over W/R frequency slots on a pseudo-random schedule, so a narrowband jammer can only corrupt the few hops that land in its slot. A smart partial-band jammer concentrates power on the optimal fraction β*=2/γ_b of the band, making the BER decay only as 1/(E_b/N_J) — far above the exponential full-band curve. Fast frequency hopping sends each bit over L hops (L-order diversity): a jammer can hit at most a fraction of them, restoring a much steeper BER slope. This is why FH systems pair hopping with coding and interleaving.',
+  'wl.fhss.card.hop.title': 'Frequency hopping',
+  'wl.fhss.card.hop.body':
+    'The carrier jumps over $W/R$ slots on a PN schedule; the slot count is the processing gain and the jammer can sit in only one slot.',
+  'wl.fhss.card.partial.title': 'Partial-band jamming',
+  'wl.fhss.card.partial.body':
+    'Concentrating jam power on a fraction $\\beta^*=2/\\gamma_b$ of the band maximises damage, giving the slow-decaying worst-case $P_e=e^{-1}/\\gamma_b$.',
+  'wl.fhss.card.slowfast.title': 'Slow vs fast FH',
+  'wl.fhss.card.slowfast.body':
+    'Slow FH sends one (or more) bits per hop; fast FH sends each bit over $L$ hops for $L$-order diversity, so $P_e\\propto q^{L}$ and the partial-band jammer loses its advantage.',
+
   // ── Retrofit: Link budget cards/theory ──
   'wl.lb.theory.title': 'Will the link close?',
   'wl.lb.theory.body':
