@@ -4,6 +4,7 @@ import {
   Select,
   Slider,
   Segmented,
+  Toggle,
   Readout,
   Formula,
   TheoryBox,
@@ -27,6 +28,7 @@ import {
   codedBerSoftRef,
   type LinearCode,
 } from '@/lib/dsp/blockcodes';
+import { burstErrorsPerCodeword } from '@/lib/dsp/concatenated';
 import { t } from '@/i18n';
 
 type CodeId = 'hamming74' | 'hamming1511' | 'rep31';
@@ -157,6 +159,8 @@ export function BlockCodesSection() {
         </Panel>
 
         <DetectionCorrectionSim />
+
+        <BurstInterleaveSim />
 
         <Panel title={t('cc.bc.curve')}>
           <Canvas
@@ -495,4 +499,123 @@ function drawSphereLine(
   ctx.fill();
   ctx.fillText('r', ax.x(errCount), yc - 26);
   ctx.textAlign = 'start';
+}
+
+const BI_N = 15; // (15,11) Hamming codeword length (book example)
+const BI_T = errorCorrectionT(3); // = 1 error/codeword
+
+/** §13.2.4 — live block-interleaver grid: a sweeping burst spreads across codewords (or piles up). */
+function BurstInterleaveSim() {
+  const [depth, setDepth] = useState(8);
+  const [burstLen, setBurstLen] = useState(8);
+  const [burstStart, setBurstStart] = useState(0);
+  const [interleave, setInterleave] = useState(true);
+
+  const total = depth * BI_N;
+  const loop = useSimulationLoop({
+    ticksPerSecond: 3,
+    onTick: () => setBurstStart((s) => (s + 1) % total),
+    onReset: () => setBurstStart(0),
+  });
+
+  const counts = burstErrorsPerCodeword(BI_N, depth, burstStart, burstLen, interleave);
+  const corrupted = counts.filter((c) => c > 0).length;
+  const uncorrectable = counts.filter((c) => c > BI_T).length;
+  const maxPer = counts.length ? Math.max(...counts) : 0;
+
+  return (
+    <Panel title={t('cc.bc.biTitle')}>
+      <div className="cc-readouts">
+        <Slider
+          label={t('cc.bc.biDepth')}
+          value={depth}
+          min={2}
+          max={12}
+          step={1}
+          onChange={(v) => {
+            setDepth(v);
+            setBurstStart(0);
+          }}
+        />
+        <Slider
+          label={t('cc.bc.biBurst')}
+          value={burstLen}
+          min={0}
+          max={24}
+          step={1}
+          onChange={setBurstLen}
+        />
+      </div>
+      <Toggle label={t('cc.bc.biInterleave')} checked={interleave} onChange={setInterleave} />
+      <TransportControls loop={loop} />
+      <Canvas
+        height={220}
+        ariaLabel="Block interleaver grid with a burst spread across codewords"
+        deps={[depth, burstLen, burstStart, interleave]}
+        draw={(ctx, w, h) =>
+          drawInterleaveGrid(ctx, w, h, depth, burstLen, burstStart, interleave, counts)
+        }
+      />
+      <div className="cc-readouts">
+        <Readout label={t('cc.bc.biMaxPer')} value={maxPer} tone={maxPer > BI_T ? 'err' : 'ok'} />
+        <Readout label={t('cc.bc.biCorrupted')} value={corrupted} />
+        <Readout
+          label={t('cc.bc.biUncorrectable')}
+          value={uncorrectable}
+          tone={uncorrectable > 0 ? 'err' : 'ok'}
+        />
+      </div>
+    </Panel>
+  );
+}
+
+/** Draw the depth×N interleaver grid; burst cells highlighted, rows tinted by correctability. */
+function drawInterleaveGrid(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  depth: number,
+  burstLen: number,
+  burstStart: number,
+  interleave: boolean,
+  counts: number[],
+): void {
+  const padL = 30;
+  const padT = 6;
+  const gw = (w - padL - 6) / BI_N;
+  const gh = (h - padT - 6) / depth;
+  // transmitted index p for a cell, per interleave mode
+  const isBurst = (row: number, col: number): boolean => {
+    const p = interleave ? col * depth + row : row * BI_N + col;
+    return p >= burstStart && p < burstStart + burstLen;
+  };
+  for (let row = 0; row < depth; row++) {
+    const cnt = counts[row] ?? 0;
+    const rowTint =
+      cnt === 0
+        ? alpha(CHART.dim, 0.08)
+        : cnt > BI_T
+          ? alpha(CHART.pink, 0.14)
+          : alpha(CHART.green, 0.14);
+    ctx.fillStyle = rowTint;
+    ctx.fillRect(padL, padT + row * gh, BI_N * gw, gh);
+    ctx.fillStyle = CHART.dim;
+    ctx.font = '9px ui-monospace, monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`c${row}`, padL - 4, padT + row * gh + gh / 2);
+    for (let col = 0; col < BI_N; col++) {
+      const x = padL + col * gw;
+      const y = padT + row * gh;
+      ctx.strokeStyle = alpha(CHART.dim, 0.4);
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, gw, gh);
+      if (isBurst(row, col)) {
+        ctx.fillStyle = cnt > BI_T ? CHART.pink : CHART.orange;
+        ctx.fillRect(x + 1.5, y + 1.5, gw - 3, gh - 3);
+      }
+    }
+  }
+  ctx.textAlign = 'start';
+  ctx.textBaseline = 'alphabetic';
 }
