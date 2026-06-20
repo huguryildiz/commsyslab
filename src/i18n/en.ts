@@ -621,6 +621,8 @@ export const en: Record<string, string> = {
   'it.tab.prefix': 'Prefix & Kraft',
   'it.tab.huffman': 'Huffman',
   'it.tab.lz': 'Lempel-Ziv',
+  'it.tab.joint': 'Mutual Info',
+  'it.tab.diff': 'Differential Entropy',
   'it.entropy.title': 'Entropy & self-information',
   'it.entropy.symbols': 'Symbols (probabilities)',
   'it.entropy.addSymbol': '+ symbol',
@@ -672,6 +674,111 @@ export const en: Record<string, string> = {
   'it.lz.encoded': 'Encoded',
   'it.lz.lengths': 'Input → encoded',
   'it.lz.lossless': 'Decoded == input (lossless)?',
+
+  // Joint & Mutual Information (§12.1.2–12.1.3)
+  'it.joint.title': 'Joint, conditional & mutual information',
+  'it.joint.matrix': 'Joint PMF p(x, y)',
+  'it.joint.ex616': 'Example 12.1.6',
+  'it.joint.ex617': 'Example 12.1.7',
+  'it.joint.indep': 'Independent',
+  'it.joint.venn': 'Entropy Venn diagram (Fig. 12.4)',
+  'it.joint.decomp': 'Decomposition  H(X,Y) = H(X|Y) + I(X;Y) + H(Y|X)',
+  'it.joint.card.joint': 'Joint entropy',
+  'it.joint.card.jointBody':
+    'Uncertainty of the pair (X, Y) — the bits needed to describe both outcomes together.',
+  'it.joint.card.cond': 'Conditional entropy',
+  'it.joint.card.condBody':
+    'What is still uncertain about X once Y is revealed. Zero when Y determines X.',
+  'it.joint.card.mi': 'Mutual information',
+  'it.joint.card.miBody':
+    'Information Y carries about X (and vice-versa) — the overlap of the two circles. Symmetric and ≥ 0.',
+  'it.joint.card.chain': 'Chain rule',
+  'it.joint.card.chainBody':
+    'Reveal Y, then what remains of X: the pair costs H(Y) plus the leftover H(X|Y).',
+  'it.joint.card.capacity': 'Channel capacity →',
+  'it.joint.card.capacityBody':
+    'Maximizing I(X;Y) over the input distribution gives channel capacity — explore it in the Channel Coding module (§12.4–12.6).',
+
+  // Differential Entropy (§12.1.4)
+  'it.diff.title': 'Differential entropy of a continuous source',
+  'it.diff.dist': 'Distribution',
+  'it.diff.uniform': 'Uniform [0, a]',
+  'it.diff.gaussian': 'Gaussian N(0, σ²)',
+  'it.diff.param': 'Parameter',
+  'it.diff.pdf': 'Probability density f_X(x)',
+  'it.diff.curve': 'h(X) vs parameter',
+  'it.diff.h': 'Differential entropy h(X)',
+  'it.diff.hnum': 'h(X) (numeric check)',
+  'it.diff.card.diff': 'Differential entropy',
+  'it.diff.card.diffBody':
+    'The continuous analog of entropy, h(X) = −∫ f log₂ f dx. It measures spread, not absolute uncertainty.',
+  'it.diff.card.negative': 'It can be negative',
+  'it.diff.card.negativeBody':
+    'Unlike discrete H ≥ 0, h(X) drops below zero when the density is concentrated — e.g. Uniform[0,a] with a < 1.',
+  'it.diff.card.maxgauss': 'Gaussian is maximal',
+  'it.diff.card.maxgaussBody':
+    'Among all densities with a given variance, the Gaussian has the largest differential entropy.',
+  'it.diff.card.mi': 'Mutual information survives',
+  'it.diff.card.miBody':
+    'Even though h(X) loses the absolute meaning of entropy, I(X;Y) keeps its meaning for continuous variables (Eq. 12.1.23).',
+
+  // Entropy tab info cards (§12.1.1)
+  'it.entropy.card.selfinfo': 'Self-information',
+  'it.entropy.card.selfinfoBody':
+    'A rare symbol surprises more: I(s) = −log₂ p bits. Sure things (p=1) carry zero information.',
+  'it.entropy.card.entropy': 'Entropy',
+  'it.entropy.card.entropyBody':
+    'Average self-information per symbol — the smallest average number of bits to describe the source output.',
+  'it.entropy.card.max': 'Maximum entropy',
+  'it.entropy.card.maxBody':
+    'Entropy peaks at log₂K when all K symbols are equally likely; any skew lowers it.',
+  'it.entropy.card.eff': 'Efficiency & redundancy',
+  'it.entropy.card.effBody':
+    'η = H / log₂K is how close the source is to maximal; 1 − η is its redundancy.',
+  'it.entropy.card.ext': 'Extended source',
+  'it.entropy.card.extBody':
+    'Blocking n symbols of a memoryless source scales entropy: H(Sⁿ) = n·H(S).',
+
+  // Source-coding tab info cards (§12.2)
+  'it.prefix.card.prefix': 'Prefix (instantaneous) code',
+  'it.prefix.card.prefixBody':
+    'No codeword is a prefix of another, so decoding needs no look-ahead — each symbol is recognized the instant it ends.',
+  'it.prefix.card.kraft': 'Kraft inequality',
+  'it.prefix.card.kraftBody': 'Codeword lengths admit a prefix code iff Σ 2^(−lₖ) ≤ 1.',
+  'it.prefix.card.ud': 'Uniquely decodable',
+  'it.prefix.card.udBody':
+    'Every bit stream maps back to at most one symbol sequence. All prefix codes are uniquely decodable, but not all UD codes are prefix codes.',
+  'it.prefix.card.thm': 'Source coding theorem',
+  'it.prefix.card.thmBody': 'Average length is bounded by entropy: H(S) ≤ L̄ < H(S) + 1.',
+
+  // Huffman tab info cards (§12.3.1)
+  'it.huffman.card.algo': 'Huffman algorithm',
+  'it.huffman.card.algoBody':
+    'Repeatedly merge the two least-probable symbols; the resulting tree gives an optimal prefix code.',
+  'it.huffman.card.minvar': 'Minimum variance',
+  'it.huffman.card.minvarBody':
+    'Tie-breaking by placing merged nodes high keeps codeword lengths even — same L̄, smaller length variance.',
+  'it.huffman.card.opt': 'Optimal & efficient',
+  'it.huffman.card.optBody':
+    'No other prefix code has a smaller average length; efficiency η = H/L̄ approaches 1 for skewed sources.',
+  'it.huffman.card.ratio': 'Compression',
+  'it.huffman.card.ratioBody':
+    'Variable-length codewords beat fixed-length ⌈log₂K⌉ bits whenever the symbols are non-uniform.',
+
+  // Lempel-Ziv tab info cards (§12.3.2)
+  'it.lz.card.dict': 'Dictionary parsing',
+  'it.lz.card.dictBody':
+    'The stream is split into never-seen phrases; each new phrase = an earlier phrase index plus one new bit.',
+  'it.lz.card.universal': 'Universal coding',
+  'it.lz.card.universalBody':
+    'LZ78 needs no prior knowledge of the source statistics — it learns them while encoding.',
+  'it.lz.card.vtf': 'Variable-to-fixed',
+  'it.lz.card.vtfBody':
+    'Variable-length input phrases map to fixed-width codewords (index bits + new bit).',
+  'it.lz.card.opt': 'Asymptotically optimal',
+  'it.lz.card.optBody':
+    'For a stationary ergodic source the compression rate approaches the entropy rate H as the input grows.',
+
   'it.theory.title': 'Key formulas',
 
   // ── Landing page ("The Lab Instrument") ──
