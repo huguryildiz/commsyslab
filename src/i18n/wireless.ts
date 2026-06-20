@@ -167,6 +167,18 @@ export const wireless: Record<string, string> = {
   'wl.ss.ber.title': 'BER vs jammer power — spread vs unspread',
   'wl.ss.readout.gp': 'Processing gain G_p',
   'wl.ss.readout.N': 'Chips per bit N',
+  'wl.ss.readout.pe': 'Detector P_e @ operating point',
+  'wl.ss.theory.title': 'Trading bandwidth for jamming immunity',
+  'wl.ss.theory.body':
+    'The data bit is multiplied by a fast ±1 PN code, spreading its energy across the whole chip-rate band. At the receiver, multiplying by the same code again collapses the wanted signal back to baseband while smearing any narrowband jammer across the band — so only 1/N of the jammer power lands in the data bandwidth. That factor N is the processing gain, and it sets the jamming margin.',
+  'wl.ss.card.gp.title': 'Processing gain',
+  'wl.ss.card.gp.body': 'The bandwidth-expansion factor $N$; despreading suppresses narrowband interference by $N$.',
+  'wl.ss.card.despread.title': 'Despreading',
+  'wl.ss.card.despread.body':
+    'Re-multiplying by the PN code de-spreads the signal to baseband and spreads the jammer — concentrating wanted power and diluting interference.',
+  'wl.ss.card.margin.title': 'Jamming margin',
+  'wl.ss.card.margin.body':
+    'The extra jammer power the link can tolerate thanks to the processing gain; $P_e=Q(\\sqrt{2\\gamma_{\\text{eff}}})$ at the detector.',
 
   // OFDM / multicarrier section
   'wl.tab.ofdm': 'OFDM',

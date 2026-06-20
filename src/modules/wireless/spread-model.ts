@@ -4,6 +4,7 @@ import {
   spreadBits,
   processingGainDb,
   dsssBer,
+  dsssDetectorPe,
 } from '@/lib/dsp/spread';
 import { spectrum } from '@/lib/dsp/fft';
 import { makeRng } from '@/lib/dsp/random';
@@ -35,6 +36,7 @@ export interface SpreadDerived {
   jsrSweep: number[]; // dB
   berSpread: number[]; // DS-SS BER vs JSR (processing gain N)
   berUnspread: number[]; // BER with no spreading (N = 1)
+  detectorPe: number; // Pe at the detector for the operating point (§15.2.2)
 }
 
 const JSR_SWEEP = linspace(-10, 40, 101); // dB
@@ -79,5 +81,6 @@ export function deriveSpread(p: SpreadParams): SpreadDerived {
     jsrSweep: JSR_SWEEP,
     berSpread,
     berUnspread,
+    detectorPe: dsssDetectorPe(p.ebN0Db, p.jsrDb, N),
   };
 }

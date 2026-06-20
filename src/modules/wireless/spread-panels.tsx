@@ -5,9 +5,10 @@ import type { SpreadParams } from './spread-model';
 interface Props {
   params: SpreadParams;
   set: (patch: Partial<SpreadParams>) => void;
+  reset: () => void;
 }
 
-export function SpreadControls({ params, set }: Props) {
+export function SpreadControls({ params, set, reset }: Props) {
   return (
     <Panel title={t('wl.ss.title')}>
       <Slider
@@ -42,6 +43,9 @@ export function SpreadControls({ params, set }: Props) {
         value={params.jammerOffset}
         onChange={(v) => set({ jammerOffset: v })}
       />
+      <button type="button" onClick={reset}>
+        {t('wl.reset')}
+      </button>
     </Panel>
   );
 }
